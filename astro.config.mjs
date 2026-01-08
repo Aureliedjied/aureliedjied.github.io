@@ -1,8 +1,12 @@
-import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+
+import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  // REMPLACE par ton nom d'utilisateur GitHub
-  site: 'https://aureliedjied.github.io', 
-  integrations: [tailwind()],
+  site: 'https://aureliedjied.github.io',
+  integrations: [],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });
