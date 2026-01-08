@@ -1,27 +1,67 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+// Récupérer et mélanger les projets
+const allProjects = await getCollection('projets');
+const randomProjects = allProjects
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 3);
+
+const skills = [
+  { category: "Système", items: ["Windows Server", "Debian 12", "Active Directory"] },
+  { category: "Réseau & Sec", items: ["PfSense", "VLANs", "VPN IPsec", "IDS/IPS"] },
+  { category: "Supervision/Cloud", items: ["Zabbix", "Proxmox", "AWS/Azure (en apprentissage)"] }
+];
 ---
 
 <Layout>
-	<section class="space-y-6">
-		<header class="space-y-2">
-			<h1 class="text-3xl font-medium tracking-tight">Aurélie Djied</h1>
-			<p class="text-gray-400 text-lg">
-				Technicienne systèmes et réseaux en formation
-			</p>
-		</header>
+  <section class="space-y-16 py-10">
+    <header class="space-y-4">
+      <div class="inline-block px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono mb-2">
+        Disponible pour un Bachelor Cloud & Réseaux
+      </div>
+      <h1 class="text-5xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
+        Aurélie Djied
+      </h1>
+      <p class="text-gray-400 text-xl max-w-xl leading-relaxed">
+        Technicienne TSSR passionnée par l'infrastructure, la sécurité et l'automatisation.
+      </p>
+    </header>
 
-		<nav class="flex gap-4 text-sm font-medium">
-			<a href="https://github.com/aureliedjied" class="text-gray-500 hover:text-white transition-colors">GitHub</a>
-			<a href="https://www.linkedin.com/in/aurelie-djied-cyber/" class="text-gray-500 hover:text-white transition-colors">LinkedIn</a>
-			<a href="mailto:aurelie.djied@gmail.com" class="text-gray-500 hover:text-white transition-colors">Contact</a>
-		</nav>
+    <div class="grid md:grid-cols-3 gap-8">
+      {skills.map(skill => (
+        <div class="space-y-4">
+          <h3 class="text-sm font-bold uppercase tracking-widest text-blue-500">{skill.category}</h3>
+          <ul class="space-y-2">
+            {skill.items.map(item => (
+              <li class="flex items-center gap-2 text-gray-300">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-900"></span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
 
-		<hr class="border-white/10 my-12" />
-
-		<div class="space-y-8">
-			<h2 class="text-sm uppercase tracking-widest text-gray-500">Projets</h2>
-			<p class="text-gray-400 italic">Bientôt de nouveaux projets ici...</p>
-		</div>
-	</section>
+    <div class="space-y-8">
+      <div class="flex justify-between items-end">
+        <h2 class="text-2xl font-bold text-white">Focus Projets</h2>
+        <a href="/projets" class="text-blue-400 text-sm hover:underline">Voir tout →</a>
+      </div>
+      
+      <div class="grid gap-4">
+        {randomProjects.map(project => (
+          <a href={`/projets/${project.slug}`} class="group p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all flex justify-between items-center">
+            <div>
+              <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{project.data.title}</h3>
+              <p class="text-sm text-gray-500">{project.data.tags.join(' • ')}</p>
+            </div>
+            <span class="text-gray-700 group-hover:text-white transition-colors">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
 </Layout>
