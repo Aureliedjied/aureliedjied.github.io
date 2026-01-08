@@ -1,16 +1,27 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+	<section class="space-y-6">
+		<header class="space-y-2">
+			<h1 class="text-3xl font-medium tracking-tight">Aurélie Djied</h1>
+			<p class="text-gray-400 text-lg">
+				Technicienne systèmes et réseaux en formation
+			</p>
+		</header>
+
+		<nav class="flex gap-4 text-sm font-medium">
+			<a href="https://github.com/aureliedjied" class="text-gray-500 hover:text-white transition-colors">GitHub</a>
+			<a href="https://www.linkedin.com/in/aurelie-djied-cyber/" class="text-gray-500 hover:text-white transition-colors">LinkedIn</a>
+			<a href="mailto:aurelie.djied@gmail.com" class="text-gray-500 hover:text-white transition-colors">Contact</a>
+		</nav>
+
+		<hr class="border-white/10 my-12" />
+
+		<div class="space-y-8">
+			<h2 class="text-sm uppercase tracking-widest text-gray-500">Projets</h2>
+			<p class="text-gray-400 italic">Bientôt de nouveaux projets ici...</p>
+		</div>
+	</section>
+</Layout>
