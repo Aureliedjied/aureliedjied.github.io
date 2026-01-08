@@ -25,15 +25,35 @@ const { Content } = await project.render();
       
       <h1 class="text-4xl font-bold mb-4 text-white">{project.data.title}</h1>
       
-      <div class="flex gap-3">
+        <div class="flex gap-3">
         {project.data.tags.map(tag => (
-          <span class="text-sm text-blue-400 font-mono">#{tag}</span>
+            <a 
+            href={`/tags/${tag}`} 
+            class="text-sm text-blue-400 font-mono hover:text-blue-300 transition-colors"
+            >
+            #{tag}
+            </a>
         ))}
-      </div>
+        </div>
     </header>
 
-    <div class="text-gray-300 leading-relaxed space-y-4">
+    <div class="prose-content">
       <Content />
     </div>
   </article>
 </Layout>
+
+<style is:global>
+  /* On indique à Tailwind v4 où se trouvent ses définitions */
+  @reference "../../styles/global.css";
+
+  .prose-content h2 { 
+    @apply text-2xl font-semibold text-white mt-8 mb-4; 
+  }
+  .prose-content p { 
+    @apply mb-4 text-gray-300; 
+  }
+  .prose-content ul { 
+    @apply list-disc list-inside mb-4 text-gray-300; 
+  }
+</style>
