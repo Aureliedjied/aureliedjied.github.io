@@ -1,0 +1,87 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const timeline = [
+  {
+    date: "2026 - 2027",
+    title: "En route vers le Bachelor Cloud, systèmes et réseaux",
+    desc: "Spécialisation dans les infrastructures haute disponibilité, la conteneurisation et l'automatisation."
+  },
+  {
+    date: "2025 - Présent",
+    title: "Technicienne TSSR",
+    desc: "Maîtrise de l'administration système (AD, Linux) et de la sécurité réseau (Firewalling, VPN, VLANs)."
+  },
+  {
+    date: "2023 - 2024",
+    title: "Développeuse Web & Web Mobile",
+    desc: "Acquisition d'une logique de programmation solide, facilitant aujourd'hui mon approche de l'automatisation et du Scripting."
+  }
+];
+---
+
+<Layout>
+  <section class="max-w-3xl mx-auto py-16 space-y-16">
+    <div class="space-y-4">
+      <h1 class="text-4xl font-bold text-white tracking-tighter">Mon Parcours</h1>
+      <p class="text-xl text-zinc-400 leading-relaxed">
+        Basée à <span class="text-white">Toulon</span>, j'évolue dans l'écosystème IT avec une curiosité constante. J'adore mettre en place des labos, les tester, les défaire tout en améliorant mes compétences.
+      </p>
+    </div>
+
+    <section class="grid md:grid-cols-2 gap-8 items-start py-8">
+      <div class="space-y-6">
+        <h2 class="text-2xl font-bold text-white tracking-tight italic">Regarder sous le capot</h2>
+        <p class="text-zinc-400 leading-relaxed text-sm">
+          Mon passé de développeuse m'a donné le goût du fonctionnement interne des outils. Aujourd'hui, je ne me contente plus de l'interface : je veux comprendre comment les paquets circulent et comment l'infrastructure respire.
+        </p>
+        <div class="grid gap-3">
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-zinc-300">
+                <span class="text-purple-400 font-mono">01.</span> Admin Système & Linux
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-zinc-300">
+                <span class="text-purple-400 font-mono">02.</span> Sécurité & Hardening
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-zinc-300">
+                <span class="text-purple-400 font-mono">03.</span> Architecture Réseau
+            </div>
+        </div>
+      </div>
+
+      <div class="relative p-6 rounded-[2rem] bg-zinc-900/30 border border-purple-500/10 font-mono text-[11px] leading-relaxed text-zinc-500 overflow-hidden shadow-2xl">
+        <div class="text-purple-400 mb-2">// Diagnostic_Système</div>
+        <div class="text-zinc-400">$ systemctl status infrastructure</div>
+        <div class="text-green-500">● active (running)</div>
+        <div class="mt-2 text-zinc-600">
+          [OK] VLAN 10 tagging (Data)<br/>
+          [OK] VPN Tunnel IPsec: Up<br/>
+          [OK] Nginx Proxy Pass: Healthy<br/>
+          [OK] Firewall Rules: Applied<br/>
+          [WAIT] Cloud Migration... 90%
+        </div>
+        <div class="absolute bottom-2 right-4 opacity-20 text-[40px]">⌨</div>
+      </div>
+    </section>
+
+    <div class="space-y-12">
+      <h2 class="text-2xl font-bold text-white">Chronologie</h2>
+      {timeline.map((item) => (
+        <div class="relative pl-8 border-l border-zinc-800 group">
+          <div class="absolute left-[-5.5px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-800 group-hover:bg-purple-500 transition-all group-hover:scale-125"></div>
+          <div class="space-y-1">
+            <span class="text-xs font-mono text-purple-400 uppercase tracking-widest">{item.date}</span>
+            <h3 class="text-xl font-bold text-white">{item.title}</h3>
+            <p class="text-zinc-400 leading-relaxed text-sm">{item.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="p-8 rounded-[2rem] bg-zinc-900/50 border border-white/5 space-y-4">
+      <h2 class="text-2xl font-bold text-white">Pourquoi cette transition ?</h2>
+      <p class="text-zinc-400 leading-relaxed">
+        Passer du développement à l'infrastructure a été une évidence. Maîtriser ce qu'il y a "en dessous" de l'application permet de construire des solutions plus robustes et plus sécurisées. Mon objectif est d'allier ma logique logicielle à l'expertise Cloud pour devenir une architecte capable de répondre aux défis complexes de la haute disponibilité.
+      </p>
+    </div>
+  </section>
+</Layout>
