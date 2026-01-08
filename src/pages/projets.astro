@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const projects = await getCollection('projets');
+const sortedProjects = projects.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout>
+  <h1 class="text-3xl font-medium mb-10">Mes Travaux</h1>
+  
+  <div class="grid gap-6">
+    {sortedProjects.map((project) => (
+      <div class="group p-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-all">
+        
+        <div class="flex justify-between items-start mb-4">
+        
+          <a href={`/projets/${project.slug}`} class="flex justify-between items-center w-full group/title">
+            <h2 class="text-xl font-medium group-hover/title:text-blue-400 transition-colors">
+              {project.data.title}
+            </h2>
+            <span class="text-gray-600 group-hover/title:translate-x-1 transition-transform">↗</span>
+          </a>
+        </div>
+        
+        <p class="text-gray-400 text-sm mb-6 leading-relaxed">
+          {project.data.description}
+        </p>
+        
+        <div class="flex flex-wrap gap-2">
+            {project.data.tags.map((tag) => (
+                <a 
+                href={`/tags/${tag}`} 
+                class="relative z-10 text-[10px] uppercase tracking-wider px-2 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded hover:bg-blue-400 hover:text-white transition-colors"
+                >
+                {tag}
+                </a>
+            ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</Layout>
