@@ -2,13 +2,12 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ] 
+    branches: [ main ]
 
 permissions:
   contents: read
   pages: write
   id-token: write
-
 
 jobs:
   build:
@@ -16,11 +15,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
       - name: Install dependencies
+        # On force le passage ici
         run: npm install --legacy-peer-deps
 
-      - name: Build and upload
-        uses: withastro/action@v3
+      - name: Build Astro
+        # On lance le build manuellement
+        run: npm run build
+
+      - name: Upload artifact
+        # On envoie le dossier dist (généré par le build) vers GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
