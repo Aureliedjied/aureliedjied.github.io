@@ -25,11 +25,10 @@ const { Content } = await project.render();
       
       <h1 class="text-4xl font-bold mb-4 text-white">{project.data.title}</h1>
       
-        <div class="flex gap-3">
-        {project.data.tags.map(tag => (
+        <div class="flex flex-wrap gap-4 mt-2"> {project.data.tags.map(tag => (
             <a 
             href={`/tags/${tag}`} 
-            class="text-sm text-blue-400 font-mono hover:text-blue-300 transition-colors"
+            class="text-sm text-blue-400 font-mono hover:text-blue-300 transition-colors bg-blue-500/5 px-2 py-0.5 rounded border border-blue-500/10"
             >
             #{tag}
             </a>

@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const allProjects = await getCollection('projets');
+  const uniqueTags = [...new Set(allProjects.map((p) => p.data.tags).flat())];
+
+  return uniqueTags.map((tag) => {
+    const filteredProjects = allProjects.filter((p) => p.data.tags.includes(tag));
+    return {
+      params: { tag },
+      props: { projects: filteredProjects },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+const { projects } = Astro.props;
+---
+
+<Layout>
+  <h1 class="text-3xl font-medium mb-10 text-white">
+    Projets avec le tag <span class="text-blue-400">#{tag}</span>
+  </h1>
+  
+  <div class="grid gap-6">
+    {projects.map((project) => (
+      <a href={`/projets/${project.slug}`} class="p-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/[0.08] transition-all">
+        <h2 class="text-xl font-medium">{project.data.title}</h2>
+        <p class="text-gray-400 text-sm mt-2">{project.data.description}</p>
+      </a>
+    ))}
+  </div>
+</Layout>

@@ -1,8 +1,36 @@
-<nav class="flex justify-between items-center py-8">
-  <a href="/" class="font-medium hover:text-blue-400 transition-colors">AD.</a>
-  <div class="flex gap-6 text-sm text-gray-400">
-    <a href="/" class="hover:text-white transition-colors">Accueil</a>
-    <a href="/projets" class="hover:text-white transition-colors">Projets</a>
-    <a href="/contact" class="hover:text-white transition-colors">Contact</a>
-  </div>
+<nav class="flex justify-between items-center py-10">
+    <a href="/" class="text-2xl font-bold tracking-tighter text-white">
+        <span id="type-target" class="text-purple-400"></span>
+    </a>
+    
+    <div class="flex gap-2 p-1 bg-[#23262d] rounded-full border border-[#343841]">
+        <a href="/" class="px-6 py-2 rounded-full text-sm font-medium text-zinc-400 hover:text-white hover:bg-[#343841] transition-all">Accueil</a>
+        <a href="/projets" class="px-6 py-2 rounded-full text-sm font-medium text-zinc-400 hover:text-white hover:bg-[#343841] transition-all">Projets</a>
+        <a href="/contact" class="px-6 py-2 rounded-full text-sm font-medium text-zinc-400 hover:text-white hover:bg-[#343841] transition-all">Contact</a>
+        <a href="/presentation" class="px-6 py-2 rounded-full text-sm font-medium text-zinc-400 hover:text-white hover:bg-[#343841] transition-all">Qui suis-je</a>
+    </div>
 </nav>
+
+<script src="https://unpkg.com/typeit@8.7.1/dist/index.umd.js" is:inline></script>
+
+<script is:inline>
+  // On attend que la page et le script TypeIt soient prêts
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof TypeIt !== 'undefined') {
+      new TypeIt("#type-target", {
+        strings: "Aurélie DJIED",
+        speed: 100,
+        cursor: true,
+        waitUntilVisible: true,
+      }).go();
+    }
+  });
+</script>
+
+<style is:global>
+  /* Personnalisation du curseur pour qu'il soit violet aussi */
+  .ti-cursor {
+    color: #a78bfa !important;
+    font-weight: bold;
+  }
+</style>

@@ -2,66 +2,95 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
-// Récupérer et mélanger les projets
+// Récupérer les projets et les trier par date pour avoir les derniers en premier
 const allProjects = await getCollection('projets');
-const randomProjects = allProjects
-  .sort(() => Math.random() - 0.5)
-  .slice(0, 3);
+const lastProjects = allProjects
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3); // On prend les 3 derniers
 
 const skills = [
   { category: "Système", items: ["Windows Server", "Debian 12", "Active Directory"] },
-  { category: "Réseau & Sec", items: ["PfSense", "VLANs", "VPN IPsec", "IDS/IPS"] },
-  { category: "Supervision/Cloud", items: ["Zabbix", "Proxmox", "AWS/Azure (en apprentissage)"] }
+  { category: "Réseau & Sec", items: ["PfSense", "VLANs", "VPN IPsec"] },
+  { category: "Supervision", items: ["Zabbix", "Proxmox", "Cloud"] }
 ];
 ---
 
 <Layout>
-  <section class="space-y-16 py-10">
-    <header class="space-y-4">
-      <div class="inline-block px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono mb-2">
-        Disponible pour un Bachelor Cloud & Réseaux
+  <section class="py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+    <div class="space-y-6 order-2 md:order-1">
+      <div class="space-y-2">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+          Bonjour, je suis <span class="text-purple-400">Aurélie</span>.
+        </h1>
+        <p class="text-lg text-zinc-400 leading-relaxed italic">
+          "Technicienne TSSR en formation, en route pour .. ."
+        </p>
+        <p class="text-base md:text-lg text-zinc-300 max-w-xl leading-relaxed">
+          Passionnée par l'architecture système et la sécurité, je prépare actuellement mon entrée en <strong>Bachelor Systèmes, Cloud & Réseaux</strong>. Mon objectif ? Concevoir des infrastructures résilientes et automatisées.
+        </p>
       </div>
-      <h1 class="text-5xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-        Aurélie Djied
-      </h1>
-      <p class="text-gray-400 text-xl max-w-xl leading-relaxed">
-        Technicienne TSSR passionnée par l'infrastructure, la sécurité et l'automatisation.
-      </p>
-    </header>
 
-    <div class="grid md:grid-cols-3 gap-8">
-      {skills.map(skill => (
-        <div class="space-y-4">
-          <h3 class="text-sm font-bold uppercase tracking-widest text-blue-500">{skill.category}</h3>
-          <ul class="space-y-2">
-            {skill.items.map(item => (
-              <li class="flex items-center gap-2 text-gray-300">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-900"></span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div class="flex flex-wrap gap-4 pt-4">
+        <a href="/contact" class="px-8 py-3 rounded-full bg-white text-black font-bold hover:bg-purple-400 hover:text-white transition-all text-sm shadow-lg shadow-white/5">
+          Me contacter
+        </a>
+        <a href="/projets" class="px-8 py-3 rounded-full bg-zinc-900 text-white font-bold border border-zinc-800 hover:border-zinc-400 transition-all text-sm">
+          Voir mes travaux
+        </a>
+      </div>
     </div>
 
-    <div class="space-y-8">
-      <div class="flex justify-between items-end">
-        <h2 class="text-2xl font-bold text-white">Focus Projets</h2>
-        <a href="/projets" class="text-blue-400 text-sm hover:underline">Voir tout →</a>
+    <div class="order-1 md:order-2 flex justify-center md:justify-end">
+      <div class="relative group">
+        <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+        
+        <img 
+          src="/photo-aurelie.jpg" 
+          alt="Aurélie Djied" 
+          class="relative w-64 h-64 md:w-80 md:h-80 object-cover rounded-3xl border border-white/10 grayscale hover:grayscale-0 transition-all duration-500 shadow-2xl"
+        />
       </div>
-      
-      <div class="grid gap-4">
-        {randomProjects.map(project => (
-          <a href={`/projets/${project.slug}`} class="group p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all flex justify-between items-center">
-            <div>
-              <h3 class="font-medium text-white group-hover:text-blue-400 transition-colors">{project.data.title}</h3>
-              <p class="text-sm text-gray-500">{project.data.tags.join(' • ')}</p>
+    </div>
+  </section>
+
+  <section class="py-12 grid md:grid-cols-3 gap-4">
+    {skills.map(skill => (
+      <div class="p-6 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-purple-400 mb-4">{skill.category}</h3>
+        <ul class="space-y-2">
+          {skill.items.map(item => (
+            <li class="text-sm text-zinc-400 flex items-center gap-2">
+              <span class="h-1 w-1 rounded-full bg-zinc-700"></span>{item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </section>
+
+  <section class="py-12 space-y-8">
+    <div class="flex justify-between items-end">
+        <h2 class="text-2xl font-bold text-white tracking-tight">Derniers projets</h2>
+        <a href="/projets" class="text-zinc-500 hover:text-white text-sm transition-colors">Voir tout →</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {lastProjects.map(project => (
+        <a href={`/projets/${project.slug}`} class="group relative flex flex-col justify-between p-6 min-h-[250px] rounded-[1.5rem] bg-[#1a1c23] border border-white/5 hover:border-purple-500/50 transition-all duration-300 shadow-2xl">
+            <div class="space-y-3 relative z-10">
+                <div class="flex gap-2">
+                    {project.data.tags.slice(0, 2).map(tag => (
+                        <span class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-black text-purple-300 rounded border border-purple-500/20">
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+                <h3 class="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">{project.data.title}</h3>
+                <p class="text-zinc-500 text-xs line-clamp-3">{project.data.description}</p>
             </div>
-            <span class="text-gray-700 group-hover:text-white transition-colors">→</span>
-          </a>
-        ))}
-      </div>
+            <div class="text-zinc-600 group-hover:text-white self-end transition-colors">↗</div>
+        </a>
+      ))}
     </div>
   </section>
 </Layout>

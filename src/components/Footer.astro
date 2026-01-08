@@ -1,3 +1,21 @@
-<footer class="mt-20 py-8 border-t border-white/10 text-center text-sm text-gray-500">
-  <p>© {new Date().getFullYear()} — Aurélie Djied. Passionnée Cloud & Réseaux.</p>
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="w-full border-t border-white/5 bg-[#050505]/50 backdrop-blur-sm">
+  <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <p class="text-zinc-500 text-sm italic">
+      Fait avec passion à <span class="text-white">Toulon</span> 🌴
+    </p>
+    
+    <div class="flex items-center gap-6">
+      <p class="text-zinc-600 text-xs tracking-widest uppercase">
+        © {currentYear} Aurélie Djied
+      </p>
+      <div class="h-1 w-1 rounded-full bg-purple-500"></div>
+      <a href="/contact" class="text-zinc-500 hover:text-purple-400 text-xs transition-colors">
+        Contact
+      </a>
+    </div>
+  </div>
 </footer>
