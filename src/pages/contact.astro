@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <section class="max-w-xl mx-auto text-center py-10">
+    <h1 class="text-4xl font-bold mb-6 text-white">Contact</h1>
+    <p class="text-gray-400 mb-12">
+      Je suis actuellement à la recherche d'une poursuite d'études en <strong>Bachelor Systèmes, Réseaux et Cloud Computing</strong>. N'hésitez pas à me contacter pour discuter de mon parcours ou d'opportunités d'alternance.
+    </p>
+
+    <div class="grid gap-4 text-left">
+      <a href="https://www.linkedin.com/in/aurelie-djied-cyber/" target="_blank" class="flex items-center justify-between p-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all group">
+        <div>
+          <h3 class="font-medium text-white">LinkedIn</h3>
+          <p class="text-sm text-gray-500 italic">Mon parcours professionnel</p>
+        </div>
+        <span class="text-blue-400 group-hover:translate-x-1 transition-transform">↗</span>
+      </a>
+
+      <a href="mailto:ton-email@exemple.com" class="flex items-center justify-between p-6 rounded-2xl border border-white/10 bg-white/5 hover:bg-purple-500/10 hover:border-purple-500/30 transition-all group">
+        <div>
+          <h3 class="font-medium text-white">Email</h3>
+          <p class="text-sm text-gray-500 italic">aurelie.djied@gmail.com</p>
+        </div>
+        <span class="text-purple-400 group-hover:translate-x-1 transition-transform">↗</span>
+      </a>
+    </div>
+
+    <div class="mt-12">
+        <a href="/cv-aurelie.pdf" download class="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-gray-200 transition-colors">
+            Télécharger mon CV (PDF)
+        </a>
+    </div>
+  </section>
+</Layout>
