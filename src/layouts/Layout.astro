@@ -4,52 +4,92 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 ---
 
-<!doctype html>
 <html lang="fr">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <title>Aurélie Djied | Portfolio</title>
+        
+        <script is:inline>
+            const theme = (() => {
+                if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+                    return localStorage.getItem('theme');
+                }
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    return 'dark';
+                }
+                return 'dark'; // Par défaut le style sombre
+            })();
+            
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        </script>
     </head>
-    <body class="bg-[#050505] text-zinc-300 min-h-screen flex flex-col">
-        <div class="fixed inset-0 -z-10 overflow-hidden">
-            <div class="absolute top-[-10%] left-[-10%] h-[600px] w-[600px] rounded-full bg-purple-600/10 blur-[120px]"></div>
-            <div class="absolute bottom-[0%] right-[-5%] h-[500px] w-[500px] rounded-full bg-blue-600/5 blur-[120px]"></div>
+    
+    <body class="min-h-screen flex flex-col font-sans transition-colors duration-300">
+        <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+            <div class="absolute top-[-10%] left-[-10%] h-[600px] w-[600px] rounded-full blur-[120px] opacity-50 dark:opacity-100" 
+                style="background-color: var(--bg-glow-1);"></div>
+            <div class="absolute bottom-[0%] right-[-5%] h-[500px] w-[500px] rounded-full blur-[120px] opacity-30 dark:opacity-100" 
+                style="background-color: var(--bg-glow-2);"></div>
         </div>
         
-        <main class="max-w-5xl mx-auto px-6 w-full flex-grow">
+        <main class="max-w-5xl mx-auto px-6 w-full flex-grow pt-8">
             <Header />
             <slot />
         </main>
 
         <Footer />
+
+        <button id="to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-purple-600 text-white shadow-lg opacity-0 translate-y-10 transition-all duration-300 hover:scale-110 z-50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg>
+        </button>
+
+        <script>
+            const toTopBtn = document.getElementById('to-top');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 400) {
+                    toTopBtn?.classList.remove('opacity-0', 'translate-y-10');
+                } else {
+                    toTopBtn?.classList.add('opacity-0', 'translate-y-10');
+                }
+            });
+            toTopBtn?.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        </script>
     </body>
 </html>
-<button 
-  id="to-top" 
-  class="fixed bottom-8 right-8 p-3 rounded-full bg-purple-600 text-white shadow-lg opacity-0 translate-y-10 transition-all duration-300 hover:scale-110 z-50"
-  aria-label="Remonter en haut"
->
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg>
-</button>
 
-<script>
-  const toTopBtn = document.getElementById('to-top');
-  
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 400) {
-      toTopBtn?.classList.remove('opacity-0', 'translate-y-10');
-    } else {
-      toTopBtn?.classList.add('opacity-0', 'translate-y-10');
-    }
-  });
-
-  toTopBtn?.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-</script>
 <style is:global>
-    :root { color-scheme: dark; }
-    html { font-family: 'Inter', system-ui, sans-serif; scroll-behavior: smooth; }
+    /* Reset des styles globaux et polices */
+    html { 
+        font-family: 'Inter', system-ui, sans-serif; 
+        scroll-behavior: smooth; 
+        background-color: var(--bg-color);
+    }
+
+    /* Animation fluide lors du changement de thème */
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+    }
+
+    /* Configuration des variables Pagefind (pour ta page /recherche) */
+    :root { 
+        --pagefind-ui-primary: #a855f7; 
+        --pagefind-ui-text: var(--text-main);
+        --pagefind-ui-background: var(--card-bg);
+        --pagefind-ui-border: var(--card-border);
+    }
+
+    /* Customisation de la sélection de texte */
+    ::selection {
+        background-color: rgba(168, 85, 247, 0.3);
+        color: var(--text-title);
+    }
 </style>

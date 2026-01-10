@@ -18,16 +18,19 @@ const filters = [
 <Layout>
   <div class="space-y-8">
     <header class="space-y-4">
-      <h1 class="text-4xl font-bold text-white tracking-tighter">Mes Travaux</h1>
-      <p class="text-zinc-400 max-w-2xl">
+      <h1 class="text-4xl font-bold tracking-tighter" style="color: var(--text-title);">
+        Mes Travaux
+      </h1>
+      <p class="max-w-2xl" style="color: var(--text-main);">
         Exploration de l'infrastructure IT : du déploiement de serveurs Windows à la sécurisation d'environnements Linux.
       </p>
     </header>
 
-    <div class="flex flex-wrap gap-3 py-4 border-y border-white/5">
+    <div class="flex flex-wrap gap-3 py-4 border-y" style="border-color: var(--card-border);">
       {filters.map(filter => (
         <button 
-          class="filter-btn px-4 py-1.5 rounded-full border border-white/10 text-xs font-medium text-zinc-400 hover:border-purple-400/50 hover:text-white transition-all [&.active]:bg-purple-500/10 [&.active]:border-purple-500 [&.active]:text-white" 
+          class="filter-btn px-4 py-1.5 rounded-full border text-xs font-medium transition-all [&.active]:bg-purple-500/10 [&.active]:border-purple-500 [&.active]:text-purple-500" 
+          style="border-color: var(--card-border); color: var(--text-main);"
           data-filter={filter.tag}
           class:list={[{ 'active': filter.tag === 'all' }]} 
         >
@@ -40,39 +43,43 @@ const filters = [
         {sortedProjects.map((project) => (
             <a 
               href={`/projets/${project.slug}`} 
-              class="project-card group relative flex flex-col justify-between p-6 min-h-[300px] rounded-[1.5rem] bg-[#1a1c23] border border-white/5 hover:border-purple-400/50 shadow-2xl transition-all duration-300"
+              class="project-card group relative flex flex-col justify-between p-6 min-h-[300px] rounded-[1.5rem] border shadow-2xl transition-all duration-300"
+              style="background-color: var(--card-bg); border-color: var(--card-border);"
               data-tags={`${project.data.tags.join(' ')} ${project.data.category || ''}`}
             >
             
             <div class="space-y-4 relative z-10">
                 <div class="flex flex-wrap gap-2">
                     {project.data.tags.map(tag => (
-                        <span class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-zinc-900 text-purple-300 rounded-md border border-purple-500/20">
+                        <span 
+                          class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-md border"
+                          style="background-color: var(--bg-color); color: var(--text-purple); border-color: var(--purple-border);"
+                        >
                             {tag}
                         </span>
                     ))}
                 </div>
                 
                 <div class="space-y-2">
-                    <h3 class="text-xl font-bold text-white group-hover:text-purple-300 transition-colors leading-tight">
+                    <h3 class="text-xl font-bold group-hover:text-purple-500 transition-colors leading-tight" style="color: var(--text-title);">
                         {project.data.title}
                     </h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed line-clamp-4">
+                    <p class="text-sm leading-relaxed line-clamp-4" style="color: var(--text-main);">
                         {project.data.description}
                     </p>
                 </div>
             </div>
 
             <div class="flex justify-between items-center mt-6 relative z-10">
-                <span class="text-[10px] font-mono text-zinc-600">
+                <span class="text-[10px] font-mono opacity-50" style="color: var(--text-main);">
                   {new Date(project.data.pubDate).toLocaleDateString('fr-FR', {month: 'short', year: 'numeric'})}
                 </span>
-                <div class="text-zinc-600 group-hover:text-white transition-colors">
+                <div class="opacity-50 group-hover:opacity-100 group-hover:text-purple-500 transition-all" style="color: var(--text-main);">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                 </div>
             </div>
             
-            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
             </a>
         ))}
     </div>
@@ -80,21 +87,19 @@ const filters = [
 </Layout>
 
 <script>
+  // Ton script de filtrage reste identique, il n'a pas besoin de changer !
   const buttons = document.querySelectorAll('.filter-btn');
   const projectCards = document.querySelectorAll('.project-card');
 
   buttons.forEach(button => {
     button.addEventListener('click', () => {
       const filter = button.getAttribute('data-filter') || 'all';
-
-      // Gestion de la classe active sur les boutons
       buttons.forEach(btn => btn.classList.remove('active'));
       button.classList.add('active');
 
       projectCards.forEach(card => {
         const cardTags = card.getAttribute('data-tags') || '';
         const cardElement = card as HTMLElement;
-
         if (filter === 'all' || cardTags.includes(filter)) {
           cardElement.style.display = 'flex';
         } else {

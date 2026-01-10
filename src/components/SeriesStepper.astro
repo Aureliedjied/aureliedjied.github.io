@@ -16,9 +16,10 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
 <nav class="my-8" aria-label="Progression du labo">
   <div class="flex items-center justify-between mb-4 px-1">
     <div class="flex flex-col">
-      <h4 class="text-white font-bold text-xl leading-none">{seriesTitle}</h4>
+      <h4 class="font-bold text-xl leading-none" style="color: var(--text-title);">{seriesTitle}</h4>
     </div>
-    <span class="text-sm font-mono text-zinc-500 bg-zinc-900/50 px-3 py-1 rounded-full border border-white/5">
+    <span class="text-sm font-mono px-3 py-1 rounded-full border transition-colors duration-300" 
+          style="color: var(--text-main); background-color: var(--card-bg); border-color: var(--card-border);">
       {currentStepIndex + 1} / {steps.length}
     </span>
   </div>
@@ -32,16 +33,19 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
           href={step.href}
           class={`group relative p-3 rounded-xl border transition-all duration-300 flex flex-col justify-center min-h-[60px] ${
             isCurrent 
-              ? "bg-purple-600/20 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.1)] ring-1 ring-purple-500/30" 
-              : "bg-zinc-900/40 border-white/5 hover:border-white/20 hover:bg-zinc-800/50"
+              ? "bg-purple-600/10 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.1)] ring-1 ring-purple-500/30" 
+              : "hover:bg-purple-500/5"
           }`}
+          style={!isCurrent ? "background-color: var(--card-bg); border-color: var(--card-border);" : ""}
         >
           <div class="flex items-center gap-3">
-            <span class={`text-sm font-black font-mono ${isCurrent ? "text-purple-400" : "text-zinc-600"}`}>
+            <span class={`text-sm font-black font-mono ${isCurrent ? "text-purple-500" : "opacity-40"}`}
+                  style={!isCurrent ? "color: var(--text-main);" : ""}>
               {index + 1}
             </span>
             
-            <span class={`text-sm md:text-base font-bold leading-tight ${isCurrent ? "text-white" : "text-zinc-400 group-hover:text-zinc-200"}`}>
+            <span class={`text-sm md:text-base font-bold leading-tight ${isCurrent ? "text-purple-600 dark:text-white" : "group-hover:text-purple-500"}`}
+                  style={!isCurrent ? "color: var(--text-main);" : ""}>
               {step.label}
             </span>
           </div>

@@ -2,18 +2,22 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="w-full border-t border-white/5 bg-[#050505]/50 backdrop-blur-sm">
+<footer class="w-full border-t transition-colors duration-300" 
+        style="border-color: var(--card-border); background-color: var(--header-bg); backdrop-blur: 8px;">
   <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
-    <p class="text-zinc-500 text-sm italic">
-      Fait avec passion à <span class="text-white">Toulon</span> 🌴
+    
+    <p class="text-sm italic" style="color: var(--text-muted);">
+      Fait avec passion à <span style="color: var(--text-title);">Toulon</span> 🌴
     </p>
     
     <div class="flex items-center gap-6">
-      <p class="text-zinc-600 text-xs tracking-widest uppercase">
+      <p class="text-[10px] tracking-widest uppercase font-medium" style="color: var(--text-muted); opacity: 0.8;">
         © {currentYear} Aurélie Djied
       </p>
-      <div class="h-1 w-1 rounded-full bg-purple-500"></div>
-      <a href="/contact" class="text-zinc-500 hover:text-purple-400 text-xs transition-colors">
+      
+      <div class="h-1 w-1 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.4)]"></div>
+      
+      <a href="/contact" class="text-xs transition-colors hover:text-purple-500" style="color: var(--text-muted);">
         Contact
       </a>
     </div>

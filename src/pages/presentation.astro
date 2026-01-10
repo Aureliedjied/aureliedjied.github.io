@@ -1,202 +1,82 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const roadmap = [
-  {
-    phase: "L'Héritage",
-    period: "2023 - 2024",
-    role: "Développeuse Fullstack PHP/Symfony",
-    status: "Terminé",
-    color: "zinc-500",
-    skills: ["Architecture MVC", "API REST", "Git/Versionning", "MySQL"],
-    content: "Cette première étape m'a donné la 'logique logicielle'. Je ne vois pas l'infrastructure comme une boîte noire, mais comme un environnement devant servir l'application."
-  },
-  {
-    phase: "L'Ancrage",
-    period: "2025 - Présent",
-    role: "Technicienne Supérieur Systèmes & Réseaux",
-    status: "En cours",
-    color: "purple-500",
-    skills: ["Windows Server / AD DS", "Proxmox / VMware", "pfSense / VLANs", "Scripting Bash & PS", "Supervision"],
-    content: "Transition vers le hardware et les couches systèmes. Je construis des fondations solides en administration d'environnements hybrides et en sécurité périmétrique."
-  },
-  {
-    phase: "L'Ascension",
-    period: "2026 - 2027",
-    role: "Bachelor Cloud, Systèmes et Réseaux",
-    status: "Objectif",
-    color: "blue-500",
-    skills: ["Linux RH / CCNA", "Infrastructure as Code", "Azure & VSphere", "Python & IA"],
-    content: "Vers l'ingénierie : automatiser l'infrastructure, maîtriser les réseaux opérateurs et orchestrer des solutions Cloud haute disponibilité."
-  }
-];
 ---
 
-<Layout title="Mon Parcours | De la ligne de code à l'infrastructure">
-  <main class="max-w-5xl mx-auto py-16 px-6 space-y-24">
+<Layout>
+  <div class="max-w-3xl mx-auto py-12 space-y-16">
     
-    <header class="relative space-y-6 text-center md:text-left">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-4">
-        <span class="relative flex h-2 w-2">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-        </span>
-        Disponible pour alternance Bachelor 2026
-      </div>
-      <h1 class="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none">
-        Construire, <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">Sécuriser, Automatiser.</span>
+    <section class="space-y-6">
+      <h1 class="text-5xl font-black italic tracking-tighter" style="color: var(--text-title);">
+        Aurélie Djied<span class="text-purple-500">.</span>
       </h1>
-      <p class="max-w-2xl text-xl text-zinc-400 leading-relaxed">
-        Basée à <span class="text-white">Toulon</span>, mon profil hybride combine la rigueur du <strong>développement</strong> et l'expertise <strong>systèmes & réseaux</strong> pour concevoir des infrastructures agiles.
+      <p class="text-xl leading-relaxed" style="color: var(--text-main);">
+        Actuellement en formation <span class="text-purple-500 font-bold">TSSR (Niveau 5)</span>, je projette d'intégrer un <span class="text-blue-500 font-bold">Bachelor Systèmes, Réseaux et Cloud Computing</span> pour la rentrée 2026.
       </p>
-    </header>
-
-    <section class="grid md:grid-cols-2 gap-12 items-center">
-      <div class="space-y-6">
-        <h2 class="text-3xl font-bold text-white tracking-tight">Regarder sous le capot</h2>
-        <p class="text-zinc-400">
-          Mon passé de développeuse est ma plus grande force en administration système. Il me permet de comprendre les problématiques applicatives, de scripter avec aisance et de voir l'infrastructure comme du code.
-        </p>
-        <div class="space-y-4">
-           <div class="flex items-start gap-4">
-              <div class="p-2 rounded-lg bg-zinc-900 border border-white/10 text-purple-400 italic font-bold text-xs italic">Dev</div>
-              <div>
-                <h4 class="text-white font-medium">Logique Applicative</h4>
-                <p class="text-sm text-zinc-500">Maîtrise du cycle de vie des données et des API.</p>
-              </div>
-           </div>
-           <div class="flex items-start gap-4">
-              <div class="p-2 rounded-lg bg-zinc-900 border border-white/10 text-blue-400 italic font-bold text-xs italic">Ops</div>
-              <div>
-                <h4 class="text-white font-medium">Excellence Opérationnelle</h4>
-                <p class="text-sm text-zinc-500">Sécurisation réseau, virtualisation et haute disponibilité.</p>
-              </div>
-           </div>
-        </div>
-      </div>
-
-      <div class="relative group">
-        <div class="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-        <div class="relative p-6 rounded-2xl bg-black border border-white/10 font-mono text-[12px] leading-relaxed shadow-2xl">
-          <div class="flex gap-1.5 mb-4">
-            <div class="w-3 h-3 rounded-full bg-red-500/20"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-500/20"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500/20"></div>
-          </div>
-          <div class="text-purple-400 mb-2">// Profiling_Evolution.sh</div>
-          <div class="text-zinc-400">$ fetch skills --mode=hybrid</div>
-          <div class="grid grid-cols-2 gap-2 mt-4">
-            <div class="text-zinc-500">[PHP/Symfony]</div> <div class="text-green-500">100% (Legacy)</div>
-            <div class="text-zinc-500">[Networking]</div> <div class="text-yellow-500">85% (TSSR)</div>
-            <div class="text-zinc-500">[Cloud/K8s]</div> <div class="text-blue-400">Loading...</div>
-            <div class="text-zinc-500">[Python/IA]</div> <div class="text-blue-400">Queued</div>
-          </div>
-          <div class="mt-6 p-2 bg-white/5 rounded border border-white/5 text-zinc-400">
-            <span class="text-white animate-pulse">_</span> Prochain lab : Migration Azure & Automatisation Python
-          </div>
-        </div>
-      </div>
     </section>
 
-    <section class="space-y-12">
-      <h2 class="text-3xl font-bold text-white text-center">Ma Roadmap</h2>
+    <section class="space-y-8">
+      <h2 class="text-2xl font-bold flex items-center gap-3" style="color: var(--text-title);">
+        <span class="w-8 h-1 bg-purple-500 rounded-full"></span>
+        Mon Parcours
+      </h2>
       
-      <div class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-zinc-900 before:via-zinc-700 before:to-zinc-900">
+      <div class="space-y-10 border-l-2 ml-4 pl-8" style="border-color: var(--card-border);">
         
-        {roadmap.map((item) => (
-          <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-            <div class={`flex items-center justify-center w-10 h-10 rounded-full border border-zinc-800 bg-black text-${item.color} shadow-lg shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 absolute left-0 md:left-1/2 -translate-x-1/2 z-10 transition-transform group-hover:scale-110`}>
-              <div class="h-2 w-2 rounded-full bg-current"></div>
-            </div>
+        <div class="relative">
+          <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-[var(--bg-color)] animate-pulse"></div>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20">Objectif 2026 - 2027</span>
+          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Bachelor Systèmes, Réseaux et Cloud Computing</h3>
+          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Niveau 6 (BAC+3)</p>
+          <p class="mt-2" style="color: var(--text-main);">Spécialisation dans l'administration avancée et les infrastructures Cloud. Préparation du <strong class="text-purple-400">CCNA</strong> en ligne de mire.</p>
+        </div>
 
-            <div class="w-[calc(100%-4rem)] md:w-[45%] p-1 rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-purple-500/20 transition-all duration-500">
-              <div class="p-6 rounded-[calc(1.5rem-1px)] bg-zinc-950 h-full">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                  <span class={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border border-${item.color}/30 text-${item.color}`}>
-                    {item.status}
-                  </span>
-                  <time class="text-xs font-mono text-zinc-500">{item.period}</time>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-1">{item.phase}</h3>
-                <p class="text-purple-400 text-sm font-medium mb-4">{item.role}</p>
-                
-                <p class="text-sm text-zinc-400 mb-6 leading-relaxed">
-                  {item.content}
-                </p>
+        <div class="relative">
+          <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-purple-500 border-4 border-[var(--bg-color)]"></div>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20">En cours : 2025 - 2026</span>
+          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Titre RNCP - Technicien Supérieur Systèmes et Réseaux</h3>
+          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Niveau 5 (BAC+2)</p>
+          <p class="mt-2" style="color: var(--text-main);">Administration d'infrastructures virtualisées, déploiement de services réseaux et sécurisation des accès.</p>
+        </div>
 
-                <div class="flex flex-wrap gap-2">
-                  {item.skills.map(skill => (
-                    <span class="text-[10px] px-2 py-1 bg-white/5 text-zinc-300 rounded-md border border-white/5">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+        <div class="relative opacity-80">
+          <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-[var(--card-border)] border-4 border-[var(--bg-color)]"></div>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20">2023 - 2024</span>
+          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Développeuse Web et Web Mobile</h3>
+          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Spécialisation PHP / Symfony</p>
+          <p class="mt-2" style="color: var(--text-main);">Conception d'applications web et gestion de bases de données. Cette base en développement me permet aujourd'hui d'aborder l'Infrastructure as Code (IaC) et le DevOps avec facilité.</p>
+        </div>
+
       </div>
     </section>
 
-    <section class="p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-b from-zinc-900/50 to-black border border-white/5">
-      <div class="max-w-3xl mx-auto space-y-8">
-        <div class="text-center space-y-2">
-          <h2 class="text-3xl font-bold text-white tracking-tight">Focus Bachelor 2026</h2>
-          <p class="text-zinc-500 italic text-sm">Ce que je m'apprête à conquérir :</p>
-        </div>
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="p-8 rounded-3xl border transition-all" style="background-color: var(--card-bg); border-color: var(--card-border);">
+        <h3 class="text-xl font-bold mb-4" style="color: var(--text-title);">Veille & Certifications</h3>
+        <ul class="space-y-3" style="color: var(--text-main);">
+          <li class="flex items-center gap-2">
+            <span class="text-blue-500">🔵</span> Cisco NetAcad (Cours en cours)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-purple-500">⚙️</span> Labo Personnel (HomeLab & Virtualisation)
+          </li>
+          <li class="flex items-center gap-2 opacity-50 italic">
+            <span class="text-zinc-500">▹</span> CCNA (Projet Bachelor 2026)
+          </li>
+        </ul>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="space-y-4">
-            <h4 class="text-blue-400 font-mono text-sm uppercase">Infrastructure & Cloud</h4>
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3 text-sm text-zinc-400">
-                <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                Linux Admin Avancée (LPIC / Red Hat)
-              </li>
-              <li class="flex items-center gap-3 text-sm text-zinc-400">
-                <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                VSphere & Virtualisation Datacenter
-              </li>
-              <li class="flex items-center gap-3 text-sm text-zinc-400">
-                <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                Expertise Microsoft Azure
-              </li>
-            </ul>
-          </div>
-          <div class="space-y-4">
-            <h4 class="text-purple-400 font-mono text-sm uppercase">Automation & Ingénierie</h4>
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3 text-sm text-zinc-400">
-                <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                Scripting Python & Algorithmique
-              </li>
-              <li class="flex items-center gap-3 text-sm text-zinc-400">
-                <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                Architectures CCNA & Réseaux Opérateurs
-              </li>
-              <li class="flex items-center gap-3 text-sm text-zinc-400">
-                <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                Introduction à l'IA appliquée au SI
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="pt-8 border-t border-white/5 text-center">
-          <p class="text-zinc-400 mb-6 italic">
-            "Ma transition vers le Cloud est une évolution naturelle : automatiser l'infra avec la précision du code."
-          </p>
-          <a href="/contact" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-purple-400 transition-colors">
-            Discutons de mon alternance
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
+      <div class="p-8 rounded-3xl border transition-all" style="background-color: var(--card-bg); border-color: var(--card-border);">
+        <h3 class="text-xl font-bold mb-4" style="color: var(--text-title);">Compétences Transverses</h3>
+        <p class="text-sm mb-4" style="color: var(--text-main);">Grâce à mon passé de développeuse, je possède une vision globale du cycle de vie d'un projet informatique.</p>
+        <div class="flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] text-purple-400 font-bold uppercase">PHP / Symfony</span>
+            <span class="px-2 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-[10px] text-blue-400 font-bold uppercase">Git / GitHub</span>
+            <span class="px-2 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded text-[10px] text-yellow-400 font-bold uppercase">SQL</span>
         </div>
       </div>
     </section>
 
-  </main>
+  </div>
 </Layout>
 
 <style>

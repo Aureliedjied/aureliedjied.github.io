@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+:root {
+  /* MODE SOMBRE (Par défaut) */
+  --bg-color: #050505;
+  --bg-glow-1: rgba(147, 51, 234, 0.1); /* Violet sombre */
+  --bg-glow-2: rgba(37, 99, 235, 0.05); /* Bleu sombre */
+  --text-main: #a1a1aa; /* zinc-400 */
+  --text-title: #ffffff;
+  --card-bg: #0f0f11;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --header-bg: rgba(5, 5, 5, 0.8);
+  --text-purple: #d8b4fe; /* purple-300 */
+  --purple-border: rgba(168, 85, 247, 0.2);
+  --text-muted: #71717a; /* zinc-500 */
+}
+
+:root[data-theme='light'] {
+  /* MODE CLAIR */
+  --bg-color: #f8fafc; /* Fond gris très clair / blanc */
+  --bg-glow-1: rgba(147, 51, 234, 0.05); /* Violet très doux */
+  --bg-glow-2: rgba(37, 99, 235, 0.03); 
+  --text-main: #334155; /* slate-700 */
+  --text-title: #0f172a; /* slate-950 */
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --header-bg: rgba(248, 250, 252, 0.8);
+  --text-purple: #7e22ce; /* purple-700 (plus foncé pour être lisible sur blanc) */
+  --purple-border: rgba(126, 34, 206, 0.1);
+  --text-muted: #64748b; /* slate-500 */
+}
+
+/* On applique la couleur de fond globale */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
