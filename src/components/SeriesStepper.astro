@@ -1,3 +1,4 @@
+
 ---
 interface Step {
   label: string;
@@ -18,11 +19,7 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
     <div class="flex flex-col">
       <h4 class="font-bold text-xl leading-none" style="color: var(--text-title);">{seriesTitle}</h4>
     </div>
-    <span class="text-sm font-mono px-3 py-1 rounded-full border transition-colors duration-300" 
-          style="color: var(--text-main); background-color: var(--card-bg); border-color: var(--card-border);">
-      {currentStepIndex + 1} / {steps.length}
-    </span>
-  </div>
+    </div>
 
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
     {steps.map((step, index) => {
@@ -45,7 +42,7 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
             </span>
             
             <span class={`text-sm md:text-base font-bold leading-tight ${isCurrent ? "text-purple-600 dark:text-white" : "group-hover:text-purple-500"}`}
-                  style={!isCurrent ? "color: var(--text-main);" : ""}>
+                  style={!isCurrent ? "color: var(--text-main);" : "color: inherit;"}>
               {step.label}
             </span>
           </div>

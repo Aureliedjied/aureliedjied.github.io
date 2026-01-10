@@ -28,9 +28,9 @@ const skills = [
 ---
 
 <Layout>
-  <section class="py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+  <section class="py-12 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-10 items-center overflow-hidden">
     <div class="space-y-6 order-2 md:order-1">
-      <div class="space-y-2">
+      <div class="space-y-4">
         <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight" style="color: var(--text-title);">
           Bonjour, je suis <span class="text-purple-500">Aurélie</span>.
         </h1>
@@ -38,16 +38,16 @@ const skills = [
           "Technicienne TSSR en formation, architecte système en devenir."
         </p>
         <p class="text-base md:text-lg max-w-xl leading-relaxed" style="color: var(--text-main);">
-          Passionnée par l'architecture système et la sécurité, je prépare actuellement mon entrée en <strong>Bachelor Systèmes, Cloud & Réseaux</strong>. Mon objectif ? Concevoir des infrastructures résilientes et automatisées.
+          Passionnée par l'architecture système et la sécurité, je prépare actuellement mon entrée en <strong>Bachelor Systèmes, Cloud & Réseaux</strong>.
         </p>
       </div>
 
-      <div class="flex flex-wrap gap-4 pt-4">
-        <a href="/contact" class="px-8 py-3 rounded-full font-bold transition-all text-sm shadow-xl hover:scale-105 active:scale-95" 
+      <div class="flex flex-col sm:flex-row gap-4 pt-4">
+        <a href="/contact" class="px-8 py-3 rounded-full font-bold transition-all text-sm shadow-xl text-center hover:scale-105" 
            style="background-color: var(--text-title); color: var(--bg-color);">
           Me contacter
         </a>
-        <a href="/projets" class="px-8 py-3 rounded-full font-bold border transition-all text-sm hover:border-purple-500 hover:text-purple-500"
+        <a href="/projets" class="px-8 py-3 rounded-full font-bold border transition-all text-sm text-center hover:border-purple-500 hover:text-purple-500"
            style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-main);">
           Voir mes projets
         </a>
@@ -55,12 +55,12 @@ const skills = [
     </div>
 
     <div class="order-1 md:order-2 flex justify-center md:justify-end">
-      <div class="relative group">
+      <div class="relative group w-full max-w-[280px] md:max-w-none">
         <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
         <img 
           src="/photo-aurelie.jpg" 
           alt="Aurélie Djied" 
-          class="relative w-64 h-64 md:w-80 md:h-80 object-cover rounded-3xl border transition-all duration-500 shadow-2xl grayscale group-hover:grayscale-0"
+          class="relative w-full aspect-square md:w-80 md:h-80 object-cover rounded-3xl border transition-all duration-500 shadow-2xl grayscale group-hover:grayscale-0"
           style="border-color: var(--card-border);"
         />
       </div>
@@ -71,7 +71,7 @@ const skills = [
     {skills.map(skill => (
       <div class="group p-6 rounded-3xl border backdrop-blur-sm transition-all duration-300 hover:border-purple-500/50 shadow-sm"
            style="background-color: var(--card-bg); border-color: var(--card-border);">
-        <div class="mb-4 inline-flex p-2 rounded-xl bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
+        <div class="mb-4 inline-flex p-2 rounded-xl bg-purple-500/10 text-purple-500">
           <div class="h-2 w-2 rounded-full bg-current shadow-[0_0_10px_currentColor]"></div>
         </div>
         
@@ -81,11 +81,11 @@ const skills = [
         
         <ul class="space-y-3">
           {skill.items.map(item => (
-            <li class="text-sm flex items-center gap-2" style="color: var(--text-main);">
-              <svg class="h-3 w-3 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <li class="text-sm flex items-start gap-2" style="color: var(--text-main);">
+              <svg class="h-4 w-4 text-purple-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
               </svg>
-              {item}
+              <span class="break-words">{item}</span>
             </li>
           ))}
         </ul>
@@ -94,34 +94,32 @@ const skills = [
   </section>
 
   <section class="py-12 space-y-8">
-    <div class="flex justify-between items-end">
+    <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold tracking-tight" style="color: var(--text-title);">Derniers projets</h2>
-        <a href="/projets" class="text-sm transition-colors hover:text-purple-500" style="color: var(--text-muted);">Voir tout →</a>
+        <a href="/projets" class="text-sm transition-colors hover:text-purple-500 shrink-0" style="color: var(--text-muted);">Voir tout →</a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {lastProjects.map(project => (
         <a href={`/projets/${project.slug}`} 
-           class="group relative flex flex-col justify-between p-6 min-h-[250px] rounded-[1.5rem] border transition-all duration-300 shadow-xl"
+           class="group relative flex flex-col justify-between p-6 min-h-[220px] rounded-[1.5rem] border transition-all duration-300 shadow-xl overflow-hidden"
            style="background-color: var(--card-bg); border-color: var(--card-border);">
             
             <div class="space-y-3 relative z-10">
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     {project.data.tags.slice(0, 2).map(tag => (
-                        <span class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded border"
+                        <span class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded border shrink-0"
                               style="background-color: var(--bg-color); color: var(--text-purple); border-color: var(--purple-border);">
                             {tag}
                         </span>
                     ))}
                 </div>
-                <h3 class="text-lg font-bold group-hover:text-purple-500 transition-colors" style="color: var(--text-title);">
+                <h3 class="text-lg font-bold group-hover:text-purple-500 transition-colors break-words" style="color: var(--text-title);">
                   {project.data.title}
                 </h3>
                 <p class="text-xs line-clamp-3" style="color: var(--text-main);">{project.data.description}</p>
             </div>
             <div class="group-hover:text-purple-500 self-end transition-colors" style="color: var(--text-muted);">↗</div>
-            
-            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
         </a>
       ))}
     </div>
