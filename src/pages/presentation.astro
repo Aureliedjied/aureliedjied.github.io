@@ -1,87 +1,210 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-const timeline = [
+const roadmap = [
   {
-    date: "2026 - 2027",
-    title: "En route vers le Bachelor Cloud, systèmes et réseaux",
-    desc: "Spécialisation dans les infrastructures haute disponibilité, la conteneurisation et l'automatisation."
+    phase: "L'Héritage",
+    period: "2023 - 2024",
+    role: "Développeuse Fullstack PHP/Symfony",
+    status: "Terminé",
+    color: "zinc-500",
+    skills: ["Architecture MVC", "API REST", "Git/Versionning", "MySQL"],
+    content: "Cette première étape m'a donné la 'logique logicielle'. Je ne vois pas l'infrastructure comme une boîte noire, mais comme un environnement devant servir l'application."
   },
   {
-    date: "2025 - Présent",
-    title: "Technicienne TSSR",
-    desc: "Maîtrise de l'administration système (AD, Linux) et de la sécurité réseau (Firewalling, VPN, VLANs)."
+    phase: "L'Ancrage",
+    period: "2025 - Présent",
+    role: "Technicienne Supérieur Systèmes & Réseaux",
+    status: "En cours",
+    color: "purple-500",
+    skills: ["Windows Server / AD DS", "Proxmox / VMware", "pfSense / VLANs", "Scripting Bash & PS", "Supervision"],
+    content: "Transition vers le hardware et les couches systèmes. Je construis des fondations solides en administration d'environnements hybrides et en sécurité périmétrique."
   },
   {
-    date: "2023 - 2024",
-    title: "Développeuse Web & Web Mobile",
-    desc: "Acquisition d'une logique de programmation solide, facilitant aujourd'hui mon approche de l'automatisation et du Scripting."
+    phase: "L'Ascension",
+    period: "2026 - 2027",
+    role: "Bachelor Cloud, Systèmes et Réseaux",
+    status: "Objectif",
+    color: "blue-500",
+    skills: ["Linux RH / CCNA", "Infrastructure as Code", "Azure & VSphere", "Python & IA"],
+    content: "Vers l'ingénierie : automatiser l'infrastructure, maîtriser les réseaux opérateurs et orchestrer des solutions Cloud haute disponibilité."
   }
 ];
 ---
 
-<Layout>
-  <section class="max-w-3xl mx-auto py-16 space-y-16">
-    <div class="space-y-4">
-      <h1 class="text-4xl font-bold text-white tracking-tighter">Mon Parcours</h1>
-      <p class="text-xl text-zinc-400 leading-relaxed">
-        Basée à <span class="text-white">Toulon</span>, j'évolue dans l'écosystème IT avec une curiosité constante. J'adore mettre en place des labos, les tester, les défaire tout en améliorant mes compétences.
+<Layout title="Mon Parcours | De la ligne de code à l'infrastructure">
+  <main class="max-w-5xl mx-auto py-16 px-6 space-y-24">
+    
+    <header class="relative space-y-6 text-center md:text-left">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-4">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+        </span>
+        Disponible pour alternance Bachelor 2026
+      </div>
+      <h1 class="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none">
+        Construire, <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">Sécuriser, Automatiser.</span>
+      </h1>
+      <p class="max-w-2xl text-xl text-zinc-400 leading-relaxed">
+        Basée à <span class="text-white">Toulon</span>, mon profil hybride combine la rigueur du <strong>développement</strong> et l'expertise <strong>systèmes & réseaux</strong> pour concevoir des infrastructures agiles.
       </p>
-    </div>
+    </header>
 
-    <section class="grid md:grid-cols-2 gap-8 items-start py-8">
+    <section class="grid md:grid-cols-2 gap-12 items-center">
       <div class="space-y-6">
-        <h2 class="text-2xl font-bold text-white tracking-tight italic">Regarder sous le capot</h2>
-        <p class="text-zinc-400 leading-relaxed text-sm">
-          Mon passé de développeuse m'a donné le goût du fonctionnement interne des outils. Aujourd'hui, je ne me contente plus de l'interface : je veux comprendre comment les paquets circulent et comment l'infrastructure respire.
+        <h2 class="text-3xl font-bold text-white tracking-tight">Regarder sous le capot</h2>
+        <p class="text-zinc-400">
+          Mon passé de développeuse est ma plus grande force en administration système. Il me permet de comprendre les problématiques applicatives, de scripter avec aisance et de voir l'infrastructure comme du code.
         </p>
-        <div class="grid gap-3">
-            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-zinc-300">
-                <span class="text-purple-400 font-mono">01.</span> Admin Système & Linux
-            </div>
-            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-zinc-300">
-                <span class="text-purple-400 font-mono">02.</span> Sécurité & Hardening
-            </div>
-            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-zinc-300">
-                <span class="text-purple-400 font-mono">03.</span> Architecture Réseau
-            </div>
+        <div class="space-y-4">
+           <div class="flex items-start gap-4">
+              <div class="p-2 rounded-lg bg-zinc-900 border border-white/10 text-purple-400 italic font-bold text-xs italic">Dev</div>
+              <div>
+                <h4 class="text-white font-medium">Logique Applicative</h4>
+                <p class="text-sm text-zinc-500">Maîtrise du cycle de vie des données et des API.</p>
+              </div>
+           </div>
+           <div class="flex items-start gap-4">
+              <div class="p-2 rounded-lg bg-zinc-900 border border-white/10 text-blue-400 italic font-bold text-xs italic">Ops</div>
+              <div>
+                <h4 class="text-white font-medium">Excellence Opérationnelle</h4>
+                <p class="text-sm text-zinc-500">Sécurisation réseau, virtualisation et haute disponibilité.</p>
+              </div>
+           </div>
         </div>
       </div>
 
-      <div class="relative p-6 rounded-[2rem] bg-zinc-900/30 border border-purple-500/10 font-mono text-[11px] leading-relaxed text-zinc-500 overflow-hidden shadow-2xl">
-        <div class="text-purple-400 mb-2">// Diagnostic_Système</div>
-        <div class="text-zinc-400">$ systemctl status infrastructure</div>
-        <div class="text-green-500">● active (running)</div>
-        <div class="mt-2 text-zinc-600">
-          [OK] VLAN 10 tagging (Data)<br/>
-          [OK] VPN Tunnel IPsec: Up<br/>
-          [OK] Nginx Proxy Pass: Healthy<br/>
-          [OK] Firewall Rules: Applied<br/>
-          [WAIT] Cloud Migration... 90%
+      <div class="relative group">
+        <div class="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+        <div class="relative p-6 rounded-2xl bg-black border border-white/10 font-mono text-[12px] leading-relaxed shadow-2xl">
+          <div class="flex gap-1.5 mb-4">
+            <div class="w-3 h-3 rounded-full bg-red-500/20"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-500/20"></div>
+            <div class="w-3 h-3 rounded-full bg-green-500/20"></div>
+          </div>
+          <div class="text-purple-400 mb-2">// Profiling_Evolution.sh</div>
+          <div class="text-zinc-400">$ fetch skills --mode=hybrid</div>
+          <div class="grid grid-cols-2 gap-2 mt-4">
+            <div class="text-zinc-500">[PHP/Symfony]</div> <div class="text-green-500">100% (Legacy)</div>
+            <div class="text-zinc-500">[Networking]</div> <div class="text-yellow-500">85% (TSSR)</div>
+            <div class="text-zinc-500">[Cloud/K8s]</div> <div class="text-blue-400">Loading...</div>
+            <div class="text-zinc-500">[Python/IA]</div> <div class="text-blue-400">Queued</div>
+          </div>
+          <div class="mt-6 p-2 bg-white/5 rounded border border-white/5 text-zinc-400">
+            <span class="text-white animate-pulse">_</span> Prochain lab : Migration Azure & Automatisation Python
+          </div>
         </div>
-        <div class="absolute bottom-2 right-4 opacity-20 text-[40px]">⌨</div>
       </div>
     </section>
 
-    <div class="space-y-12">
-      <h2 class="text-2xl font-bold text-white">Chronologie</h2>
-      {timeline.map((item) => (
-        <div class="relative pl-8 border-l border-zinc-800 group">
-          <div class="absolute left-[-5.5px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-800 group-hover:bg-purple-500 transition-all group-hover:scale-125"></div>
-          <div class="space-y-1">
-            <span class="text-xs font-mono text-purple-400 uppercase tracking-widest">{item.date}</span>
-            <h3 class="text-xl font-bold text-white">{item.title}</h3>
-            <p class="text-zinc-400 leading-relaxed text-sm">{item.desc}</p>
+    <section class="space-y-12">
+      <h2 class="text-3xl font-bold text-white text-center">Ma Roadmap</h2>
+      
+      <div class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-zinc-900 before:via-zinc-700 before:to-zinc-900">
+        
+        {roadmap.map((item) => (
+          <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+            <div class={`flex items-center justify-center w-10 h-10 rounded-full border border-zinc-800 bg-black text-${item.color} shadow-lg shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 absolute left-0 md:left-1/2 -translate-x-1/2 z-10 transition-transform group-hover:scale-110`}>
+              <div class="h-2 w-2 rounded-full bg-current"></div>
+            </div>
+
+            <div class="w-[calc(100%-4rem)] md:w-[45%] p-1 rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-purple-500/20 transition-all duration-500">
+              <div class="p-6 rounded-[calc(1.5rem-1px)] bg-zinc-950 h-full">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  <span class={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border border-${item.color}/30 text-${item.color}`}>
+                    {item.status}
+                  </span>
+                  <time class="text-xs font-mono text-zinc-500">{item.period}</time>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-1">{item.phase}</h3>
+                <p class="text-purple-400 text-sm font-medium mb-4">{item.role}</p>
+                
+                <p class="text-sm text-zinc-400 mb-6 leading-relaxed">
+                  {item.content}
+                </p>
+
+                <div class="flex flex-wrap gap-2">
+                  {item.skills.map(skill => (
+                    <span class="text-[10px] px-2 py-1 bg-white/5 text-zinc-300 rounded-md border border-white/5">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="p-8 md:p-12 rounded-[2.5rem] bg-gradient-to-b from-zinc-900/50 to-black border border-white/5">
+      <div class="max-w-3xl mx-auto space-y-8">
+        <div class="text-center space-y-2">
+          <h2 class="text-3xl font-bold text-white tracking-tight">Focus Bachelor 2026</h2>
+          <p class="text-zinc-500 italic text-sm">Ce que je m'apprête à conquérir :</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <h4 class="text-blue-400 font-mono text-sm uppercase">Infrastructure & Cloud</h4>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-sm text-zinc-400">
+                <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                Linux Admin Avancée (LPIC / Red Hat)
+              </li>
+              <li class="flex items-center gap-3 text-sm text-zinc-400">
+                <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                VSphere & Virtualisation Datacenter
+              </li>
+              <li class="flex items-center gap-3 text-sm text-zinc-400">
+                <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                Expertise Microsoft Azure
+              </li>
+            </ul>
+          </div>
+          <div class="space-y-4">
+            <h4 class="text-purple-400 font-mono text-sm uppercase">Automation & Ingénierie</h4>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-sm text-zinc-400">
+                <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                Scripting Python & Algorithmique
+              </li>
+              <li class="flex items-center gap-3 text-sm text-zinc-400">
+                <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                Architectures CCNA & Réseaux Opérateurs
+              </li>
+              <li class="flex items-center gap-3 text-sm text-zinc-400">
+                <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+                Introduction à l'IA appliquée au SI
+              </li>
+            </ul>
           </div>
         </div>
-      ))}
-    </div>
+        
+        <div class="pt-8 border-t border-white/5 text-center">
+          <p class="text-zinc-400 mb-6 italic">
+            "Ma transition vers le Cloud est une évolution naturelle : automatiser l'infra avec la précision du code."
+          </p>
+          <a href="/contact" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-full hover:bg-purple-400 transition-colors">
+            Discutons de mon alternance
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
 
-    <div class="p-8 rounded-[2rem] bg-zinc-900/50 border border-white/5 space-y-4">
-      <h2 class="text-2xl font-bold text-white">Pourquoi cette transition ?</h2>
-      <p class="text-zinc-400 leading-relaxed">
-        Passer du développement à l'infrastructure a été une évidence. Maîtriser ce qu'il y a "en dessous" de l'application permet de construire des solutions plus robustes et plus sécurisées. Mon objectif est d'allier ma logique logicielle à l'expertise Cloud pour devenir une architecte capable de répondre aux défis complexes de la haute disponibilité.
-      </p>
-    </div>
-  </section>
+  </main>
 </Layout>
+
+<style>
+  /* Pour gérer les couleurs dynamiques Tailwind dans le map */
+  .text-zinc-500 { color: #71717a; }
+  .text-purple-500 { color: #a855f7; }
+  .text-blue-500 { color: #3b82f6; }
+  .border-zinc-500\/30 { border-color: rgba(113, 113, 122, 0.3); }
+  .border-purple-500\/30 { border-color: rgba(168, 85, 247, 0.3); }
+  .border-blue-500\/30 { border-color: rgba(59, 130, 246, 0.3); }
+</style>

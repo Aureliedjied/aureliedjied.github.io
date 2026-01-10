@@ -5,8 +5,12 @@ const projets = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    pubDate: z.coerce.date(),
     tags: z.array(z.string()),
-    pubDate: z.date(),
+    image: z.string().optional(),
+    // ON AJOUTE CES DEUX LIGNES :
+    serie: z.string().optional(), // .optional() car tous les projets n'ont pas de série
+    category: z.string().optional(),
   }),
 });
 

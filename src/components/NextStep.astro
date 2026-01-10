@@ -1,0 +1,19 @@
+---
+interface Props {
+  href: string;
+  title: string;
+}
+const { href, title } = Astro.props;
+---
+
+<div class="mt-16 pt-8 border-t border-white/5">
+  <a href={href} class="group flex flex-col items-end gap-2 text-right">
+    <span class="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Étape Suivante</span>
+    <div class="flex items-center gap-3">
+      <span class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">{title}</span>
+      <div class="p-2 rounded-full bg-zinc-900 border border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/10 transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-500"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </div>
+    </div>
+  </a>
+</div>

@@ -9,9 +9,22 @@ const lastProjects = allProjects
   .slice(0, 3); // On prend les 3 derniers
 
 const skills = [
-  { category: "Système", items: ["Windows Server", "Debian 12", "Active Directory"] },
-  { category: "Réseau & Sec", items: ["PfSense", "VLANs", "VPN IPsec"] },
-  { category: "Supervision", items: ["Zabbix", "Proxmox", "Cloud"] }
+  { 
+    category: "Virtualisation & Cloud", 
+    items: ["VMware", "Proxmox VE", "Docker"] 
+  },
+  { 
+    category: "Administration Système", 
+    items: ["Windows Server (AD, GPO)", "Linux (Debian, Ubuntu)", "Scripts PowerShell/Bash"] 
+  },
+  { 
+    category: "Réseau & Sécurité", 
+    items: ["PfSense / Firewalls", "VLANs & Routage", "VPN IPsec/OpenVPN", "Sécurité infra"] 
+  },
+  { 
+    category: "Continuité & Supervision", 
+    items: ["Stratégies de Sauvegarde", "Veeam / Acronis", "Zabbix / Grafana", "Documentation technique"] 
+  }
 ];
 ---
 
@@ -23,7 +36,7 @@ const skills = [
           Bonjour, je suis <span class="text-purple-400">Aurélie</span>.
         </h1>
         <p class="text-lg text-zinc-400 leading-relaxed italic">
-          "Technicienne TSSR en formation, en route pour .. ."
+          "Technicienne TSSR en formation, architecte système en devenir."
         </p>
         <p class="text-base md:text-lg text-zinc-300 max-w-xl leading-relaxed">
           Passionnée par l'architecture système et la sécurité, je prépare actuellement mon entrée en <strong>Bachelor Systèmes, Cloud & Réseaux</strong>. Mon objectif ? Concevoir des infrastructures résilientes et automatisées.
@@ -35,7 +48,7 @@ const skills = [
           Me contacter
         </a>
         <a href="/projets" class="px-8 py-3 rounded-full bg-zinc-900 text-white font-bold border border-zinc-800 hover:border-zinc-400 transition-all text-sm">
-          Voir mes travaux
+          Voir mes projets
         </a>
       </div>
     </div>
@@ -53,14 +66,25 @@ const skills = [
     </div>
   </section>
 
-  <section class="py-12 grid md:grid-cols-3 gap-4">
+  <section class="py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
     {skills.map(skill => (
-      <div class="p-6 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
-        <h3 class="text-xs font-bold uppercase tracking-widest text-purple-400 mb-4">{skill.category}</h3>
-        <ul class="space-y-2">
+      <div class="group p-6 rounded-3xl border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:border-purple-500/30 hover:bg-white/[0.04] transition-all duration-300">
+        <div class="mb-4 inline-flex p-2 rounded-xl bg-purple-500/10 text-purple-400 group-hover:scale-110 transition-transform">
+          {/* Un petit cercle pour symboliser une icône technique */}
+          <div class="h-2 w-2 rounded-full bg-current shadow-[0_0_10px_currentColor]"></div>
+        </div>
+        
+        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4">
+          {skill.category}
+        </h3>
+        
+        <ul class="space-y-3">
           {skill.items.map(item => (
             <li class="text-sm text-zinc-400 flex items-center gap-2">
-              <span class="h-1 w-1 rounded-full bg-zinc-700"></span>{item}
+              <svg class="h-3 w-3 text-purple-500/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+              {item}
             </li>
           ))}
         </ul>

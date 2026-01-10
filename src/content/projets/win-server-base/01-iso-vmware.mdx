@@ -1,0 +1,39 @@
+---
+title: "ISO & Préparation VMware"
+description: "Choix de la version de Windows Server 2022 et configuration optimale des ressources virtuelles."
+tags: ["Windows Server", "Virtualisation"]
+category: "Virtualisation"
+pubDate: 2026-01-10
+slug: "iso-vmware"
+---
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import { WIN_SERVER_BASIC } from '../../../constants/series';
+
+<SeriesStepper 
+  seriesTitle="Déploiement Windows Server 2022" 
+  steps={WIN_SERVER_BASIC} 
+  currentStepIndex={0} 
+/>
+
+## 🛠️ Préparation de l'environnement
+
+Avant de lancer l'installation, il est crucial de bien dimensionner notre machine virtuelle. Pour ce labo, nous utilisons **Windows Server 2022 LTSC**.
+
+### 1. Téléchargement de l'ISO
+Nous utilisons la version d'évaluation (180 jours) disponible sur le centre d'évaluation Microsoft.
+
+### 2. Configuration VMware
+Voici les spécifications recommandées pour un contrôleur de domaine fluide :
+* **CPU :** 2 vCPUs
+* **RAM :** 4 Go (minimum 2 Go)
+* **Disque :** 60 Go (Thin Provisioning)
+* **Réseau :** VMNet spécifique pour notre futur labo isolé.
+
+import NextStep from '../../../components/NextStep.astro';
+
+<NextStep 
+  href="/projets/install-os" 
+  title="Installation de l'OS" 
+/>
+
+---
