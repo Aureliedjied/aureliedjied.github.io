@@ -1,43 +1,39 @@
-# Astro Starter Kit: Minimal
+# 🚀 Portfolio Pro - Aurélie Djied
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Ce dépôt contient le code source de mon portfolio professionnel. C'est un projet **Astro** conçu pour présenter mon parcours, mes compétences en administration systèmes & réseaux, ainsi que mes laboratoires techniques.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### 🎯 Objectif
+Mettre en avant mes projets réalisés durant mon titre **TSSR** et ma future spécialisation en **Bachelor Systèmes, Réseaux et Cloud Computing**.
 
-## 🚀 Project Structure
+---
 
-Inside of your Astro project, you'll see the following folders and files:
+## 🛠️ Stack Technique
+
+* **Framework :** [Astro 5](https://astro.build/) (vitesse et SEO optimisés)
+* **Styling :** [Tailwind CSS](https://tailwindcss.com/)
+* **Composants :** MDX (pour les tutoriels de labos interactifs)
+* **Recherche :** [Pagefind](https://pagefind.app/) (recherche statique performante)
+* **Thème :** Mode Clair / Sombre dynamique avec persistance `localStorage`
+
+## 📁 Structure du Projet
 
 ```text
-/
-├── public/
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+│   ├── components/    # Composants réutilisables (Header, Stepper, etc.)
+│   ├── content/       # Fichiers MDX des projets (le cœur du labo)
+│   ├── layouts/       # Templates de pages
+│   └── pages/         # Routes du site (Accueil, Recherche, Contact)
+├── public/            # Assets statiques (PDF du CV, Images)
+└── astro.config.mjs   # Configuration du framework
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+📝 Fonctionnalités Clés
+Série de Labos : Un système de "Stepper" pour suivre le déploiement d'infrastructures étape par étape.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Filtrage de recherche : Recherche par mots-clés (ex: Active Directory, PfSense).
 
-Any static assets, like images, can be placed in the `public/` directory.
+Responsive Design : Consultable sur mobile, tablette et desktop.
 
-## 🧞 Commands
+📬 Contact
+LinkedIn : Aurélie Djied
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Email : aurelie.djied@gmail.com
