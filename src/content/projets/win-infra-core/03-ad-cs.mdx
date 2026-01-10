@@ -1,18 +1,18 @@
 ---
-title: "ISO & Préparation VMware"
+title: "Rôle AD CS"
 description: "Choix de la version de Windows Server 2022 et configuration optimale des ressources virtuelles."
 tags: ["Windows Server", "Virtualisation"]
 category: "Virtualisation"
 pubDate: 2026-01-10
-slug: "iso-vmware"
+slug: "ad-cs"
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_SERVER_BASIC } from '../../../constants/series';
+import { WIN_INFRA_CORE} from '../../../constants/series';
 
 <SeriesStepper 
   seriesTitle="Déploiement Windows Server 2022" 
-  steps={WIN_SERVER_BASIC} 
-  currentStepIndex={0} 
+  steps={WIN_INFRA_CORE} 
+  currentStepIndex={3} 
 />
 
 ## 🛠️ Préparation de l'environnement
@@ -32,7 +32,7 @@ Voici les spécifications recommandées pour un contrôleur de domaine fluide :
 import NextStep from '../../../components/NextStep.astro';
 
 <NextStep 
-  href="/projets/install-os" 
+  href="/projets/ldaps" 
   title="Installation de l'OS" 
 />
 

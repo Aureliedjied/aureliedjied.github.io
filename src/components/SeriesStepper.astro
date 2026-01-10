@@ -1,4 +1,3 @@
-
 ---
 interface Step {
   label: string;
@@ -15,43 +14,37 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
 ---
 
 <nav class="my-8" aria-label="Progression du labo">
-  <div class="flex items-center justify-between mb-4 px-1">
-    <div class="flex flex-col">
-      <h4 class="font-bold text-xl leading-none" style="color: var(--text-title);">{seriesTitle}</h4>
-    </div>
-    </div>
+  <div class="mb-3 px-1">
+    <h4 class="text-[10px] uppercase tracking-[0.2em] font-black opacity-40">{seriesTitle}</h4>
+  </div>
 
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+  <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar snap-x">
     {steps.map((step, index) => {
       const isCurrent = index === currentStepIndex;
       
       return (
         <a 
           href={step.href}
-          class={`group relative p-3 rounded-xl border transition-all duration-300 flex flex-col justify-center min-h-[60px] ${
+          class={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-200 shrink-0 snap-start ${
             isCurrent 
-              ? "bg-purple-600/10 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.1)] ring-1 ring-purple-500/30" 
-              : "hover:bg-purple-500/5"
+              ? "bg-purple-600 border-purple-500 text-white shadow-md" 
+              : "bg-[#1a1a1a] border-white/5 hover:border-purple-500/50 text-white/60 hover:text-white"
           }`}
-          style={!isCurrent ? "background-color: var(--card-bg); border-color: var(--card-border);" : ""}
         >
-          <div class="flex items-center gap-3">
-            <span class={`text-sm font-black font-mono ${isCurrent ? "text-purple-500" : "opacity-40"}`}
-                  style={!isCurrent ? "color: var(--text-main);" : ""}>
-              {index + 1}
-            </span>
-            
-            <span class={`text-sm md:text-base font-bold leading-tight ${isCurrent ? "text-purple-600 dark:text-white" : "group-hover:text-purple-500"}`}
-                  style={!isCurrent ? "color: var(--text-main);" : "color: inherit;"}>
-              {step.label}
-            </span>
-          </div>
-
-          {isCurrent && (
-            <div class="absolute bottom-0 left-0 h-1 bg-purple-500 rounded-b-xl w-full"></div>
-          )}
+          <span class={`font-mono text-[10px] font-bold ${isCurrent ? "text-purple-200" : "opacity-40"}`}>
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span class="text-sm font-bold whitespace-nowrap">
+            {step.label}
+          </span>
         </a>
       )
     })}
   </div>
 </nav>
+
+<style>
+  /* Cache la scrollbar mais permet le défilement */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

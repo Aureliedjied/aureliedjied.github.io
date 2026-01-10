@@ -1,0 +1,66 @@
+---
+title: "Virtualisation & Installation OS"
+description: "Préparation de l'environnement virtuel sous VMware et installation de Windows Server 2022."
+tags: ["VMware", "Virtualisation", "Windows Server"]
+category: "Infrastructure"
+pubDate: 2026-01-08
+slug: "vmware-setup"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+import { WIN_INFRA_CORE } from '../../../constants/series';
+
+<SeriesStepper 
+  seriesTitle="Fondations & Sécurité du Socle" 
+  steps={WIN_INFRA_CORE} 
+  currentStepIndex={0} 
+/>
+
+# Épisode 0 : Virtualisation & Préparation de l'OS
+
+Avant de configurer nos services, nous devons bâtir une machine virtuelle (VM) robuste et optimisée. Ce chapitre traite de la création de l'hôte virtuel et de l'installation du système d'exploitation.
+
+## 🛠️ Configuration de la machine virtuelle
+Pour ce lab, j'utilise **VMware Workstation**. Le dimensionnement a été choisi pour équilibrer performances et économie de ressources sur la machine hôte.
+
+* **Processeur :** 2 vCPUs
+* **Mémoire vive :** 4 Go de RAM (suffisant pour un AD sans rôles lourds)
+* **Stockage :** 60 Go en mode *Thin Provisioning* (le disque ne prend que l'espace réellement utilisé).
+* **Réseau :** Carte placée sur un segment LAN isolé pour simuler un réseau d'entreprise protégé.
+
+
+
+---
+
+## 💿 Montage de l'ISO et Boot
+L'installation s'appuie sur l'image ISO officielle de **Windows Server 2022**. 
+
+
+
+Une fois l'ISO montée, nous démarrons la VM. Lors du partitionnement, j'ai opté pour une installation propre sur l'espace non alloué pour laisser le système gérer l'alignement des partitions.
+
+---
+
+## 🖥️ Installation de Windows Server 2022
+J'ai sélectionné la version **Standard (Expérience utilisateur)**. 
+
+> 💡 **Pourquoi ce choix ?** Bien que la version "Core" (sans interface) soit plus sécurisée, la version GUI est privilégiée dans ce lab pour faciliter la démonstration visuelle des outils d'administration et de l'annuaire.
+
+
+
+### Étapes post-installation :
+1.  **Mot de passe Administrateur :** Définition d'un mot de passe complexe pour le compte local initial.
+2.  **VMware Tools :** Installation immédiate des pilotes pour optimiser les performances graphiques et permettre la gestion avancée du cycle de vie de la VM depuis l'hyperviseur.
+
+
+
+---
+
+## ✅ Résultat
+Notre serveur est maintenant installé, fluide et prêt à être transformé en contrôleur de domaine.
+
+<NextStep 
+  href="/projets/socle-ad-securite" 
+  title="Épisode 1 : Socle Active Directory & Sécurité" 
+/>

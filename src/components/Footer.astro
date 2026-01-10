@@ -3,7 +3,7 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer class="w-full border-t transition-colors duration-300" 
-        style="border-color: var(--card-border); background-color: var(--header-bg); backdrop-blur: 8px;">
+        style="border-color: var(--card-border); background-color: var(--header-bg); backdrop-filter: blur(8px);">
   <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
     
     <p class="text-sm italic" style="color: var(--text-muted);">
@@ -11,13 +11,13 @@ const currentYear = new Date().getFullYear();
     </p>
     
     <div class="flex items-center gap-6">
-      <p class="text-[10px] tracking-widest uppercase font-medium" style="color: var(--text-muted); opacity: 0.8;">
+      <p class="text-xs tracking-widest uppercase font-medium" style="color: var(--text-muted); opacity: 0.9;">
         © {currentYear} Aurélie Djied
       </p>
       
       <div class="h-1 w-1 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.4)]"></div>
       
-      <a href="/contact" class="text-xs transition-colors hover:text-purple-500" style="color: var(--text-muted);">
+      <a href="/contact" class="text-sm font-medium transition-colors hover:text-purple-500" style="color: var(--text-muted);">
         Contact
       </a>
     </div>

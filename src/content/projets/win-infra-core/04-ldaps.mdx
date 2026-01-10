@@ -1,18 +1,18 @@
 ---
-title: "Organisation de l'Annuaire"
+title: "LDAPS"
 description: "Mise en place des Unités d'Organisation (OU), gestion des comptes d'administration et hygiène informatique."
 tags: ["Windows Server", "Active Directory"]
 category: "Système Windows"
 pubDate: 2026-01-13
-slug: "mise-en-place-annuaire"
+slug: "ldaps"
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_SERVER_BASIC } from '../../../constants/series';
+import { WIN_INFRA_CORE } from '../../../constants/series';
 
 <SeriesStepper 
   seriesTitle="Déploiement Windows Server 2022" 
-  steps={WIN_SERVER_BASIC} 
-  currentStepIndex={3} 
+  steps={WIN_INFRA_CORE} 
+  currentStepIndex={4} 
 />
 
 ## 📂 Organisation de l'Annuaire (OU)
@@ -65,6 +65,6 @@ Ce socle va nous permettre d'attaquer les modules suivants : la mise en place d'
 import NextStep from '../../../components/NextStep.astro';
 
 <NextStep 
-  href="/projets/audit-pingcastle" 
+  href="/projets/audit-ad-cs" 
   title="Audit de sécurité avec PingCastle" 
 />

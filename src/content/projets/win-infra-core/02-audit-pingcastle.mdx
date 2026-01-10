@@ -1,18 +1,18 @@
 ---
-title: "Installation de l'OS & Configuration Initiale"
+title: "Audit PingCastle"
 description: "Déploiement de Windows Server 2022 avec interface graphique et paramétrage du socle réseau."
 tags: ["Windows Server", "Installation", "Réseau"]
 category: "Système Windows"
 pubDate: 2026-01-11
-slug: "install-os"
+slug: "audit-pingcastle"
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_SERVER_BASIC } from '../../../constants/series';
+import { WIN_INFRA_CORE } from '../../../constants/series';
 
 <SeriesStepper 
   seriesTitle="Déploiement Windows Server 2022" 
-  steps={WIN_SERVER_BASIC} 
-  currentStepIndex={1} 
+  steps={WIN_INFRA_CORE} 
+  currentStepIndex={2} 
 />
 
 ## 💿 Processus d'installation
@@ -52,6 +52,6 @@ Essentiel pour la gestion des pilotes réseau et la synchronisation de l'heure a
 import NextStep from '../../../components/NextStep.astro';
 
 <NextStep 
-  href="/projets/promotion-ad" 
+  href="/projets/ad-cs" 
   title="Promotion du Contrôleur de Domaine" 
 />

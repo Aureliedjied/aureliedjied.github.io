@@ -1,0 +1,96 @@
+---
+title: "Socle Active Directory"
+description: "Installation du rôle AD DS et création d'une nouvelle forêt pour le laboratoire."
+tags: ["Windows Server", "Active Directory", "DNS"]
+category: "Système Windows"
+pubDate: 2026-01-12
+slug: "socle-ad-securite"
+---
+import Layout from '../../../layouts/Layout.astro';
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+import { WIN_INFRA_CORE } from '../../../constants/series';
+
+<SeriesStepper 
+  seriesTitle="Déploiement Windows Server 2022" 
+  steps={WIN_INFRA_CORE} 
+  currentStepIndex={1} 
+/>
+
+    <header class="mb-12">
+      <h1 class="text-4xl font-black mb-4" style="color: var(--text-title);">
+        Épisode 1 : Mise en place du socle AD & Sécurité
+      </h1>
+      <p class="text-lg opacity-80" style="color: var(--text-main);">
+        Configuration d'un contrôleur de domaine Windows Server 2022 avec un durcissement (hardening) initial conforme aux bonnes pratiques entreprise.
+      </p>
+    </header>
+
+
+Configuration d'un contrôleur de domaine Windows Server 2022 avec un durcissement (hardening) initial conforme aux bonnes pratiques entreprise.
+
+<section class="bg-purple-500/5 border border-purple-500/20 p-6 rounded-2xl my-8">
+  <h2 class="text-xl font-bold mb-4 flex items-center gap-2" style="margin-top: 0;">
+    🎯 Objectifs de l'étape
+  </h2>
+  <ul class="list-disc list-inside space-y-2">
+    <li>Préparer le système (OS & réseau statique)</li>
+    <li>Promouvoir le domaine `lab.internal`</li>
+    <li>Appliquer les premières mesures de hardening (SMB, LLMNR, NTLM)</li>
+    <li>Sécuriser les mots de passe locaux avec **LAPS**</li>
+  </ul>
+</section>
+
+## 1. Préparation du système
+Avant toute chose, le serveur doit être identifiable et fixe sur le réseau.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-black/20 p-4 rounded-xl border border-white/5 my-6">
+  <div>
+    <span class="text-xs uppercase opacity-50 block">Nom du serveur</span>
+    <span class="font-mono text-purple-400">SRV-AD</span>
+  </div>
+  <div>
+    <span class="text-xs uppercase opacity-50 block">IP Statique</span>
+    <span class="font-mono text-purple-400">192.168.174.10</span>
+  </div>
+</div>
+
+## 2. Promotion du Domaine
+Installation du rôle **AD DS** et promotion en tant que nouvelle forêt : `lab.internal`.
+
+> **Note de sécurité :** Le mot de passe DSRM (Directory Services Restore Mode) a été défini et stocké en coffre-fort numérique.
+
+
+
+## 3. Hardening Réseau (Sécurité)
+Pour protéger l'annuaire dès sa création, nous appliquons ces mesures via GPO :
+
+<div class="space-y-4 my-6">
+  <div class="flex gap-4 p-4 border border-white/5 rounded-lg bg-white/5">
+    <span class="text-2xl">🛡️</span>
+    <div>
+      <h4 class="font-bold text-white">Désactivation de SMBv1 & LLMNR</h4>
+      <p class="text-sm opacity-80">Suppression des protocoles obsolètes pour bloquer les attaques de type poisoning et ransomware.</p>
+    </div>
+  </div>
+  <div class="flex gap-4 p-4 border border-white/5 rounded-lg bg-white/5">
+    <span class="text-2xl">🔐</span>
+    <div>
+      <h4 class="font-bold text-white">Restriction NTLM</h4>
+      <p class="text-sm opacity-80">Forçage de NTLMv2 uniquement pour améliorer la sécurité des échanges d'authentification.</p>
+    </div>
+  </div>
+</div>
+
+## 4. Sécurisation via Windows LAPS
+Utilisation du module natif pour gérer les mots de passe Administrateur local de manière unique et chiffrée.
+
+      <footer class="pt-10 border-t border-white/5 text-center">
+        <p class="text-purple-400 font-bold">✅ Résultat : Un AD fonctionnel, durci et prêt pour l'audit.</p>
+      </footer>
+
+
+<NextStep 
+  href="/projets/audit-pingcastle" 
+  title="Mise en place de l'annuaire" 
+/>
