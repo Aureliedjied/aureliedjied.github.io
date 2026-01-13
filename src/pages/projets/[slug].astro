@@ -17,27 +17,28 @@ const { Content } = await project.render();
 <Layout>
   <article class="max-w-none" data-pagefind-body>
     <header class="mb-10">
-      <a href="/projets" data-pagefind-ignore 
-         class="text-sm transition-colors flex items-center gap-2 mb-8 group"
-         style="color: var(--text-muted);">
-        <span class="group-hover:-translate-x-1 transition-transform">←</span> Retour aux projets
-      </a>
-      
-      <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tighter italic" 
-          style="color: var(--text-title);">
-        {project.data.title}
-      </h1>
-      
-      <div class="flex flex-wrap gap-3 mt-2"> 
-        {project.data.tags.map(tag => (
-          <span 
-            class="text-[10px] uppercase tracking-widest font-bold bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20 text-purple-500"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-    </header>
+          <a href="/projets" data-pagefind-ignore 
+            class="text-sm transition-colors flex items-center gap-2 mb-8 group"
+            style="color: var(--text-muted);">
+            <span class="group-hover:-translate-x-1 transition-transform">←</span> Retour aux projets
+          </a>
+          
+          <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tighter italic" 
+              style="color: var(--text-title);">
+            {project.data.title}
+          </h1>
+          
+          <div class="flex flex-wrap gap-3 mt-2"> 
+            {project.data.tags.map(tag => (
+              <a 
+                href={`/projets?filter=${encodeURIComponent(tag)}`}
+                class="text-[10px] uppercase tracking-widest font-bold bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20 text-purple-500 hover:bg-purple-500 hover:text-white transition-all duration-300"
+              >
+                {tag}
+              </a>
+            ))}
+          </div>
+        </header>
 
     <div class="prose-content">
       <Content />

@@ -87,25 +87,55 @@ const filters = [
 </Layout>
 
 <script>
-  // Ton script de filtrage reste identique, il n'a pas besoin de changer !
   const buttons = document.querySelectorAll('.filter-btn');
   const projectCards = document.querySelectorAll('.project-card');
 
+  // --- 1. FONCTION DE FILTRAGE PRINCIPALE ---
+  function filterProjects(filterValue: string) {
+    projectCards.forEach(card => {
+      const cardTags = card.getAttribute('data-tags') || '';
+      const cardElement = card as HTMLElement;
+      
+      // On utilise includes() pour permettre des filtres partiels
+      if (filterValue === 'all' || cardTags.toLowerCase().includes(filterValue.toLowerCase())) {
+        cardElement.style.display = 'flex';
+      } else {
+        cardElement.style.display = 'none';
+      }
+    });
+
+    // Mise à jour visuelle des boutons
+    buttons.forEach(btn => {
+      const btnFilter = btn.getAttribute('data-filter') || 'all';
+      if (btnFilter === filterValue) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  // --- 2. ÉCOUTEURS DE CLIC SUR LES BOUTONS ---
   buttons.forEach(button => {
     button.addEventListener('click', () => {
       const filter = button.getAttribute('data-filter') || 'all';
-      buttons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-
-      projectCards.forEach(card => {
-        const cardTags = card.getAttribute('data-tags') || '';
-        const cardElement = card as HTMLElement;
-        if (filter === 'all' || cardTags.includes(filter)) {
-          cardElement.style.display = 'flex';
-        } else {
-          cardElement.style.display = 'none';
-        }
-      });
+      filterProjects(filter);
+      
+      // Optionnel : Nettoyer l'URL si on clique manuellement sur un filtre
+      const url = new URL(window.location.href);
+      url.searchParams.delete('filter');
+      window.history.pushState({}, '', url);
     });
+  });
+
+  // --- 3. LOGIQUE AU CHARGEMENT (LECTURE URL) ---
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterParam = urlParams.get('filter');
+
+    if (filterParam) {
+      // On applique le filtre récupéré de l'URL
+      filterProjects(filterParam);
+    }
   });
 </script>

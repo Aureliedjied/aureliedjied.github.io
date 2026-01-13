@@ -2,7 +2,6 @@
 title: "Virtualisation & Installation OS"
 description: "Préparation de l'environnement virtuel sous VMware et installation de Windows Server 2022."
 tags: ["VMware", "Virtualisation", "Windows Server"]
-category: "Infrastructure"
 pubDate: 2026-01-08
 slug: "vmware-setup"
 ---
@@ -17,23 +16,45 @@ import { WIN_INFRA_CORE } from '../../../constants/series';
   currentStepIndex={0} 
 />
 
-# Épisode 0 : Virtualisation & Préparation de l'OS
+# Virtualisation & Préparation de l'OS
 
 Avant de configurer nos services, nous devons bâtir une machine virtuelle (VM) robuste et optimisée. Ce chapitre traite de la création de l'hôte virtuel et de l'installation du système d'exploitation.
 
 ## 🛠️ Configuration de la machine virtuelle
-Pour ce lab, j'utilise **VMware Workstation**. Le dimensionnement a été choisi pour équilibrer performances et économie de ressources sur la machine hôte.
 
+Pour ce lab, j'utilise **VMware Workstation**. Le dimensionnement a été choisi pour équilibrer performances et économie de ressources sur la machine hôte :
 * **Processeur :** 2 vCPUs
-* **Mémoire vive :** 4 Go de RAM (suffisant pour un AD sans rôles lourds)
-* **Stockage :** 60 Go en mode *Thin Provisioning* (le disque ne prend que l'espace réellement utilisé).
-* **Réseau :** Carte placée sur un segment LAN isolé pour simuler un réseau d'entreprise protégé.
+* **Mémoire vive :** 4 Go de RAM
+* **Stockage :** 60 Go en mode *Thin Provisioning*.
 
+### 🌐 Configuration Réseau (VMnet8)
 
+Le serveur est placé sur le segment **NAT (VMnet8)**. Afin de coller aux exigences de sécurité réelles, le plan d'adressage est strictement défini :
+
+<div style="overflow-x: auto;">
+
+* **Sous-réseau :** `192.168.174.0/24`
+* **Passerelle :** `192.168.174.2`
+* **Mode IP :** Statique (Post-install)
+
+  <div class="flex flex-col items-center my-8">
+    <img 
+      src="/images/projets/win-infra-core/vmware-nat-no-dhcp.png" 
+      alt="Configuration IP Statique" 
+      class="rounded-lg shadow-lg border border-white/10 max-w-[500px] w-full"
+    />
+    <p class="text-xs text-center opacity-50 mt-3 italic">
+      Interface NAT : désactiver le DHCP
+    </p>
+  </div>
+</div>
+
+> 🛡️ **Hardening Réseau** : En entreprise, on désactive le DHCP sur les segments serveurs. Cela empêche l'attribution automatique d'IP à des équipements non autorisés et garantit la stabilité des futurs services DNS de l'Active Directory.
 
 ---
 
 ## 💿 Montage de l'ISO et Boot
+
 L'installation s'appuie sur l'image ISO officielle de **Windows Server 2022**. 
 
 
@@ -43,24 +64,25 @@ Une fois l'ISO montée, nous démarrons la VM. Lors du partitionnement, j'ai opt
 ---
 
 ## 🖥️ Installation de Windows Server 2022
+
 J'ai sélectionné la version **Standard (Expérience utilisateur)**. 
 
-> 💡 **Pourquoi ce choix ?** Bien que la version "Core" (sans interface) soit plus sécurisée, la version GUI est privilégiée dans ce lab pour faciliter la démonstration visuelle des outils d'administration et de l'annuaire.
-
-
+> 💡 **Pourquoi ce choix ?** Bien que la version "Core" (sans interface) soit plus sécurisée en limitant la surface d'attaque, la version GUI est ici privilégiée pour faciliter la démonstration visuelle des outils d'administration.
 
 ### Étapes post-installation :
-1.  **Mot de passe Administrateur :** Définition d'un mot de passe complexe pour le compte local initial.
-2.  **VMware Tools :** Installation immédiate des pilotes pour optimiser les performances graphiques et permettre la gestion avancée du cycle de vie de la VM depuis l'hyperviseur.
+1.  **Hostname** : Renommage immédiat du serveur (ex: `SRV-AD-01`) pour une identification claire.
+2.  **Mot de passe Administrateur** : Définition d'un mot de passe complexe pour le compte local initial.
+3.  **VMware Tools** : Installation des pilotes pour optimiser la fluidité et permettre la gestion avancée depuis l'hyperviseur.
 
 
 
 ---
 
 ## ✅ Résultat
-Notre serveur est maintenant installé, fluide et prêt à être transformé en contrôleur de domaine.
+
+Notre serveur est installé, isolé sur son segment réseau et prêt pour la phase cruciale de promotion.
 
 <NextStep 
   href="/projets/socle-ad-securite" 
-  title="Épisode 1 : Socle Active Directory & Sécurité" 
+  title="Socle Active Directory & Sécurité" 
 />
