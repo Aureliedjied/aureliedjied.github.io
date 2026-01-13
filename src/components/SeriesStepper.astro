@@ -15,26 +15,28 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
 
 <nav class="my-8" aria-label="Progression du labo">
   <div class="mb-3 px-1">
-    <h4 class="text-[10px] uppercase tracking-[0.2em] font-black opacity-40">{seriesTitle}</h4>
+    <h4 class="text-[10px] uppercase tracking-[0.2em] font-black opacity-40 dark:opacity-40 text-black dark:text-white">
+      {seriesTitle}
+    </h4>
   </div>
 
-  <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar snap-x">
+  <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:overflow-x-auto sm:pb-2 no-scrollbar sm:snap-x">
     {steps.map((step, index) => {
       const isCurrent = index === currentStepIndex;
       
       return (
         <a 
           href={step.href}
-          class={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-200 shrink-0 snap-start ${
+          class={`flex items-center gap-2 px-3 py-2 sm:px-4 rounded-lg border transition-all duration-200 shrink-0 sm:snap-start ${
             isCurrent 
-              ? "bg-purple-600 border-purple-500 text-white shadow-md" 
-              : "bg-[#1a1a1a] border-white/5 hover:border-purple-500/50 text-white/60 hover:text-white"
+              ? "bg-purple-600 border-purple-500 text-white shadow-md shadow-purple-500/20" 
+              : "bg-[#1a1a1a] border-white/5 text-white/60 hover:text-white hover:border-purple-500/30"
           }`}
         >
           <span class={`font-mono text-[10px] font-bold ${isCurrent ? "text-purple-200" : "opacity-40"}`}>
             {String(index + 1).padStart(2, '0')}
           </span>
-          <span class="text-sm font-bold whitespace-nowrap">
+          <span class="text-[12px] sm:text-sm font-bold whitespace-nowrap overflow-hidden text-ellipsis">
             {step.label}
           </span>
         </a>
@@ -44,7 +46,7 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
 </nav>
 
 <style>
-  /* Cache la scrollbar mais permet le défilement */
+  /* Cache la scrollbar pour le mode Desktop */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
