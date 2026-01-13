@@ -27,26 +27,35 @@ Pour ce lab, j'utilise **VMware Workstation**. Le dimensionnement a été choisi
 * **Mémoire vive :** 4 Go de RAM
 * **Stockage :** 60 Go en mode *Thin Provisioning*.
 
+<div style="display: flex; flex-direction: column; align-items: center; margin: 2rem 0;">
+  <img 
+    src="/images/projets/win-infra-core/allouer-ram.png" 
+    alt="allouer ram" 
+    style="width: 100%; max-width: 350px; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 0.5rem;" 
+  />
+</div>
+
 ### 🌐 Configuration Réseau (VMnet8)
 
 Le serveur est placé sur le segment **NAT (VMnet8)**. Afin de coller aux exigences de sécurité réelles, le plan d'adressage est strictement défini :
 
-<div style="overflow-x: auto;">
+<div class="my-6">
+  <ul>
+    <li><strong>Sous-réseau :</strong> <code>192.168.174.0/24</code></li>
+    <li><strong>Passerelle :</strong> <code>192.168.174.2</code></li>
+    <li><strong>Mode IP :</strong> Statique (Post-install)</li>
+  </ul>
+</div>
 
-* **Sous-réseau :** `192.168.174.0/24`
-* **Passerelle :** `192.168.174.2`
-* **Mode IP :** Statique (Post-install)
-
-  <div class="flex flex-col items-center my-8">
-    <img 
-      src="/images/projets/win-infra-core/vmware-nat-no-dhcp.png" 
-      alt="Configuration IP Statique" 
-      class="rounded-lg shadow-lg border border-white/10 max-w-[500px] w-full"
-    />
-    <p class="text-xs text-center opacity-50 mt-3 italic">
-      Interface NAT : désactiver le DHCP
-    </p>
-  </div>
+<div style="display: flex; flex-direction: column; align-items: center; margin: 2rem 0;">
+  <img 
+    src="/images/projets/win-infra-core/vmware-nat-no-dhcp.png" 
+    alt="Désactivation DHCP VMware" 
+    style="width: 100%; max-width: 350px; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 0.5rem;" 
+  />
+  <p style="font-size: 0.45rem; text-align: center; opacity: 0.6; margin: 0; font-style: italic;">
+    Interface NAT : désactivation du service DHCP
+  </p>
 </div>
 
 > 🛡️ **Hardening Réseau** : En entreprise, on désactive le DHCP sur les segments serveurs. Cela empêche l'attribution automatique d'IP à des équipements non autorisés et garantit la stabilité des futurs services DNS de l'Active Directory.
