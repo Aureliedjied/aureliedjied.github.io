@@ -2,7 +2,7 @@
 // Objectif : Installation propre et durcissement initial
 export const WIN_INFRA_CORE = [
   { label: "Virtualisation Windows Server 2022", href: "/projets/vmware-setup" },
-  { label: "Socle AD & Sécurité", href: "/projets/socle-ad-securite" },
+  { label: "Promotion du domaine", href: "/projets/promotion-domaine" },
   { label: "Audit PingCastle", href: "/projets/audit-pingcastle" },
   { label: "PKI / AD CS", href: "/projets/ad-cs" },
   { label : "LDAPS" , href: "/projets/ldaps"}

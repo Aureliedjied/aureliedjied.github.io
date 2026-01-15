@@ -1,0 +1,26 @@
+---
+title: "Promouvoir le domaine"
+description: "Installation du rôle AD DS et création d'une nouvelle forêt pour le lab."
+tags: ["Windows Server", "Active Directory"]
+pubDate: 2026-01-12
+slug: "promotion-domaine"
+---
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+import { WIN_INFRA_CORE } from '../../../constants/series';
+
+<SeriesStepper 
+  seriesTitle="Déploiement Windows Server 2022" 
+  steps={WIN_INFRA_CORE} 
+  currentStepIndex={1} 
+/>
+
+
+
+
+
+
+<NextStep 
+  href="/projets/audit-pingcastle" 
+  title="Mise en place de l'annuaire" 
+/>

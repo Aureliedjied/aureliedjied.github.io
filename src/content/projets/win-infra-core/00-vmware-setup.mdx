@@ -32,12 +32,21 @@ Pour ce lab, j'utilise **VMware Workstation**. Le dimensionnement a été choisi
   </ul>
 </div>
 
-<div style="display: flex; flex-direction: column; align-items: center; margin: 2rem 0;">
-  <img 
-    src="/images/projets/win-infra-core/allouer-ram.png" 
-    alt="allouer ram" 
-    style="width: 100%; max-width: 350px; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 0.5rem;" 
-  />
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/vmware-setup/processeur.png" alt="Configuration CPU" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">2 vCPUs</p>
+  </div>
+
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/vmware-setup/allouer-ram.png" alt="Configuration RAM" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">4 Go de RAM</p>
+  </div>
+
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/vmware-setup/espace-disk.png" alt="Configuration Stockage" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">60 Go (Thin)</p>
+  </div>
 </div>
 
 ### 🌐 Configuration Réseau (VMnet8)
@@ -52,18 +61,19 @@ Le serveur est placé sur le segment **NAT (VMnet8)**. Afin de coller aux exigen
   </ul>
 </div>
 
-<div style="display: flex; flex-direction: column; align-items: center; margin: 2rem 0;">
-  <img 
-    src="/images/projets/win-infra-core/vmware-nat-no-dhcp.png" 
-    alt="Désactivation DHCP VMware" 
-    style="width: 100%; max-width: 350px; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 0.5rem;" 
-  />
-  <p style="font-size: 0.45rem; text-align: center; opacity: 0.6; margin: 0; font-style: italic;">
-    Interface NAT : désactivation du service DHCP
-  </p>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 350px; flex: 1; min-width: 280px;">
+    <img src="/images/projets/win-infra-core/vmware-setup/vmware-nat-no-dhcp.png" alt="Désactivation DHCP VMware" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Interface NAT : désactivation du service DHCP</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 350px; flex: 1; min-width: 280px;">
+    <img src="/images/projets/win-infra-core/vmware-setup/reseau-nat.png" alt="Configuration Réseau NAT" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Plan d'adressage : Configuration du segment VMnet8</p>
+  </div>
 </div>
 
-> 🛡️ **Hardening Réseau** : En entreprise, on désactive le DHCP sur les segments serveurs. Cela empêche l'attribution automatique d'IP à des équipements non autorisés et garantit la stabilité des futurs services DNS de l'Active Directory.
+> 🛡️ **Hardening Réseau** : En entreprise, on désactive le DHCP sur les segments serveurs. Cela empêche l'attribution automatique d'IP à des équipements non autorisés et garantit la stabilité des futurs services DNS.
 
 ---
 
@@ -71,32 +81,161 @@ Le serveur est placé sur le segment **NAT (VMnet8)**. Afin de coller aux exigen
 
 L'installation s'appuie sur l'image ISO officielle de **Windows Server 2022**. 
 
+Une fois l'ISO montée, nous démarrons la VM. Lors de la création, nous nommons l'inventaire VMware **`SRV-AD-01`** pour une organisation propre dès le départ.
 
-
-Une fois l'ISO montée, nous démarrons la VM. Lors du partitionnement, j'ai opté pour une installation propre sur l'espace non alloué pour laisser le système gérer l'alignement des partitions.
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/win-infra-core/vmware-setup/renommer-serveur.png" alt="nommer le serveur" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Identification de la VM dans l'inventaire</p>
+  </div>
+</div>
 
 ---
 
 ## 🖥️ Installation de Windows Server 2022
 
-J'ai sélectionné la version **Standard (Expérience utilisateur)**. 
+J'ai sélectionné la version **Standard (Expérience Bureau)**. 
 
-> 💡 **Pourquoi ce choix ?** Bien que la version "Core" (sans interface) soit plus sécurisée en limitant la surface d'attaque, la version GUI est ici privilégiée pour faciliter la démonstration visuelle des outils d'administration.
+> 💡 **Pourquoi ce choix ?** Bien que la version "Core" soit plus sécurisée, la version GUI est ici privilégiée pour faciliter la démonstration visuelle des outils d'administration AD.
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/win-infra-core/vmware-setup/experience-bureau.png" alt="experience-bureau" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sélection de l'OS : Windows Server 2022 Standard Desktop Experience</p>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/win-infra-core/vmware-setup/installation.png" alt="Installation" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Processus d'installation de l'OS</p>
+  </div>
+</div>
 
 ### Étapes post-installation :
-1.  **Hostname** : Renommage immédiat du serveur (ex: `SRV-AD-01`) pour une identification claire.
-2.  **Mot de passe Administrateur** : Définition d'un mot de passe complexe pour le compte local initial.
-3.  **VMware Tools** : Installation des pilotes pour optimiser la fluidité et permettre la gestion avancée depuis l'hyperviseur.
+1. **Mot de passe Administrateur** : Définition d'un mot de passe complexe pour le compte local initial.
+2. **VMware Tools** : Installation des pilotes pour optimiser la fluidité et les performances de la machine.
 
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/win-infra-core/vmware-setup/mdp-admin-local.png" alt="Mot de passe" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Définition du MDP Administrateur</p>
+  </div>
 
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/win-infra-core/vmware-setup/vm-tools.png" alt="VMware Tools" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Optimisation via VMware Tools</p>
+  </div>
+</div>
 
 ---
 
-## ✅ Résultat
+<section style="margin-top: 3rem;">
+    <h2 style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 10px;">
+        🖥️ Démarrage et Nommage
+    </h2>
+    <p>
+        Au démarrage, entrer le mot de passe du compte Administrateur local.
+    </p>
+    <p>
+        Avant toute promotion ou installation de rôle, le serveur doit porter un nom définitif et normalisé. Pour ce contrôleur de domaine, j'ai choisi <code>SRV-AD-01</code>, un nom court respectant les conventions de nommage standards.
+    </p>
 
-Notre serveur est installé, isolé sur son segment réseau et prêt pour la phase cruciale de promotion.
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 60px; margin: 3rem 0;">
+        <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px; flex: 1; min-width: 280px;">
+            <img src="/images/projets/win-infra-core/roles/open-admin.png" alt="Saisie mot de passe" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
+            <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Ouverture de session Administrateur local</p>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px; flex: 1; min-width: 280px;">
+            <img src="/images/projets/win-infra-core/roles/renommer-ad.png" alt="Renommage serveur" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
+            <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Changement du nom d'hôte (Redémarrage requis)</p>
+        </div>
+    </div>
+</section>
+
+### Configuration IP Statique
+Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe sur soi-même.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
+  <div class="overflow-hidden rounded-lg border border-white/10">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-white/5">
+        <tr>
+          <th class="p-3 border-b border-white/10">Paramètre</th>
+          <th class="p-3 border-b border-white/10">Valeur</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="p-3 border-b border-white/10 font-bold">Adresse IP</td>
+          <td class="p-3 border-b border-white/10 text-blue-400">192.168.174.10</td>
+        </tr>
+        <tr>
+          <td class="p-3 border-b border-white/10 font-bold">Masque</td>
+          <td class="p-3 border-b border-white/10">255.255.255.0</td>
+        </tr>
+        <tr>
+          <td class="p-3 border-b border-white/10 font-bold">Passerelle</td>
+          <td class="p-3 border-b border-white/10">192.168.174.2</td>
+        </tr>
+        <tr>
+          <td class="p-3 border-b border-white/10 font-bold">DNS Primaire</td>
+          <td class="p-3 border-b border-white/10 text-green-400">192.168.174.10</td>
+        </tr>
+        <tr>
+          <td class="p-3 border-b border-white/10 font-bold">DNS Secondaire</td>
+          <td class="p-3 border-b border-white/10 text-green-400">127.0.0.1 (Loopback)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+   <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/win-infra-core/roles/ipstatique.png" alt="nommer le serveur" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Identification de la VM dans l'inventaire</p>
+  </div>
+</div>
+
+---
+
+## 🛠️ Installation des Rôles (Pré-Promotion)
+
+Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Je ne lance pas encore la promotion pour m'assurer que les rôles sont correctement déployés.
+
+<div class="flex flex-col items-center mb-8">
+  <img src="/images/projets/win-infra-core/roles/ajouter-role.png" alt="Menu Gérer" class="max-w-[500px] w-full rounded-lg border border-white/10" />
+  <p class="text-[0.65rem] italic opacity-50 mt-2">Accès à l'assistant via le Gestionnaire de serveur</p>
+</div>
+
+### 1. AD DS (Active Directory Domain Services)
+Le socle de l'annuaire permettant la gestion centralisée des identités.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/roles/serveur-adds.png" alt="Sélection AD DS" class="rounded-lg border border-white/10 w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Sélection du rôle AD DS</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/roles/ad-install.png" alt="Installation AD DS" class="rounded-lg border border-white/10 w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Confirmation et installation des binaires</p>
+  </div>
+</div>
+
+### 2. DNS Server
+Essentiel pour la résolution des noms du domaine et la localisation des services via les enregistrements SRV.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/roles/serveur-dns.png" alt="Installation DNS" class="rounded-lg border border-white/10 w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Installation du rôle DNS</p>
+  </div>
+  <div class="flex flex-col items-center justify-center bg-white/5 rounded-lg border border-dashed border-white/20 p-4">
+    <p class="text-sm text-center opacity-70">
+      💡 <strong>Note :</strong> Le DNS est souvent installé automatiquement lors de la promotion du premier DC si le rôle n'est pas déjà présent.
+    </p>
+  </div>
+</div>
+
 
 <NextStep 
-  href="/projets/socle-ad-securite" 
-  title="Socle Active Directory & Sécurité" 
+  title="Promotion du Contrôleur de Domaine" 
+  description="Comment transformer ce serveur en une nouvelle forêt Active Directory." 
+  link="/projets/win-infra-core/promotion-domaine" 
 />
+
