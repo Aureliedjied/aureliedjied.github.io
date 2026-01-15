@@ -103,9 +103,13 @@ La promotion du serveur `SRV-AD-01` peut être engagée pour créer la forêt ra
 Les paramètres appliqués localement lors de cette phase seront par la suite consolidés et renforcés via des stratégies de groupe (GPO) au niveau du domaine.
 
 ### Configuration du Domaine
-* **Nom de la forêt** : `infra.formation.local`
-* **Niveau fonctionnel** : Windows Server 2016
-* **Services** : Catalogue global (GC) et DNS intégrés
+<div class="my-6">
+  <ul>
+    <li><strong>Nom de la forêt :</strong> <code>infra.formation.local</code></li>
+    <li><strong>Niveau fonctionnel :</strong> <code>Windows Server 2016</code></li>
+    <li><strong>Services:</strong> Catalogue global et DNS </li>
+  </ul>
+</div>
 
 La promotion du serveur en Contrôleur de Domaine s’effectue via l’assistant Active Directory. Pour y accéder, ouvrir le drapeau jaune qui proposera de " Promouvoir ce serveur en controleur de domaine ".
 Les choix effectués à cette étape conditionnent la stabilité, la sécurité et l’évolutivité de la forêt.
@@ -117,7 +121,7 @@ Les choix effectués à cette étape conditionnent la stabilité, la sécurité 
   </div>
 </div>
 
-#### Création de la forêt
+### Création de la forêt
 Le choix **« Ajouter une nouvelle forêt »** permet d’initialiser un environnement Active Directory isolé, maîtrisé et conforme aux bonnes pratiques.
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
@@ -141,7 +145,7 @@ Une délégation n’est pertinente que dans un scénario de sous-domaine ou d�
 </div>
 
 
-#### Mot de passe DSRM
+**Mot de passe DSRM**:
 Le mot de passe **Directory Services Restore Mode (DSRM)** est défini à cette étape. J'ai choisi une passphrase composée de chiffres et caractères spéciaux.
 Il permet l’accès au contrôleur de domaine en mode restauration et doit être :
 - robuste,
@@ -166,7 +170,7 @@ Dans ce contexte de laboratoire maîtrisé, les chemins par défaut sont conserv
 </div>
 
 
-#### Installation de la forêt
+**Installation de la forêt**:
 Cette étape récapitule l’ensemble des paramètres choisis précédemment.  
 Elle permet une dernière vérification avant l’exécution effective de la promotion.
 
