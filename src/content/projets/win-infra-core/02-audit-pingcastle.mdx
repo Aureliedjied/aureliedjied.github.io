@@ -2,7 +2,6 @@
 title: "Audit PingCastle"
 description: "Déploiement de Windows Server 2022 avec interface graphique et paramétrage du socle réseau."
 tags: ["Windows Server", "Installation", "Réseau"]
-category: "Système Windows"
 pubDate: 2026-01-11
 slug: "audit-pingcastle"
 ---
@@ -10,7 +9,7 @@ import SeriesStepper from '../../../components/SeriesStepper.astro';
 import { WIN_INFRA_CORE } from '../../../constants/series';
 
 <SeriesStepper 
-  seriesTitle="Déploiement Windows Server 2022" 
+  seriesTitle="Auditer la sécurité" 
   steps={WIN_INFRA_CORE} 
   currentStepIndex={2} 
 />
@@ -53,5 +52,5 @@ import NextStep from '../../../components/NextStep.astro';
 
 <NextStep 
   href="/projets/ad-cs" 
-  title="Promotion du Contrôleur de Domaine" 
+  title="Certificat AD CS" 
 />

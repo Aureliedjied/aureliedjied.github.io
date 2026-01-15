@@ -2,7 +2,6 @@
 title: "Rôle AD CS"
 description: "Choix de la version de Windows Server 2022 et configuration optimale des ressources virtuelles."
 tags: ["Windows Server", "Virtualisation"]
-category: "Virtualisation"
 pubDate: 2026-01-10
 slug: "ad-cs"
 ---
@@ -10,7 +9,7 @@ import SeriesStepper from '../../../components/SeriesStepper.astro';
 import { WIN_INFRA_CORE} from '../../../constants/series';
 
 <SeriesStepper 
-  seriesTitle="Déploiement Windows Server 2022" 
+  seriesTitle="Certificat AD CS" 
   steps={WIN_INFRA_CORE} 
   currentStepIndex={3} 
 />
@@ -33,7 +32,7 @@ import NextStep from '../../../components/NextStep.astro';
 
 <NextStep 
   href="/projets/ldaps" 
-  title="Installation de l'OS" 
+  title="LDAPS" 
 />
 
 ---

@@ -11,7 +11,7 @@ import NextStep from '../../../components/NextStep.astro';
 import { WIN_INFRA_CORE } from '../../../constants/series';
 
 <SeriesStepper 
-  seriesTitle="Fondations & Sécurité du Socle" 
+  seriesTitle="Fondations & Mise en place" 
   steps={WIN_INFRA_CORE} 
   currentStepIndex={0} 
 />
@@ -224,10 +224,10 @@ Essentiel pour la résolution des noms du domaine et la localisation des service
   </div>
 </div>
 
-
+// ici une phrase " j'ai appris à ...."
+// ici une presentation rapide de la suite : promouvoir, foret, créer admin
 <NextStep 
-  title="Promotion du Contrôleur de Domaine" 
-  description="Comment transformer ce serveur en une nouvelle forêt Active Directory." 
-  link="/projets/win-infra-core/promotion-domaine" 
+  href="/projets/promotion-domaine" 
+  title="Hardening et Promotion du DC" 
 />
 

@@ -1,7 +1,7 @@
 ---
-title: "Promouvoir le domaine"
-description: "Installation du rôle AD DS et création d'une nouvelle forêt pour le lab."
-tags: ["Windows Server", "Active Directory"]
+title: "Hardening et Promouvoir le domaine"
+description: "Déploiement d'une nouvelle forêt Active Directory et application des premières mesures de durcissement selon les préconisations ANSSI."
+tags: ["Windows Server", "Active Directory", "Sécurité"]
 pubDate: 2026-01-12
 slug: "promotion-domaine"
 ---
@@ -10,17 +10,194 @@ import NextStep from '../../../components/NextStep.astro';
 import { WIN_INFRA_CORE } from '../../../constants/series';
 
 <SeriesStepper 
-  seriesTitle="Déploiement Windows Server 2022" 
+  seriesTitle="Hardening et Promouvoir le domaine" 
   steps={WIN_INFRA_CORE} 
   currentStepIndex={1} 
 />
 
+# Promotion & Durcissement du Contrôleur de Domaine
+
+La préparation d'un Contrôleur de Domaine (DC) ne se limite pas à l'installation des rôles Active Directory. Pour garantir un niveau de sécurité conforme aux attentes de l'ANSSI, le système doit être durci **avant même la création de la forêt**, lorsque le serveur est encore vierge de toute stratégie de domaine.
+
+Cette approche permet de réduire drastiquement la surface d’attaque dès l’origine et d’éviter l’introduction de protocoles obsolètes dans l’environnement Active Directory.
+
+## 🛡️ Durcissement Pré-Promotion (Phase 1)
+
+L'objectif est de réduire la surface d'attaque en désactivant les protocoles de résolution de noms et de communication réseau hérités, fréquemment exploités lors des phases de compromission initiale.
+
+### 1. Désactivation de LLMNR
+LLMNR est un vecteur majeur d'interception de hashs NTLM. En l'absence de domaine et donc de GPO, l'intervention s'effectue directement dans le registre afin d'imposer la désactivation.
+
+En cas d'échec DNS, LLMNR diffuse la requête en clair sur le réseau local, ce qui permet à un attaquant de capturer et relayer des identifiants via des attaques de type *Man-in-the-Middle*.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/promo/llmnr-desactived.png" alt="Désactivation LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Création de la clé de registre EnableMulticast</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/promo/llmnr-verif-0.png" alt="Vérification LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Audit : Valeur positionnée à 0 (Désactivé)</p>
+  </div>
+</div>
+
+### 2. Désactivation de SMBv1
+Protocole historique désormais obsolète, SMBv1 est dépourvu de mécanismes de sécurité modernes. Il a notamment été utilisé comme vecteur de propagation lors d’attaques massives telles que WannaCry.
+
+Dans ce cas précis, la fonctionnalité **SMB 1.0/CIFS** n’est pas installée sur le système : le protocole est donc déjà absent, ce qui confirme une configuration conforme aux standards de sécurité actuels.
+
+<div class="flex flex-col items-center my-8">
+  <img src="/images/projets/win-infra-core/promo/smb1-desactived.png" alt="Désactivation SMBv1" class="max-w-[400px] w-full rounded-lg border border-white/10 shadow-md" />
+  <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'état du rôle : Available (Non installé)</p>
+</div>
+
+### 3. Désactivation de NetBIOS
+NetBIOS est un protocole particulièrement bavard qui expose inutilement le nom et certaines informations du serveur aux autres machines du segment réseau. Son maintien augmente la surface d’attaque et facilite la reconnaissance par un attaquant.
+
+Sa désactivation constitue une étape clé du durcissement réseau, en particulier avant l’introduction du serveur dans un environnement Active Directory.
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/promo/netbios-active.png" alt="NetBIOS Activé" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">État initial : NetbiosOptions vide (0)</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/promo/netbios-desactived.png" alt="NetBIOS Désactivé" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Exécution du script de désactivation</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/promo/netbios-verif.png" alt="Vérification NetBIOS" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Audit final : NetbiosOptions = 2</p>
+  </div>
+</div>
+
+---
+
+## Vérifications
+
+Après redémarrage, une vérification rapide via `netstat` permet de confirmer l’état du serveur.  
+Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont en écoute.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/netbios-verif.png" alt="Paramètres NetBIOS via IPv4 avancé" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Accès aux paramètres avancés NetBIOS via les propriétés IPv4</p>
+  </div>
+</div>
 
 
+
+Cette validation volontairement simple permet de s’assurer qu’aucun service superflu n’est exposé avant la promotion du serveur en Contrôleur de Domaine.
+
+<div class="mt-12 p-6 border border-green-500/30 bg-green-500/5 rounded-xl text-center">
+    <span class="text-green-500 font-bold">✅ État Final :</span> Le Contrôleur de Domaine est opérationnel, durci et prêt à accueillir la structure des Unités d'Organisation.
+</div>
+
+---
+
+## 🚀 Promotion : Création de la Forêt
+
+Le socle système est désormais sain, maîtrisé et conforme aux bonnes pratiques de sécurité.  
+La promotion du serveur `SRV-AD-01` peut être engagée pour créer la forêt racine Active Directory.
+
+Les paramètres appliqués localement lors de cette phase seront par la suite consolidés et renforcés via des stratégies de groupe (GPO) au niveau du domaine.
+
+### Configuration du Domaine
+* **Nom de la forêt** : `infra.formation.local`
+* **Niveau fonctionnel** : Windows Server 2016
+* **Services** : Catalogue global (GC) et DNS intégrés
+
+La promotion du serveur en Contrôleur de Domaine s’effectue via l’assistant Active Directory. Pour y accéder, ouvrir le drapeau jaune qui proposera de " Promouvoir ce serveur en controleur de domaine ".
+Les choix effectués à cette étape conditionnent la stabilité, la sécurité et l’évolutivité de la forêt.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/promotion-ad.png" alt="Lancement de la promotion Active Directory" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Lancement de la promotion du serveur en Contrôleur de Domaine</p>
+  </div>
+</div>
+
+#### Création de la forêt
+Le choix **« Ajouter une nouvelle forêt »** permet d’initialiser un environnement Active Directory isolé, maîtrisé et conforme aux bonnes pratiques.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/creation-foret.png" alt="Création de la forêt Active Directory" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Création de la forêt racine infra.formation.local</p>
+  </div>
+</div>
+
+**Délégation DNS**  
+La création d’une délégation DNS **n’est pas cochée**.  
+Dans le cadre d’une nouvelle forêt racine, le serveur héberge lui-même le service DNS intégré à Active Directory.  
+Une délégation n’est pertinente que dans un scénario de sous-domaine ou d’intégration à une infrastructure DNS existante.
+
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/no-dns.png" alt="ne pas ajouter de dns" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">ne pas cocher le DNS</p>
+  </div>
+</div>
+
+
+#### Mot de passe DSRM
+Le mot de passe **Directory Services Restore Mode (DSRM)** est défini à cette étape. J'ai choisi une passphrase composée de chiffres et caractères spéciaux.
+Il permet l’accès au contrôleur de domaine en mode restauration et doit être :
+- robuste,
+- stocké de manière sécurisée,
+- distinct des comptes administrateurs du domaine.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/mdp-dsrm.png" alt="Définition du mot de passe DSRM"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Définition du mot de passe DSRM</p>
+  </div>
+</div>
+
+L’assistant propose par défaut des emplacements standards pour la base de données, les journaux et le dossier **SYSVOL**.  
+Dans ce contexte de laboratoire maîtrisé, les chemins par défaut sont conservés afin de garantir la compatibilité maximale avec les outils et bonnes pratiques Microsoft.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/sysvol.png" alt="Configuration du dossier SYSVOL"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Emplacement de la base AD, des journaux et du dossier SYSVOL</p>
+  </div>
+</div>
+
+
+#### Installation de la forêt
+Cette étape récapitule l’ensemble des paramètres choisis précédemment.  
+Elle permet une dernière vérification avant l’exécution effective de la promotion.
+
+Une fois validée, l’installation initialise :
+- le schéma Active Directory,
+- les partitions de la forêt,
+- le service DNS intégré,
+- le partage SYSVOL.
+
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/installation-foret.png" alt="Installation de la forêt Active Directory"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Récapitulatif et lancement de l’installation de la forêt</p>
+  </div>
+</div>
+
+La promotion se conclut par la validation des paramètres et le redémarrage automatique du serveur.  
+À l’issue du redémarrage, l’ouverture de session s’effectue désormais via le compte **INFRA\\Administrateur**, confirmant la création effective du domaine.
+
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/open-admin-ad.png" alt="ouverture session admin" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Ouverture de la session INFRA\Administrateur</p>
+  </div>
+</div>
 
 
 
 <NextStep 
   href="/projets/audit-pingcastle" 
-  title="Mise en place de l'annuaire" 
+  title="Auditer la sécurité" 
 />
