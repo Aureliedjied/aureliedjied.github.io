@@ -2,7 +2,7 @@
 title: "Virtualisation & Installation OS"
 description: "Préparation de l'environnement virtuel sous VMware et installation de Windows Server 2022."
 tags: ["VMware", "Virtualisation", "Windows Server"]
-pubDate: 2026-01-08
+pubDate: 2026-01-13
 slug: "vmware-setup"
 ---
 
@@ -73,7 +73,8 @@ Le serveur est placé sur le segment **NAT (VMnet8)**. Afin de coller aux exigen
   </div>
 </div>
 
-> 🛡️ **Hardening Réseau** : En entreprise, on désactive le DHCP sur les segments serveurs. Cela empêche l'attribution automatique d'IP à des équipements non autorisés et garantit la stabilité des futurs services DNS.
+> 🛡️ **Hardening Réseau** : En entreprise, on désactive le DHCP sur les segments serveurs. Cela empêche l'attribution automatique d'IP à des équipements non autorisés et garantit la stabilité des futurs services DNS. Dans ce lab, le service DHCP VMware est désactivé afin de simuler un segment serveur maîtrisé.
+En environnement réel, le DHCP serait centralisé sur un serveur dédié ou une appliance réseau.
 
 ---
 
@@ -110,7 +111,7 @@ J'ai sélectionné la version **Standard (Expérience Bureau)**.
 </div>
 
 ### Étapes post-installation :
-1. **Mot de passe Administrateur** : Définition d'un mot de passe complexe pour le compte local initial.
+1. **Mot de passe Administrateur** : Le mot de passe Administrateur local respecte une politique de complexité élevée et sera remplacé ultérieurement par des comptes nominaux après la promotion du domaine.
 2. **VMware Tools** : Installation des pilotes pour optimiser la fluidité et les performances de la machine.
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
@@ -151,7 +152,7 @@ J'ai sélectionné la version **Standard (Expérience Bureau)**.
 </section>
 
 ### Configuration IP Statique
-Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe sur soi-même. On peut accéder à la configuration avec la commande ncpa.cpl.
+Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe sur soi-même. Aucun DNS public n’est configuré sur le contrôleur de domaine afin d’éviter toute résolution externe non maîtrisée. On peut accéder à la configuration avec la commande ncpa.cpl.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
   <div class="overflow-hidden rounded-lg border border-white/10">
@@ -224,8 +225,17 @@ Essentiel pour la résolution des noms du domaine et la localisation des service
   </div>
 </div>
 
-{/* // ici une phrase " j'ai appris à ...."
-// ici une presentation rapide de la suite : promouvoir, foret, créer admin */}
+<section class="mt-12">
+  <p class="text-base leading-relaxed opacity-90">
+    Cette étape met en évidence l’importance de la préparation d’un contrôleur de domaine avant sa promotion :
+    réseau maîtrisé, configuration DNS cohérente, nommage définitif et réduction de la surface d’attaque.
+  </p>
+
+  <p class="text-base leading-relaxed opacity-90 mt-4">
+    La prochaine phase est dédiée au <em>hardening</em> préalable, visant à renforcer la sécurité du serveur
+    et à garantir une base saine avant son élévation en tant que contrôleur de domaine.
+  </p>
+</section>
 
 <NextStep 
   href="/projets/promotion-domaine" 

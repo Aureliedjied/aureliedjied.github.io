@@ -1,12 +1,13 @@
 ---
 title: "Audit PingCastle"
 description: "Déploiement de Windows Server 2022 avec interface graphique et paramétrage du socle réseau."
-tags: ["Windows Server", "Installation", "Réseau"]
-pubDate: 2026-01-11
+tags: ["Windows", "Installation", "Réseau", "Sécurité", "Active Directory"]
+pubDate: 2026-01-15
 slug: "audit-pingcastle"
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import { WIN_INFRA_CORE } from '../../../constants/series';
+import NextStep from '../../../components/NextStep.astro';
 
 <SeriesStepper 
   seriesTitle="Auditer la sécurité" 
@@ -14,41 +15,9 @@ import { WIN_INFRA_CORE } from '../../../constants/series';
   currentStepIndex={2} 
 />
 
-## 💿 Processus d'installation
-
-Pour ce contrôleur de domaine, nous choisissons l'édition **Standard (Desktop Experience)**. 
-
-> **Pourquoi ?** Bien que la version *Core* soit plus sécurisée, l'interface graphique est privilégiée dans ce labo pour faciliter la démonstration des outils d'administration AD.
-
-### 1. Partitionnement du disque
-J'ai alloué l'intégralité des 60 Go à la partition système. Pour un environnement de production réel, il serait préférable de séparer les bases de données NTDS et les logs sur un volume distinct.
-
-### 2. Premier démarrage et mot de passe Admin
-Une fois l'installation terminée, la première étape critique est la définition d'un mot de passe **complexe** pour le compte Administrateur local.
+Contenu à venir ...
 
 
-
----
-
-## ⚙️ Configuration Post-Installation
-
-Avant de promouvoir le serveur, trois étapes sont indispensables pour garantir la stabilité du futur domaine :
-
-### A. Nommage du serveur
-Un nom clair est essentiel. Ici, nous utilisons : `SRV-AD-01`.
-*Cela permet d'identifier immédiatement le rôle (AD) et l'index du serveur.*
-
-### B. Configuration de l'adresse IP Statique
-Un contrôleur de domaine ne doit **jamais** être en DHCP.
-* **IP :** `192.168.174.10`
-* **Masque :** `255.255.255.0`
-* **Passerelle :** `192.168.174.2` 
-* **DNS :** `127.0.0.1` (le serveur sera son propre résolveur)
-
-### C. Installation des VMware Tools
-Essentiel pour la gestion des pilotes réseau et la synchronisation de l'heure avec l'hôte.
-
-import NextStep from '../../../components/NextStep.astro';
 
 <NextStep 
   href="/projets/ad-cs" 

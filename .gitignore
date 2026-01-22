@@ -20,5 +20,13 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# Spécifique à Windows (cache des miniatures d'images)
+Thumbs.db 
+
 # jetbrains setting folder
 .idea/
+
+# Dossiers de cache outils
+.turbo/
+.vercel/
+.netlify/

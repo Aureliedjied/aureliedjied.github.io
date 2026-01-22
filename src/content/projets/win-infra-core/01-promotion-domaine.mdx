@@ -2,7 +2,7 @@
 title: "Hardening et Promouvoir le domaine"
 description: "Déploiement d'une nouvelle forêt Active Directory et application des premières mesures de durcissement selon les préconisations ANSSI."
 tags: ["Windows Server", "Active Directory", "Sécurité"]
-pubDate: 2026-01-12
+pubDate: 2026-01-14
 slug: "promotion-domaine"
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
@@ -21,7 +21,7 @@ La préparation d'un Contrôleur de Domaine (DC) ne se limite pas à l'installat
 
 Cette approche permet de réduire drastiquement la surface d’attaque dès l’origine et d’éviter l’introduction de protocoles obsolètes dans l’environnement Active Directory.
 
-## 🛡️ Durcissement Pré-Promotion (Phase 1)
+## 🛡️ Durcissement Pré-Promotion 
 
 L'objectif est de réduire la surface d'attaque en désactivant les protocoles de résolution de noms et de communication réseau hérités, fréquemment exploités lors des phases de compromission initiale.
 
@@ -80,18 +80,14 @@ Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont 
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/netbios-verif.png" alt="Paramètres NetBIOS via IPv4 avancé" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/win-infra-core/promo/netstat.png" alt="Paramètres NetBIOS via IPv4 avancé" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Accès aux paramètres avancés NetBIOS via les propriétés IPv4</p>
   </div>
 </div>
 
 
-
 Cette validation volontairement simple permet de s’assurer qu’aucun service superflu n’est exposé avant la promotion du serveur en Contrôleur de Domaine.
 
-<div class="mt-12 p-6 border border-green-500/30 bg-green-500/5 rounded-xl text-center">
-    <span class="text-green-500 font-bold">✅ État Final :</span> Le Contrôleur de Domaine est opérationnel, durci et prêt à accueillir la structure des Unités d'Organisation.
-</div>
 
 ---
 
@@ -169,6 +165,7 @@ Dans ce contexte de laboratoire maîtrisé, les chemins par défaut sont conserv
   </div>
 </div>
 
+---
 
 **Installation de la forêt**:
 Cette étape récapitule l’ensemble des paramètres choisis précédemment.  
@@ -199,9 +196,135 @@ La promotion se conclut par la validation des paramètres et le redémarrage aut
   </div>
 </div>
 
+## 🛠️ Configuration Post-Promotion 
 
+Une fois le domaine opérationnel, il est crucial d'ajuster les paramètres par défaut qui sont souvent trop faibles. Ces actions préparent le terrain pour un audit PingCastle réussi.
+
+### Activation de la Corbeille Active Directory
+
+L'activation est réalisée en PowerShell. Le système demande une confirmation explicite car cette action est irréversible, marquant un point de non-retour dans la sécurisation de la disponibilité des objets.
+
+<div class="flex flex-col items-center my-8">
+  <img src="/images/projets/win-infra-core/promo/active-recycle-bin.png" alt="PowerShell Activation Corbeille" class="rounded-lg border border-white/10 shadow-md w-full"/>
+  <p class="text-[0.65rem] italic opacity-50 mt-2">Activation et vérification de la fonctionnalité 'Recycle Bin Feature'</p>
+</div>
+
+La commande **`Get-ADOptionalFeature`** confirme que le périmètre **(`EnabledScopes`)** couvre désormais l'ensemble de la forêt `infra.formation.local`.
+
+
+## 🔐 Durcissement de la politique de mots de passe Active Directory
+
+### 🧭 Marche à suivre (en bref)
+Modifier la *Default Domain Policy* afin d’imposer des mots de passe robustes, limiter les tentatives de connexion et réduire la surface d’attaque des comptes intégrés. Cette GPO ne sera modifiée que pour le strict minimum, nous n'y toucherons plus par la suite. Des GPOs plus ciblées seront alors créées selon les besoins.
+
+
+### 📏 Renforcement des règles de mots de passe
+
+Par défaut, Active Directory autorise des mots de passe trop courts au regard des recommandations actuelles de l’ANSSI.  
+La **Default Domain Policy** a donc été durcie afin d’élever le niveau de sécurité global du domaine.
+
+- Longueur minimale du mot de passe : **14 caractères**
+- Activation de la **complexité**
+- Historique des mots de passe activé pour empêcher la réutilisation
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/gpo-password-length.png" alt="GPO Longueur mot de passe" class="rounded-lg border border-white/10 w-full shadow-md" />
+      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Configuration de la longueur minimale à 14 caractères</p>
+  </div>
+</div>
+
+🔎 Objectif : rendre les attaques par force brute et par dictionnaire nettement plus coûteuses.
+
+
+### 🔒 Politique de verrouillage des comptes
+
+Une politique de verrouillage a été mise en place afin de bloquer les attaques par dictionnaire en ligne :
+
+- Seuil de verrouillage : **5 tentatives**
+- Durée de verrouillage : **30 minutes**
+- Réinitialisation automatique du compteur
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/gpo-lockout.png" alt="GPO Verrouillage compte" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Seuil de verrouillage fixé à 5 tentatives pour 30 minutes</p>
+  </div>
+</div>
+
+⚠️ **Note de sécurité**  
+Le verrouillage de compte est une mesure à double tranchant : mal calibrée, elle peut être exploitée pour provoquer un déni de service.  
+Elle reste néanmoins indispensable pour bloquer efficacement les attaques automatisées.
+
+
+### 👤 Hygiène des comptes intégrés
+
+Le compte **Administrateur intégré** possède un **SID prévisible**, ce qui en fait une cible prioritaire lors des phases de reconnaissance.  
+Pour limiter les attaques automatisées, les actions suivantes ont été appliquées via GPO :
+
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/gpo-modif.png" alt="Modifier la GPO Domain Policy" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Modification de la GPO racine</p>
+  </div>
+</div>
+
+- Renommage du compte **Administrateur**
+- Renommage du compte **Invité**
+- Description volontairement neutre et non identifiable
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center my-8">
+    <img src="/images/projets/win-infra-core/promo/gpo-rename-admin.png" alt="Renommage du compte Administrateur" class="rounded-lg border border-white/10 shadow-md w-full" />
+  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Renommage du compte Administrateur intégré</p>
+  </div>
+
+  <div class="flex flex-col items-center my-8">
+    <img src="/images/projets/win-infra-core/promo/gpo-rename-guest.png" alt="Renommage du compte Invité" class="rounded-lg border border-white/10 shadow-md w-full"/>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Renommage du compte Invité</p>
+  </div>
+</div>
+
+- Désactivation complète du compte **Invité**
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/guest-disabled.png" alt="Désactivation du compte Invité" class="rounded-lg border border-white/10 shadow-md w-full"/>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Désactivation du compte Invité via GPO</p>
+  </div>
+</div>
+
+🎯 Objectif : sortir des schémas d’attaque standards utilisés par les outils automatisés.
+
+
+
+### ⚙️ Application de la stratégie
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div style="display: flex; justify-content: center; margin: 2rem 0;">
+    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+      <img src="/images/projets/win-infra-core/promo/gpupdate.png" alt="Application de la GPO via PowerShell" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Application immédiate via gpupdate /force</p>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; margin: 2rem 0;">
+    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+      <img src="/images/projets/win-infra-core/promo/activer-gpo.png" alt="Activation de la GPO au niveau du domaine" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Application de la Default Domain Policy à l’échelle du domaine</p>
+    </div>
+  </div>
+</div>
+
+Cette étape marque la mise en place des fondations du domaine Active Directory : un contrôleur de domaine promu dans un environnement maîtrisé, reposant sur une configuration cohérente et des choix structurants dès la création de la forêt.
+
+Les premières mesures de durcissement appliquées, combinées à une politique de sécurité renforcée dès l’origine, permettent de réduire significativement la surface d’attaque et d’établir un socle fiable pour les configurations à venir.
+
+La prochaine phase sera consacrée à l’audit de sécurité du domaine, afin d’évaluer objectivement le niveau de sécurité de l’infrastructure et d’identifier les axes d’amélioration possibles.
 
 <NextStep 
   href="/projets/audit-pingcastle" 
   title="Auditer la sécurité" 
 />
+

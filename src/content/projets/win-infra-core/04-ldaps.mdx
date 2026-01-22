@@ -14,51 +14,6 @@ import { WIN_INFRA_CORE } from '../../../constants/series';
   currentStepIndex={4} 
 />
 
-## 📂 Organisation de l'Annuaire (OU)
-
-Une erreur classique est de laisser tous les objets dans les containers par défaut (*Users* et *Computers*). Pour appliquer des GPO de manière ciblée, j'ai mis en place une structure d'**Unités d'Organisation (OU)** hiérarchisée.
-
-### Structure mise en place :
-* **LAB-ORG** (OU Racine)
-    * **Utilisateurs** (Admin, Standard, Externes)
-    * **Ordinateurs** (Workstations, Portables)
-    * **Serveurs** (DC, File-Server, Web)
-    * **Groupes** (Sécurité, Distribution)
-
-
-
----
-
-## 👤 Gestion des identités
-
-### 1. Création d'un compte Administrateur dédié
-La bonne pratique de sécurité stipule qu'on ne doit pas utiliser le compte "Administrateur" du domaine pour les tâches quotidiennes.
-* **Compte créé :** `adm-aurelie`
-* **Privilèges :** Ajout au groupe "Administrateurs du domaine".
-
-### 2. Stratégie de groupes (Groupes de sécurité)
-J'ai commencé à préparer la gestion des accès en créant des groupes de sécurité basés sur le modèle **AGDLP** (Account, Global, Domain Local, Permission).
-
----
-
-## 🔒 Premières mesures de sécurité
-
-Avant d'aller plus loin dans le durcissement (Hardening), j'ai configuré deux éléments essentiels :
-
-1. **Désactivation du compte Invité :** (Vérification par défaut).
-2. **Synchronisation du temps (NTP) :** Configuration du contrôleur de domaine pour se synchroniser sur une source de temps fiable, garantissant le bon fonctionnement du protocole **Kerberos**.
-
-
-
----
-
-## 🏁 Bilan du Labo "Socle"
-
-Notre infrastructure de base est désormais prête. Nous avons :
-* Une machine virtuelle optimisée sous **VMware**.
-* Un OS **Windows Server 2022** à jour et nommé proprement.
-* Un domaine **Active Directory** fonctionnel et structuré.
-
-Ce socle va nous permettre d'attaquer les modules suivants : la mise en place d'un Firewall **PfSense** pour isoler ce réseau, et l'audit de sécurité avec **PingCastle**.
+Contenu à venir ..
 
 import NextStep from '../../../components/NextStep.astro';
