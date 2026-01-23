@@ -10,7 +10,7 @@ import NextStep from '../../../components/NextStep.astro';
 import { WIN_INFRA_CORE } from '../../../constants/series';
 
 <SeriesStepper 
-  seriesTitle="Hardening et Promouvoir le domaine" 
+  seriesTitle="Hardening et Promouvoir le domaine"
   steps={WIN_INFRA_CORE} 
   currentStepIndex={1} 
 />
@@ -89,7 +89,6 @@ Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont 
 Cette validation volontairement simple permet de s’assurer qu’aucun service superflu n’est exposé avant la promotion du serveur en Contrôleur de Domaine.
 
 
----
 
 ## 🚀 Promotion : Création de la Forêt
 
@@ -98,7 +97,7 @@ La promotion du serveur `SRV-AD-01` peut être engagée pour créer la forêt ra
 
 Les paramètres appliqués localement lors de cette phase seront par la suite consolidés et renforcés via des stratégies de groupe (GPO) au niveau du domaine.
 
-### Configuration du Domaine
+### 1. Configuration du Domaine
 <div class="my-6">
   <ul>
     <li><strong>Nom de la forêt :</strong> <code>infra.formation.local</code></li>
@@ -117,7 +116,7 @@ Les choix effectués à cette étape conditionnent la stabilité, la sécurité 
   </div>
 </div>
 
-### Création de la forêt
+### 2. Création de la forêt
 Le choix **« Ajouter une nouvelle forêt »** permet d’initialiser un environnement Active Directory isolé, maîtrisé et conforme aux bonnes pratiques.
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
@@ -165,7 +164,6 @@ Dans ce contexte de laboratoire maîtrisé, les chemins par défaut sont conserv
   </div>
 </div>
 
----
 
 **Installation de la forêt**:
 Cette étape récapitule l’ensemble des paramètres choisis précédemment.  
@@ -196,7 +194,7 @@ La promotion se conclut par la validation des paramètres et le redémarrage aut
   </div>
 </div>
 
-## 🛠️ Configuration Post-Promotion 
+## 🛠️ Durcissement Post-Promotion 
 
 Une fois le domaine opérationnel, il est crucial d'ajuster les paramètres par défaut qui sont souvent trop faibles. Ces actions préparent le terrain pour un audit PingCastle réussi.
 
@@ -214,11 +212,10 @@ La commande **`Get-ADOptionalFeature`** confirme que le périmètre **(`EnabledS
 
 ## 🔐 Durcissement de la politique de mots de passe Active Directory
 
-### 🧭 Marche à suivre (en bref)
 Modifier la *Default Domain Policy* afin d’imposer des mots de passe robustes, limiter les tentatives de connexion et réduire la surface d’attaque des comptes intégrés. Cette GPO ne sera modifiée que pour le strict minimum, nous n'y toucherons plus par la suite. Des GPOs plus ciblées seront alors créées selon les besoins.
 
 
-### 📏 Renforcement des règles de mots de passe
+### 1. Renforcement des règles de mots de passe
 
 Par défaut, Active Directory autorise des mots de passe trop courts au regard des recommandations actuelles de l’ANSSI.  
 La **Default Domain Policy** a donc été durcie afin d’élever le niveau de sécurité global du domaine.
@@ -237,7 +234,7 @@ La **Default Domain Policy** a donc été durcie afin d’élever le niveau de s
 🔎 Objectif : rendre les attaques par force brute et par dictionnaire nettement plus coûteuses.
 
 
-### 🔒 Politique de verrouillage des comptes
+### 2. Politique de verrouillage des comptes
 
 Une politique de verrouillage a été mise en place afin de bloquer les attaques par dictionnaire en ligne :
 
@@ -257,7 +254,7 @@ Le verrouillage de compte est une mesure à double tranchant : mal calibrée, el
 Elle reste néanmoins indispensable pour bloquer efficacement les attaques automatisées.
 
 
-### 👤 Hygiène des comptes intégrés
+### 3. Hygiène des comptes intégrés
 
 Le compte **Administrateur intégré** possède un **SID prévisible**, ce qui en fait une cible prioritaire lors des phases de reconnaissance.  
 Pour limiter les attaques automatisées, les actions suivantes ont été appliquées via GPO :
@@ -298,8 +295,7 @@ Pour limiter les attaques automatisées, les actions suivantes ont été appliqu
 🎯 Objectif : sortir des schémas d’attaque standards utilisés par les outils automatisés.
 
 
-
-### ⚙️ Application de la stratégie
+### 4. Application de la stratégie
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div style="display: flex; justify-content: center; margin: 2rem 0;">
@@ -313,6 +309,36 @@ Pour limiter les attaques automatisées, les actions suivantes ont été appliqu
     <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
       <img src="/images/projets/win-infra-core/promo/activer-gpo.png" alt="Activation de la GPO au niveau du domaine" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
       <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Application de la Default Domain Policy à l’échelle du domaine</p>
+    </div>
+  </div>
+</div>
+
+## 👤 Création du compte d'administration nominatif
+
+Pour respecter le principe du moindre privilège et assurer la traçabilité, j'abandonne l'usage du compte générique au profit d'un compte nominatif sécurisé.
+
+### Mesures de protection appliquées :
+- **Isolation** : Stocké dans une OU dédiée aux comptes à hauts privilèges.
+- **Délégation interdite** : Activation de l'option "Account is sensitive and cannot be delegated" pour contrer les attaques de type Delegation Attack.
+- **Chiffrement fort** : Restriction au chiffrement AES (128/256 bits) uniquement.
+
+> 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "au coffre".
+
+Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShell pour créer mon compte d'administration nominatif. Ce script applique immédiatement les durcissements recommandés (Isolation en OU, chiffrement AES uniquement et interdiction de délégation).
+
+
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div style="display: flex; justify-content: center; margin: 2rem 0;">
+    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+      <img src="/images/projets/win-infra-core/promo/script-adm.png" alt="Script PowerShell création admin" class="rounded-lg border border-white/10 shadow-md w-full" />
+      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Exécution du script de création du compte adm-aurelie</p>
+    </div>
+  </div>
+  <div style="display: flex; justify-content: center; margin: 2rem 0;">
+    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+      <img src="/images/projets/win-infra-core/promo/psh-create-admin.png" alt="vérification adm-aurelie" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vérification de l'adm-aurelie dans l'annuaire</p>
     </div>
   </div>
 </div>
