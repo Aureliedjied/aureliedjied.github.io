@@ -1,6 +1,6 @@
 ---
 title: "Audit PingCastle"
-description: "Déploiement de Windows Server 2022 avec interface graphique et paramétrage du socle réseau."
+description: "Audit du domaine et durcissement via GPO selon recommandations ANSSI."
 tags: ["Windows", "Installation", "Réseau", "Sécurité", "Active Directory"]
 pubDate: 2026-01-15
 slug: "audit-pingcastle"
@@ -15,11 +15,209 @@ import NextStep from '../../../components/NextStep.astro';
   currentStepIndex={2} 
 />
 
-Contenu à venir ...
+# Audit de Sécurité avec PingCastle
+
+Après avoir promu notre domaine et configuré les services de base, il est crucial de confronter l'installation à la réalité de la cybersécurité. Pour cela, j'utilise **PingCastle**, un outil d'audit spécialisé dans l'évaluation du niveau de risque des infrastructures Active Directory.
+
+### Lancement de l'audit
+
+L'outil ne nécessite pas d'installation complexe : il s'exécute directement sur le Contrôleur de Domaine. Ce premier scan sert de **"Baseline"** (point de référence) pour identifier les vulnérabilités par défaut de Windows Server.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/choix-install.png" alt="Choix mode" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Sélection du mode Healthcheck.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/pingcastle-exe.png" alt="Lancement exe" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Exécution en tant qu'administrateur.</p>
+  </div>
+</div>
+
+### État des lieux
+
+Le premier rapport généré sert de point de référence. Avec un **Risk Score global de 60/100**, l'infrastructure présente des vulnérabilités héritées des configurations par défaut de Windows Server.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
+  <div class="flex flex-col items-center">
+     <img src="/images/projets/win-infra-core/audit/pingcastle-radar.png" alt="Radar de sécurité" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
+     <p class="text-[0.65rem] italic opacity-50 mt-2">Répartition du risque initial.</p>
+  </div>
+  
+  <div>
+    | Indicateur | Score | Analyse |
+    | :--- | :--- | :--- |
+    | **Anomalies** | 60 | Protocoles obsolètes (NTLMv1) et DNS permissif. |
+    | **Privileged Accounts** | 40 | Besoin de durcissement des comptes admins. |
+    | **Stale Objects** | 31 | Objets inactifs à nettoyer dans l'annuaire. |
+    | **Trusts** | 0 | Aucune relation d'approbation externe. |
+  </div>
+</div>
+
+---
+
+## 🛠️ Phase de Hardening (Durcissement par GPO)
+
+Le durcissement (Hardening) a été réalisé principalement via des **GPO (Group Policy Objects)**. Une GPO permet de centraliser et d'automatiser l'application de règles de sécurité sur l'ensemble du domaine. 
+
+Pour maintenir une infrastructure lisible, j'ai adopté une nomenclature stricte : `[CIBLE]-[ACTION]-[DESCRIPTION]`. J'ai choisi de créer des GPO dédiées plutôt que de modifier les politiques par défaut (`Default Domain Policy`), permettant un meilleur contrôle et un retour arrière facilité.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/risk-model.png" alt="Risques à améliorer" class="max-w-[600px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Le Risk Model détaille les points de contrôle à durcir en priorité.</p>
+  </div>
+</div>
 
 
+### 1. Désactivation du NTLMv1
+**GPO associée :** `DOM-H-Protocols`
+
+Le domaine autorisait encore le protocole obsolète NTLMv1, vulnérable aux attaques par relais. Selon la **recommandation ANSSI n°12**, j'ai forcé le niveau d'authentification sur "**NTLMv2 uniquement**" via la politique de groupe racine.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/gpo-ntlm.png" alt="Désactivation ntlm" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Forçage de NTLMv2 et refus du LM/NTLMv1.</p>
+  </div>
+</div>
+
+
+### 2. Désactivation LLMNR
+**GPO associée :** `DOM-H-Protocols`
+
+LLMNR est un protocole de résolution de noms local qui peut être détourné pour capturer des hashs de mots de passe. DNS étant fonctionnel sur notre domaine, ce protocole est inutile et dangereux ; il est donc désactivé par GPO.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/llmnr1.png" alt="llmnr1" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Localisation du paramètre de résolution multicast.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/llmnr2.png" alt="llmnr2" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Activation de la restriction LLMNR.</p>
+  </div>
+</div>
+
+
+### 3. Visibilité sur l'activité PowerShell
+**GPO associée :** `DOM-S-PowerShell_Auditing`
+
+L'activation de l'audit PowerShell (Script Block Logging) permet de tracer l'exécution de commandes malveillantes, même si elles sont obfusquées, garantissant une meilleure réponse aux incidents.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/actived-powershell.png" alt="Audit PowerShell" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Mise en place de la traçabilité des scripts PowerShell.</p>
+  </div>
+</div>
+
+
+### 4. Désactivation du Spooler d'impression
+**GPO associée :** `DC-H-Services_Restriction`
+
+Le service de spouleur sur un contrôleur de domaine présente un risque majeur (faille PrintNightmare). Ce service est désactivé car il est inutile sur un serveur d'infrastructure.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/spooler-desactived.png" alt="Spooler désactivé" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Arrêt et désactivation du service de spouleur système.</p>
+  </div>
+</div>
+
+
+### 5. Activation de l'Audit Avancé
+**GPO associée :** `DOM-S-Advanced_Auditing`
+
+L'audit de base étant trop limité, j'ai créée une GPO spécifique à l'audit avancé. Cette granularité est indispensable pour identifier précisément les modifications de l'annuaire ou les tentatives de connexions suspectes.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/audit-comptes.png" alt="Audit gestion comptes" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Traçabilité des modifications sur les utilisateurs et groupes.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/audit-sessions.png" alt="Audit sessions" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Surveillance des ouvertures et fermetures de sessions.</p>
+  </div>
+</div>
+
+J'ai également activé l'audit de l'**Accès au service d'annuaire** et forcé l'écrasement des anciennes catégories d'audit via les options de sécurité des GPO.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/audit-global.png" alt="??" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Forcer la configuration de l'audit par la GPO</p>
+  </div>
+</div>
+
+
+## Protection des objets et des identités (Protected Users)
+
+La sécurité d'un domaine ne repose pas uniquement sur les GPO, mais aussi sur la gestion rigoureuse des objets critiques de l'Active Directory.
+
+#### **Le bouclier "Protected Users**"
+J'ai intégré mes comptes d'administration nominatifs au groupe de sécurité **Protected Users**. Selon l'ANSSI, ce groupe est une protection indispensable :
+* Il désactive les protocoles d'authentification faibles (NTLM).
+* Il empêche la mise en cache des identifiants sur les postes de travail.
+* Il limite la durée de vie des tickets Kerberos.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/protected-users.png" alt="Membres du groupe Protected Users" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Ajout de l'administrateur nominatif dans le groupe Protected Users.</p>
+  </div>
+</div>
+
+## Sécurisation des zones DNS
+Par défaut, le groupe `Utilisateurs authentifiés` dispose du droit de création d'objets enfants dans la zone DNS. Cette configuration par défaut expose le domaine à des risques de pollution d'annuaire ou d'usurpation d'identité réseau. 
+
+J'ai donc modifié les **ACL (Access Control Lists)** de la zone DNS pour retirer les utilisateurs non-privilégiés, ne laissant que les serveurs et les administrateurs gérer les enregistrements.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/dns-security.png" alt="Sécurité DNS" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Suppression des Utilisateurs Authentifiés.</p>
+  </div>
+</div>
+
+## Prévention des erreurs de manipulation
+Afin de garantir la disponibilité du domaine, j'ai activé la **protection contre la suppression accidentelle** sur les Unités d'Organisation (OU) stratégiques, notamment l'OU des contrôleurs de domaine. Cette mesure empêche toute suppression involontaire qui pourrait entraîner un arrêt de service majeur.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/protected-ou.png" alt="ou non supprimables" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Empêcher la suppression accidentelle d'une OU.</p>
+  </div>
+</div>
+
+## Restriction du privilège de jonction via Powershell (ms-DS-MachineAccountQuota)
+Par défaut, n'importe quel utilisateur peut joindre 10 machines au domaine. C'est un risque majeur de déni de service et d'usurpation. J'ai modifié cet attribut pour ramener le quota à **0**, verrouillant ainsi la création sauvage de comptes ordinateurs.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/audit/ms-ds-desactived.png" alt="Désactivation quota machine" class="max-w-[400px] w-full rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Modification de l'attribut ms-DS-MachineAccountQuota pour interdire la jonction automatique.</p>
+  </div>
+</div>
+
+
+
+---
+
+## ✅ Validation : Nouveau Scan
+
+Après l'application de ces mesures, un second audit confirme une nette amélioration. Le score de la catégorie **Anomalies** chute drastiquement, validant la disparition de NTLMv1 et du quota de machines.
+
+La sécurité étant un processus continu, les alertes restantes (comme la mise en place de LAPS ou la synchronisation NTP externe) seront traitées lors des prochaines phases de maintenance du projet.
+
+
+## 🚀 Prochaines étapes : Vers une infrastructure durcie
+
+Ce premier audit PingCastle a permis d'assainir les bases de l'Active Directory. 
+Cependant, la sécurisation d'une infrastructure est un processus continu. Les prochains chapitres de ce projet seront consacrés à .... ?
 
 <NextStep 
   href="/projets/ad-cs" 
-  title="Certificat AD CS" 
+  title="Installation de l’Autorité de Certification (AD CS)" 
 />

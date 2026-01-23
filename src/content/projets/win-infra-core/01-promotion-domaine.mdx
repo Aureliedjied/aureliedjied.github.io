@@ -328,7 +328,7 @@ Pour respecter le principe du moindre privilège et assurer la traçabilité, j'
 
 > 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "au coffre".
 
-Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShell pour créer mon compte d'administration nominatif. Ce script applique immédiatement les durcissements recommandés (Isolation en OU, chiffrement AES uniquement et interdiction de délégation).
+Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShell pour créer mon compte d'administration nominatif. Ce script applique immédiatement les durcissements recommandés (Isolation en OU, chiffrement AES uniquement et interdiction de délégation). Le compte Administrateur renommé sera lui aussi protégé de la délégation.
 
 
 
@@ -344,6 +344,13 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
       <img src="/images/projets/win-infra-core/promo/psh-create-admin.png" alt="vérification adm-aurelie" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
       <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vérification de l'adm-aurelie dans l'annuaire</p>
     </div>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/promo/adm-aurelie-session.png" alt="Session adm-aurelie" class="rounded-lg border border-white/10 shadow-md w-full"/>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Session avec le nouvel administrateur adm-aurelie</p>
   </div>
 </div>
 
