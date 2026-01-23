@@ -318,9 +318,13 @@ Pour limiter les attaques automatisées, les actions suivantes ont été appliqu
 Pour respecter le principe du moindre privilège et assurer la traçabilité, j'abandonne l'usage du compte générique au profit d'un compte nominatif sécurisé.
 
 ### Mesures de protection appliquées :
-- **Isolation** : Stocké dans une OU dédiée aux comptes à hauts privilèges.
-- **Délégation interdite** : Activation de l'option "Account is sensitive and cannot be delegated" pour contrer les attaques de type Delegation Attack.
-- **Chiffrement fort** : Restriction au chiffrement AES (128/256 bits) uniquement.
+<div class="my-6">
+  <ul>
+    <li><strong>Isolation :</strong> <code>Stocké dans une OU dédiée aux comptes à hauts privilèges</code></li>
+    <li><strong>Délégation interdite :</strong> <code>Activation de l'option "Account is sensitive and cannot be delegated" pour contrer les attaques de type Delegation Attack.</code></li>
+    <li><strong>Chiffrement fort :</strong> Restriction au chiffrement AES (128/256 bits) uniquement </li>
+  </ul>
+</div>
 
 > 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "au coffre".
 
