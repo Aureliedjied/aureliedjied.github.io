@@ -1,7 +1,7 @@
 ---
 title: "Audit PingCastle"
 description: "Audit du domaine et durcissement via GPO selon recommandations ANSSI."
-tags: ["Windows", "Installation", "Réseau", "Sécurité", "Active Directory"]
+tags: ["Windows Server", "Installation", "Sécurité", "Active Directory"]
 pubDate: 2026-01-15
 slug: "audit-pingcastle"
 ---
@@ -12,16 +12,14 @@ import NextStep from '../../../components/NextStep.astro';
 <SeriesStepper 
   seriesTitle="Auditer la sécurité" 
   steps={WIN_INFRA_CORE} 
-  currentStepIndex={2} 
+  currentStepIndex={3} 
 />
-
-# Audit de Sécurité avec PingCastle
 
 Après avoir promu notre domaine et configuré les services de base, il est crucial de confronter l'installation à la réalité de la cybersécurité. Pour cela, j'utilise **PingCastle**, un outil d'audit spécialisé dans l'évaluation du niveau de risque des infrastructures Active Directory.
 
 ### Lancement de l'audit
 
-L'outil ne nécessite pas d'installation complexe : il s'exécute directement sur le Contrôleur de Domaine. Ce premier scan sert de **"Baseline"** (point de référence) pour identifier les vulnérabilités par défaut de Windows Server.
+L'outil ne nécessite pas d'installation complexe : dans un environnement de production, l’outil devrait être exécuté depuis un poste d’administration sécurisé (PAW). Dans ce lab, il est exécuté directement sur le DC à des fins pédagogiques.. Ce premier scan sert de **"Baseline"** (point de référence) pour identifier les vulnérabilités par défaut de Windows Server.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
@@ -45,12 +43,12 @@ Le premier rapport généré sert de point de référence. Avec un **Risk Score 
   </div>
   
   <div>
-    | Indicateur | Score | Analyse |
-    | :--- | :--- | :--- |
-    | **Anomalies** | 60 | Protocoles obsolètes (NTLMv1) et DNS permissif. |
-    | **Privileged Accounts** | 40 | Besoin de durcissement des comptes admins. |
-    | **Stale Objects** | 31 | Objets inactifs à nettoyer dans l'annuaire. |
-    | **Trusts** | 0 | Aucune relation d'approbation externe. |
+| Indicateur | Score |  | Commentaire |
+| :--- | :--- | :--- | :--- |
+| **Anomalies** | <span style="color:#ef4444">60</span> | 🟠 Critique | Protocoles obsolètes (NTLMv1) et DNS permissif. |
+| **Privileged Accounts** | <span style="color:#f97316">40</span> | 🟠 Important | Besoin de durcissement des comptes admins. |
+| **Stale Objects** | <span style="color:#eab308">31</span> | 🟡 Moyen | Objets inactifs à nettoyer dans l'annuaire. |
+| **Trusts** | <span style="color:#22c55e">0</span> | 🟢 Sain | Aucune relation d'approbation externe. |
   </div>
 </div>
 
@@ -71,7 +69,7 @@ Pour maintenir une infrastructure lisible, j'ai adopté une nomenclature stricte
 
 
 ### 1. Désactivation du NTLMv1
-**GPO associée :** `DOM-H-Protocols`
+**GPO associée :** `DOM-H-Hardening_Protocols`
 
 Le domaine autorisait encore le protocole obsolète NTLMv1, vulnérable aux attaques par relais. Selon la **recommandation ANSSI n°12**, j'ai forcé le niveau d'authentification sur "**NTLMv2 uniquement**" via la politique de groupe racine.
 
@@ -84,9 +82,9 @@ Le domaine autorisait encore le protocole obsolète NTLMv1, vulnérable aux atta
 
 
 ### 2. Désactivation LLMNR
-**GPO associée :** `DOM-H-Protocols`
+**GPO associée :** `DOM-H-Hardening_Protocols`
 
-LLMNR est un protocole de résolution de noms local qui peut être détourné pour capturer des hashs de mots de passe. DNS étant fonctionnel sur notre domaine, ce protocole est inutile et dangereux ; il est donc désactivé par GPO.
+LLMNR est un protocole de résolution de noms local qui peut être détourné pour capturer des hashs de mots de passe. Le DNS sera fonctionnel sur notre domaine, ce protocole est donc inutile et dangereux ; il est désactivé par GPO.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
@@ -126,10 +124,22 @@ Le service de spouleur sur un contrôleur de domaine présente un risque majeur 
 </div>
 
 
-### 5. Activation de l'Audit Avancé
+### 5. Activation de l'Audit Avancé  
 **GPO associée :** `DOM-S-Advanced_Auditing`
 
-L'audit de base étant trop limité, j'ai créée une GPO spécifique à l'audit avancé. Cette granularité est indispensable pour identifier précisément les modifications de l'annuaire ou les tentatives de connexions suspectes.
+L’audit natif de Windows étant trop limité pour une analyse de sécurité pertinente, j’ai déployé une GPO dédiée à la **stratégie d’audit avancée**. Cette configuration permet une journalisation fine des actions sensibles réalisées dans l’annuaire et sur les contrôleurs de domaine.
+
+Les catégories suivantes ont été activées en **Succès et Échec** :
+
+- **Gestion des comptes** : suivi des créations, suppressions et modifications d’utilisateurs et de groupes  
+- **Ouverture et fermeture de session** : traçabilité des connexions interactives, réseau et RDP  
+- **Accès au service d’annuaire** : détection des lectures et modifications d’objets Active Directory  
+- **Modification de stratégie** : détection de tout changement sur les politiques de sécurité ou d’audit  
+
+Cette granularité est indispensable pour détecter :
+- l’utilisation anormale de comptes privilégiés  
+- les tentatives d’élévation de privilèges  
+- les modifications suspectes dans l’annuaire  
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
@@ -142,11 +152,15 @@ L'audit de base étant trop limité, j'ai créée une GPO spécifique à l'audit
   </div>
 </div>
 
-J'ai également activé l'audit de l'**Accès au service d'annuaire** et forcé l'écrasement des anciennes catégories d'audit via les options de sécurité des GPO.
+Afin d’assurer la cohérence de la configuration, j’ai également activé l’option :
+
+**“Forcer les sous-catégories de stratégie d’audit à remplacer les catégories de stratégie d’audit”**
+
+Cela garantit que la stratégie d’audit avancée définie par GPO prévaut sur toute configuration locale.
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/audit-global.png" alt="??" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/win-infra-core/audit/audit-global.png" alt="Option de remplacement des catégories d'audit" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Forcer la configuration de l'audit par la GPO</p>
   </div>
 </div>
@@ -202,20 +216,61 @@ Par défaut, n'importe quel utilisateur peut joindre 10 machines au domaine. C'e
 </div>
 
 
+## 🌐 Optimisation de l'infrastructure et réseau
 
----
+Pour parfaire l'audit, j'ai corrigé deux alertes structurelles relevées par l'outil qui impactaient la "propreté" de l'annuaire et la sécurité des flux.
 
-## ✅ Validation : Nouveau Scan
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+    <h4 class="text-primary mt-0 flex items-center gap-2">
+      📍 Sites et Services AD
+    </h4>
+    <p class="text-sm">
+      Déclaration du sous-réseau IP (Subnet) lié au site <code>Default-First-Site-Name</code>. Cela permet à l'AD de mapper correctement l'infra et d'optimiser les réplications.
+    </p>
+  </div>
 
-Après l'application de ces mesures, un second audit confirme une nette amélioration. Le score de la catégorie **Anomalies** chute drastiquement, validant la disparition de NTLMv1 et du quota de machines.
+  <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+    <h4 class="text-primary mt-0 flex items-center gap-2">
+      🔥 Filtrage PowerShell
+    </h4>
+    <p class="text-sm">
+      Création d'une règle de pare-feu sortante bloquant <code>powershell.exe</code>. Mesure expérimentale en environnement de lab visant à limiter les exfiltrations simples via PowerShell pour empêcher le téléchargement de payloads malveillants depuis l'extérieur.
+    </p>
+  </div>
+</div>
 
-La sécurité étant un processus continu, les alertes restantes (comme la mise en place de LAPS ou la synchronisation NTP externe) seront traitées lors des prochaines phases de maintenance du projet.
 
+## ✅ Validation : Nouveau Scan de Sécurité
 
-## 🚀 Prochaines étapes : Vers une infrastructure durcie
+Après l’application des mesures de durcissement, un second audit PingCastle a été réalisé afin de mesurer objectivement l’impact des corrections.
 
-Ce premier audit PingCastle a permis d'assainir les bases de l'Active Directory. 
-Cependant, la sécurisation d'une infrastructure est un processus continu. Les prochains chapitres de ce projet seront consacrés à .... ?
+Ce nouveau scan montre une **réduction significative du niveau de risque**, notamment sur les catégories liées aux protocoles obsolètes et aux mauvaises pratiques par défaut.
+
+Les améliorations principales concernent :
+- la disparition de NTLMv1  
+- la restriction du quota de création de machines  
+- la réduction de la surface d’attaque liée aux services inutiles  
+- une meilleure traçabilité des actions sensibles grâce à l’audit avancé  
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
+  <div class="flex flex-col items-center">
+     <img src="/images/projets/win-infra-core/audit/pingcastle-radar2.png" alt="Radar de sécurité après remédiation" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
+     <p class="text-[0.65rem] italic opacity-50 mt-2">Radar de sécurité après application des mesures de durcissement.</p>
+  </div>
+  
+  <div class="flex flex-col items-center">
+     <img src="/images/projets/win-infra-core/audit/risk-model2.png" alt="Risk model après remédiation" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
+     <p class="text-[0.65rem] italic opacity-50 mt-2">Détail des indicateurs de risque restants après corrections.</p>
+  </div>
+</div>
+
+Ce second rapport ne marque pas la fin du travail : il met en évidence les **axes d’amélioration restants**, qui seront traités dans les prochaines étapes du projet, notamment :
+- la mise en place de LAPS pour la gestion des mots de passe locaux  
+- le déploiement d’une autorité de certification interne (AD CS)  
+- le renforcement de l’authentification des comptes privilégiés ( MFA)
+
+La sécurité d’un Active Directory s’inscrit dans une démarche continue d’amélioration, basée sur la mesure régulière du risque et l’application progressive des recommandations.
 
 <NextStep 
   href="/projets/ad-cs" 

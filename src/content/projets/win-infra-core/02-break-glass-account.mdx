@@ -1,0 +1,165 @@
+---
+title: "Sécurité : Compte de secours Break-Glass"
+description: "Mise en place d'une procédure d'urgence pour prévenir la perte d'accès au domaine après durcissement."
+tags: ["Sécurité", "Active Directory", "Windows Server"]
+pubDate: 2026-01-24
+slug: "break-glass-account"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+import { WIN_INFRA_CORE } from '../../../constants/series';
+
+<SeriesStepper 
+  seriesTitle="Fondations & Hardening" 
+  steps={WIN_INFRA_CORE} 
+  currentStepIndex={2} 
+/>
+
+Le durcissement (Hardening) d'une infrastructure peut paradoxalement mener à un déni de service administratif. Si une panne majeure affecte le MFA ou si une GPO bloque les accès nominaux, le compte **Break-Glass** est l'ultime recours pour reprendre la main sur l'annuaire.
+
+## 💻 Création automatisée via PowerShell
+
+Pour garantir une configuration rigoureuse, j'ai automatisé la création du compte et de son environnement. Ce compte est membre du groupe **Admins du domaine** afin de garantir une capacité de restauration totale en cas de sinistre.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/account-glass/script-secu-1.png" alt="Script partie 1" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Phase 1 : Création de l'OU 99-EMERGENCY et définition des variables</p>
+  </div>
+
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/account-glass/script-secu-2.png" alt="Script partie 2" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Phase 2 : Création de l'utilisateur et durcissement (Non-délégation)</p>
+  </div>
+</div>
+
+---
+
+## 🏗️ Isolation et Structure AD
+
+Le compte `secu-adm-urgency` est isolé dans une Unité d'Organisation (OU) spécifique. Cette séparation permet d'appliquer des restrictions d'accès strictes et de faciliter l'audit.
+
+<div style="display: flex; justify-content: center; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/win-infra-core/account-glass/secu-adm.png" alt="Utilisateur dans son OU" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Visualisation du compte dormant dans l'OU 99-EMERGENCY</p>
+  </div>
+</div>
+
+---
+
+## 🛡️ Immunisation : Blocage de l'héritage GPO
+
+C'est l'étape cruciale de la stratégie : on veut s'assurer qu'aucune erreur de configuration dans une GPO globale (ex: restriction d'horaires ou paramètre MFA défaillant) ne vienne verrouiller ce compte de secours.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/account-glass/secu-adm-blok.png" alt="Blocage héritage" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Action : Clic droit sur l'OU > Bloquer l'héritage</p>
+  </div>
+
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/account-glass/gpo-blok.png" alt="Confirmation blocage" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Résultat : L'icône bleue confirme que l'OU est protégée des GPO parentes</p>
+  </div>
+</div>
+
+> 🛡️ **Note de sécurité** : Le blocage de l’héritage sur l’OU 99-EMERGENCY empêche les GPO de configuration utilisateur définies au niveau du domaine d’affecter le compte de secours.  
+> Les paramètres de sécurité appliqués aux **contrôleurs de domaine** via leur propre OU restent toutefois actifs, garantissant que l’audit et les protections système du DC demeurent en place quel que soit le compte utilisé.
+---
+
+## 👁️ Surveillance et Audit
+
+Toute activité liée à ce compte doit être considérée comme un incident de sécurité.  
+La supervision repose notamment sur :
+
+- **4624** : Connexion réussie  
+- **4625** : Tentative de connexion échouée  
+- **4672** : Attribution de privilèges spéciaux (connexion avec droits admin)
+
+Ces événements permettent de détecter aussi bien l’usage légitime d’urgence que les tentatives d’abus.
+
+<div class="my-6 overflow-hidden rounded-lg border border-white/10">
+  <table class="w-full text-sm text-left">
+    <thead class="bg-white/5">
+      <tr>
+        <th class="p-3 border-b border-white/10">Paramètre de sécurité</th>
+        <th class="p-3 border-b border-white/10">Valeur / État</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="p-3 border-b border-white/10 font-bold">Délégation Kerberos</td>
+        <td class="p-3 border-b border-white/10 text-blue-400">Désactivée (Sensible)</td>
+      </tr>
+      <tr>
+        <td class="p-3 border-b border-white/10 font-bold">Expiration Password</td>
+        <td class="p-3 border-b border-white/10">Jamais</td>
+      </tr>
+      <tr>
+        <td class="p-3 border-b border-white/10 font-bold">Stockage Secret</td>
+        <td class="p-3 border-b border-white/10 text-green-400">Physique (Hors-ligne)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <div style="display: flex; justify-content: center; margin: 3rem 0;">
+    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+      <img src="/images/projets/win-infra-core/account-glass/log-session-urgency.png" alt="log powershell" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Visualisation du log de connexion via PowerShell</p>
+    </div>
+  </div>
+
+  ---
+
+## 🚀 Perspectives : Centralisation et Alerting
+
+L'audit local est une base indispensable, mais la sécurité moderne repose sur la **proactivité**.
+
+<div class="flex flex-col md:flex-row items-center gap-6 bg-white/5 p-6 rounded-xl border border-white/10 my-8">
+  <div class="flex-1">
+    <p class="text-sm leading-relaxed">
+      La prochaine évolution majeure consistera à centraliser ces journaux vers un serveur <strong>Graylog</strong>. En configurant un <strong>Stream dédié</strong>, chaque détection de l'ID 4624 pour l'utilisateur <code>secu-adm-urgency</code> déclenchera une alerte instantanée (Email ou Webhook).
+    </p>
+  </div>
+  <div class="flex items-center justify-center gap-4 text-2xl opacity-50">
+    <span>🖥️</span>
+    <span>➡️</span>
+    <span>📊</span>
+    <span>➡️</span>
+    <span>🚨</span>
+  </div>
+</div>
+
+
+<section class="mt-16 border-t border-white/10 pt-8">
+  <div class="bg-red-500/10 border-l-4 border-red-500 p-6 my-8">
+    <h4 class="text-red-400 font-bold mb-2 flex items-center gap-2">
+      ⚠️ Règle de Gouvernance
+    </h4>
+    <p class="text-base leading-relaxed opacity-90">
+      Ce compte ne doit <strong>jamais</strong> être utilisé pour des tâches d’administration courantes. 
+      Son usage est strictement réservé aux situations de crise. Chaque activation impose :
+    </p>
+    <ul class="list-disc list-inside mt-3 space-y-2 opacity-80 text-sm">
+      <li>Une justification consignée dans le registre d'incidents.</li>
+      <li>Une rotation <strong>immédiate</strong> du mot de passe après usage.</li>
+      <li>Une analyse post-mortem systématique des logs de session.</li>
+    </ul>
+  </div>
+
+  <p class="text-base leading-relaxed opacity-90 mt-8">
+    La mise en place de cette issue de secours termine la préparation de notre socle. L'infrastructure est désormais prête pour un audit de vulnérabilités approfondi.
+  </p>
+
+  <p class="text-base leading-relaxed opacity-90 mt-4">
+    La prochaine phase utilisera l'outil <strong>PingCastle</strong> pour valider notre niveau de sécurité et corriger les derniers points de faiblesse du domaine.
+  </p>
+</section>
+
+<NextStep 
+  href="/projets/audit-pingcastle" 
+  title="Audit de sécurité avec PingCastle" 
+/>

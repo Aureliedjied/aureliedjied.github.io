@@ -15,8 +15,6 @@ import { WIN_INFRA_CORE } from '../../../constants/series';
   currentStepIndex={1} 
 />
 
-# Promotion & Durcissement du Contrôleur de Domaine
-
 La préparation d'un Contrôleur de Domaine (DC) ne se limite pas à l'installation des rôles Active Directory. Pour garantir un niveau de sécurité conforme aux attentes de l'ANSSI, le système doit être durci **avant même la création de la forêt**, lorsque le serveur est encore vierge de toute stratégie de domaine.
 
 Cette approche permet de réduire drastiquement la surface d’attaque dès l’origine et d’éviter l’introduction de protocoles obsolètes dans l’environnement Active Directory.
@@ -194,6 +192,37 @@ La promotion se conclut par la validation des paramètres et le redémarrage aut
   </div>
 </div>
 
+## 🕒 Post-Configuration : Hiérarchie du temps (NTP)
+
+Dans un environnement Active Directory, la synchronisation temporelle est une composante critique de la sécurité. Le protocole **Kerberos**, pilier de l'authentification Windows, ne tolère par défaut qu'un décalage maximal de **5 minutes**. Au-delà, l'authentification échoue systématiquement.
+
+
+### 🔍 Vérification de la hiérarchie et de la source
+
+Il est indispensable de valider que notre serveur est bien le référent du domaine et qu'il interroge effectivement une horloge atomique externe plutôt que son horloge matérielle locale, ce qui n'est pas le cas ici :
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/promo/dc-pdcemulator.png" alt="Vérification rôle FSMO" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Validation du détenteur du rôle PDC Emulator via PowerShell.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/promo/time-local-value.png" alt="Vérification source NTP" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Confirmation de la source de synchronisation active (Pool NTP).</p>
+  </div>
+</div>
+
+### Configuration du rôle PDC Emulator
+En tant que premier Contrôleur de Domaine de la forêt, `SRV-AD-01` détient le rôle FSMO **PDC Emulator**. Il doit donc servir de source de temps de référence pour l'ensemble du domaine en se synchronisant sur une source externe fiable. 
+
+<div class="flex flex-col items-center my-8">
+  <img src="/images/projets/win-infra-core/promo/ntp-config.png" alt="Configuration NTP" class="rounded-lg border border-white/10 shadow-md w-full max-w-[600px]" />
+  <p class="text-[0.65rem] italic opacity-50 mt-2">Définition du pool NTP français et marquage du serveur comme source fiable.</p>
+</div>
+
+> 🛡️ **Note de sécurité** : Une horloge synchronisée est indispensable pour la cohérence des journaux (Logs). Sans une base de temps commune, la corrélation d'événements lors d'un audit ou d'un incident devient impossible.
+
+
 ## 🛠️ Durcissement Post-Promotion 
 
 Une fois le domaine opérationnel, il est crucial d'ajuster les paramètres par défaut qui sont souvent trop faibles. Ces actions préparent le terrain pour un audit PingCastle réussi.
@@ -210,7 +239,7 @@ L'activation est réalisée en PowerShell. Le système demande une confirmation 
 La commande **`Get-ADOptionalFeature`** confirme que le périmètre **(`EnabledScopes`)** couvre désormais l'ensemble de la forêt `infra.formation.local`.
 
 
-## 🔐 Durcissement de la politique de mots de passe Active Directory
+### 🔐 Durcissement de la politique de mots de passe Active Directory
 
 Modifier la *Default Domain Policy* afin d’imposer des mots de passe robustes, limiter les tentatives de connexion et réduire la surface d’attaque des comptes intégrés. Cette GPO ne sera modifiée que pour le strict minimum, nous n'y toucherons plus par la suite. Des GPOs plus ciblées seront alors créées selon les besoins.
 
@@ -361,7 +390,7 @@ Les premières mesures de durcissement appliquées, combinées à une politique 
 La prochaine phase sera consacrée à l’audit de sécurité du domaine, afin d’évaluer objectivement le niveau de sécurité de l’infrastructure et d’identifier les axes d’amélioration possibles.
 
 <NextStep 
-  href="/projets/audit-pingcastle" 
-  title="Auditer la sécurité" 
+  href="/projets/break-glass-account" 
+  title="Mettre en place un compte de secours" 
 />
 
