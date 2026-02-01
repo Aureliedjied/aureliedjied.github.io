@@ -1,26 +1,218 @@
 ---
-title: "Rôle AD CS"
-description: "Choix de la version de Windows Server 2022 et configuration optimale des ressources virtuelles."
-tags: ["Windows Server", "Virtualisation"]
-pubDate: 2026-01-10
+title: "PKI : Déploiement du rôle AD CS"
+description: "Mise en place d’une autorité de certification d’entreprise pour établir la confiance numérique au sein du domaine."
+tags: ["Active Directory", "Sécurité", "PKI", "Audit"]
+pubDate: 2026-01-30
+category: "windows"
 slug: "ad-cs"
 ---
+
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_IDENTITY_PRO} from '../../../constants/series';
+import { WIN_IDENTITY_PRO } from '../../../constants/series';
+import NextStep from '../../../components/NextStep.astro';
 
 <SeriesStepper 
   seriesTitle="Certificat AD CS" 
-    steps={WIN_IDENTITY_PRO} 
+  steps={WIN_IDENTITY_PRO} 
   currentStepIndex={0} 
 />
 
-Contenu à venir ...
+L’**Active Directory Certificate Services (AD CS)** constitue la fondation de la confiance numérique d’un environnement Windows.  
+Dans cette étape du lab, l’objectif n’est pas seulement d’installer une autorité de certification, mais de poser une **racine de confiance propre, maîtrisée et durcie**, capable de supporter les futurs besoins : authentification forte, LDAPS, chiffrement des services et authentification machine.
 
-import NextStep from '../../../components/NextStep.astro';
-
-<NextStep 
-  href="/projets/mfa-adm" 
-  title="Authentification à double facteurs" 
-/>
+Le déploiement d'une **PKI (Public Key Infrastructure)** est donc abordé ici avec une logique de **sécurité, de traçabilité et de moindre privilège**.
 
 ---
+
+## 🏗️ Étape 1 : Installer le rôle
+
+Je commence par ajouter le rôle **Services de certificats Active Directory** depuis le Gestionnaire de serveur.  
+L’objectif est de rester sur une **installation minimale** :
+
+- Je sélectionne uniquement **Autorité de certification**
+- Je **n’active pas l’inscription Web** afin d’éviter d’installer IIS et d’augmenter la surface d’attaque du serveur
+
+Avant de lancer la configuration, je vérifie que le **nom DNS du serveur est définitif**, car il sera inscrit dans les certificats émis par la CA.
+
+> ❗ Une autorité de certification ne doit pas changer d’identité réseau après son déploiement.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+      <img src="/images/projets/win-identity-pro/ad-cs/install-adcs.png" alt="Installation du rôle AD CS" class="rounded-lg border border-white/10 shadow-md" /> 
+      <p class="text-[0.65rem] italic opacity-50 mt-2">Sélection du rôle Autorité de certification.</p>
+  </div>
+    <div class="flex flex-col items-center">
+      <img src="/images/projets/win-identity-pro/ad-cs/install-ca.png" alt="Installation minimale" class="rounded-lg border border-white/10 shadow-md" /> 
+      <p class="text-[0.65rem] italic opacity-50 mt-2">Installation sans service Web pour réduire l’exposition.</p>
+  </div>
+</div>
+
+---
+
+## 🔐 Étape 2 : Configurer l’Autorité de Certification
+
+Je déploie une **Autorité de certification d’entreprise racine**, intégrée à Active Directory.  
+Ce choix permet plus tard :
+
+- l’**auto-enrôlement** via GPO  
+- l’approbation automatique des certificats pour les modèles autorisés  
+
+Je génère ensuite une **nouvelle clé privée RSA 4096 bits** avec un algorithme de hachage **SHA512**, dans une logique de durcissement cryptographique au-delà du minimum recommandé (SHA256 restant le standard courant).
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/adcs-4.png" alt="Clé privée" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Création d'une nouvelle clé privée sécurisée.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/adcs-fin.png" alt="Résumé final" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Validation des paramètres cryptographiques.</p>
+  </div>
+</div>
+
+---
+
+## 🛡️ Étape 3 : Segmenter l’administration de la PKI (Moindre privilège)
+
+Administrer une PKI avec un compte **Domain Admin** créerait un point de compromission critique.  
+Je mets donc en place une **identité d’exploitation dédiée** : **`adm-pki`**.
+
+### 👤 Création du compte d’administration PKI
+
+Le compte est :
+
+- isolé dans une OU dédiée aux comptes d’administration :  
+  **`00_ADMINS > PKI`**
+- utilisé uniquement pour l’exploitation quotidienne de l’autorité de certification
+
+Cette séparation permet d’identifier clairement les actions PKI dans les journaux et de limiter les risques en cas de compromission.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki.png" alt="Création du compte adm-pki" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Création du compte d’administration dédié à la PKI.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Isolation du compte dans l’OU d’administration PKI.</p>
+  </div>
+</div>
+
+---
+
+### 📜 Gestion du groupe **Certificate Publishers**
+
+Le groupe **Éditeurs de certificats** permet de publier des certificats dans Active Directory (attributs des objets utilisateurs et ordinateurs).
+
+Dans une configuration par défaut, le **compte machine du serveur CA** peut en être membre.  
+Ici, je fais le choix d’un modèle plus strict :
+
+- 🔻 Retrait du compte machine **`SRV-AD-01$`**
+- ➕ Ajout exclusif du compte **`adm-pki`**
+
+👉 Cela permet que la publication des certificats dans l’annuaire soit réalisée par une **identité nominative** plutôt que par un compte machine, ce qui améliore la traçabilité. 
+
+Ce choix relève d’un **durcissement organisationnel**, et non d’une obligation technique.
+Depuis la console **`certsrv.msc`**, j’ouvre les propriétés de l’autorité puis l’onglet **Sécurité** afin de déléguer uniquement les droits nécessaires au compte `adm-pki` :
+
+- **Lire**
+- **Émettre et gérer des certificats**
+
+Ces permissions permettent la gestion quotidienne (émission, révocation, suivi des demandes) sans autoriser de modifications structurelles.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki3.png" alt="Membres du groupe Éditeurs de certificats" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Restriction des membres du groupe Certificate Publishers.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki-cert.png" alt="Permissions de la CA" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Délégation des droits d’émission sur l’autorité de certification.</p>
+  </div>
+</div>
+
+---
+
+
+### 🔐 Séparation des rôles d’administration
+
+La gestion avancée de la PKI reste strictement limitée aux comptes **Tier 0**, notamment :
+
+- modification de la configuration de la CA  
+- gestion des modèles de certificats sensibles  
+- maintenance de la hiérarchie de certification  
+
+Ainsi, le compte **`adm-pki`** est un compte d’**exploitation**, pas un compte d’**architecture**.
+
+> 🎯 Cette séparation réduit fortement l’impact potentiel d’une compromission et s’aligne avec les bonnes pratiques de sécurisation des environnements Active Directory.
+
+---
+
+## 🔍 Étape 4 : Activer l’audit et corriger les conflits GPO
+
+Une PKI sans journalisation fiable constitue un angle mort de sécurité.  
+J’active donc l’audit des événements directement dans les propriétés de l’autorité de certification en modifiant la GPO **DOM - S - Advanced_Auditing** pour activer l’option " Auditer les services de certifications " :
+
+
+Après application, la sous-catégorie **Services de certification** passe bien en **Succès et Échec**, vérifiable via powershell.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/audit-cert.png" alt="Membres du groupe Éditeurs de certificats" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Auditer les succès et échecs.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/ad-cs/audit-pwshell-ok.png" alt="Permissions de la CA" class="rounded-lg border border-white/10 shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'audit avec la commande auditpol /get</p>
+  </div>
+</div>
+---
+
+## 🧬 Étape 5 : Gérer les modèles de certificats
+
+Je duplique un modèle Kerberos afin de créer une version adaptée à mon environnement de lab.
+
+J’y configure notamment :
+- l’ajout du **SAN DNS**, indispensable pour la compatibilité avec les usages TLS modernes  
+- l’**exportation de la clé privée** (choix volontairement pédagogique pour le lab, déconseillé pour des comptes sensibles en production)
+
+Je vérifie ensuite via **ADSI Edit** que le modèle est bien publié dans la partition de configuration d’Active Directory, au sein des objets de services de clé publique.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 450px;">
+    <img src="/images/projets/win-identity-pro/ad-cs/cert-ad-inscrit.png" alt="ADSI console" style="width: 130%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le certificat est bien généré et enregistré dans l'ADSI</p>
+  </div>
+</div>
+---
+
+## ✅ Étape 6 : Vérifier la santé de la PKI
+
+Pour terminer, j’utilise **PKIView (`pkiview.msc`)** afin de contrôler :
+
+- la hiérarchie de certification  
+- la validité des certificats d’autorité  
+- la disponibilité des points **AIA** et **CDP**
+
+Tous les indicateurs sont au vert : la chaîne de confiance est fonctionnelle et les points de distribution sont accessibles.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 450px;">
+    <img src="/images/projets/win-identity-pro/ad-cs/pki-ok.png" alt="PKIview" style="width: 130%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Emplacement AIA et CDP du certificat OK</p>
+  </div>
+</div>
+
+---
+
+
+La PKI interne est désormais **opérationnelle, segmentée et correctement auditée**.  
+Elle constitue la **brique de confiance** nécessaire pour sécuriser les flux critiques du domaine.
+
+La prochaine étape consiste à exploiter cette infrastructure pour chiffrer les communications LDAP via **LDAPS**.
+
+<NextStep 
+  title="Sécurisation LDAPS" 
+  description="Utilisation de nos modèles pour chiffrer les échanges de l'annuaire sur le port 636." 
+  link="/projets/win-identity-pro/ldaps" 
+/>

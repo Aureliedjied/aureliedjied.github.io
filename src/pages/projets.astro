@@ -12,8 +12,17 @@ const filters = [
   { label: "Sécurité & VPN", tag: "Sécurité" },
   { label: "Monitoring & Audit", tag: "Monitoring" },
   { label: "Virtualisation & Cloud", tag: "Virtualisation" },
-  { label: "Support Client & Ticketing"}
+  { label: "Support Client & Ticketing", tag: "Support" } 
 ];
+
+// Dictionnaire des thèmes visuels
+const themeMap = {
+  pfsense: { border: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)', icon: '🛡️' },
+  windows: { border: '#00a4ef', bg: 'rgba(0, 164, 239, 0.1)', icon: '🪟' },
+  zabbix: { border: '#e0291e', bg: 'rgba(224, 41, 30, 0.1)', icon: '📊' },
+  linux: { border: '#fdb900', bg: 'rgba(253, 185, 0, 0.1)', icon: '🐧' },
+  default: { border: '#a855f7', bg: 'rgba(168, 85, 247, 0.1)', icon: '📁' }
+};
 ---
 
 <Layout>
@@ -41,20 +50,31 @@ const filters = [
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedProjects.map((project) => (
+        {sortedProjects.map((project) => {
+          // On récupère le thème selon la catégorie, sinon default
+          const theme = (project.data.category && themeMap[project.data.category]) 
+              ? themeMap[project.data.category] 
+              : themeMap.default;
+
+          return (
             <a 
               href={`/projets/${project.slug}`} 
-              class="project-card group relative flex flex-col justify-between p-6 min-h-[300px] rounded-[1.5rem] border shadow-2xl transition-all duration-300"
-              style="background-color: var(--card-bg); border-color: var(--card-border);"
+              class="project-card group relative flex flex-col justify-between p-6 min-h-[300px] rounded-[1.5rem] border shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              style={`background-color: var(--card-bg); border-color: ${theme.border}44;`}
               data-tags={`${project.data.tags.join(' ')} ${project.data.category || ''}`}
             >
             
+            {/* Icône flottante en haut à droite */}
+            <div class="absolute top-6 right-6 text-2xl opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+              {theme.icon}
+            </div>
+
             <div class="space-y-4 relative z-10">
                 <div class="flex flex-wrap gap-2">
                     {project.data.tags.map(tag => (
                         <span 
                           class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-md border"
-                          style="background-color: var(--bg-color); color: var(--text-purple); border-color: var(--purple-border);"
+                          style={`background-color: ${theme.bg}; color: ${theme.border}; border-color: ${theme.border}33;`}
                         >
                             {tag}
                         </span>
@@ -62,7 +82,7 @@ const filters = [
                 </div>
                 
                 <div class="space-y-2">
-                    <h3 class="text-xl font-bold group-hover:text-purple-500 transition-colors leading-tight" style="color: var(--text-title);">
+                    <h3 class="text-xl font-bold transition-colors leading-tight" style={`color: var(--text-title);`}>
                         {project.data.title}
                     </h3>
                     <p class="text-sm leading-relaxed line-clamp-4" style="color: var(--text-main);">
@@ -72,20 +92,39 @@ const filters = [
             </div>
 
             <div class="flex justify-between items-center mt-6 relative z-10">
-                <span class="text-[10px] font-mono opacity-50" style="color: var(--text-main);">
-                  {new Date(project.data.pubDate).toLocaleDateString('fr-FR', {month: 'short', year: 'numeric'})}
-                </span>
-                <div class="opacity-50 group-hover:opacity-100 group-hover:text-purple-500 transition-all" style="color: var(--text-main);">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[10px] font-mono opacity-50 uppercase tracking-tighter" style="color: var(--text-main);">
+                      Publié en {new Date(project.data.pubDate).toLocaleDateString('fr-FR', {month: 'short', year: 'numeric'})}
+                    </span>
+                    
+                    {project.data.updatedDate && (
+                        <span class="text-[9px] font-bold text-purple-400 flex items-center gap-1">
+                            <span class="relative flex h-1.5 w-1.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-purple-500"></span>
+                            </span>
+                            MAJ {new Date(project.data.updatedDate).toLocaleDateString('fr-FR', {month: 'short', year: 'numeric'})}
+                        </span>
+                    )}
+                </div>
+
+                <div class="opacity-50 group-hover:opacity-100 transition-all" style={`color: ${theme.border};`}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                 </div>
             </div>
             
-            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            {/* Overlay de couleur au survol basé sur le thème */}
+            <div 
+              class="absolute inset-0 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+              style={`background: linear-gradient(135deg, ${theme.bg} 0%, transparent 100%);`}
+            ></div>
             </a>
-        ))}
+          );
+        })}
     </div>
   </div>
 </Layout>
+
 
 <script>
   const buttons = document.querySelectorAll('.filter-btn');

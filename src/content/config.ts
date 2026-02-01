@@ -6,11 +6,12 @@ const projets = defineCollection({
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()),
     image: z.string().optional(),
     // ON AJOUTE CES DEUX LIGNES :
     serie: z.string().optional(), // .optional() car tous les projets n'ont pas de série
-    category: z.string().optional(),
+    category: z.enum(['pfsense', 'windows', 'zabbix', 'linux']).optional(),
   }),
 });
 

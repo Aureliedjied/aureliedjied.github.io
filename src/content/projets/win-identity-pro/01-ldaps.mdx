@@ -1,6 +1,7 @@
 ---
 title: "LDAPS"
 description: "Mise en place des Unités d'Organisation (OU), gestion des comptes d'administration et hygiène informatique."
+category: "windows"
 tags: ["Windows Server", "Active Directory"]
 pubDate: 2026-01-13
 slug: "ldaps"
@@ -11,9 +12,14 @@ import { WIN_IDENTITY_PRO} from '../../../constants/series';
 <SeriesStepper 
   seriesTitle="LDAPS" 
   steps={WIN_IDENTITY_PRO} 
-  currentStepIndex={2} 
+  currentStepIndex={1} 
 />
 
 Contenu à venir ..
 
 import NextStep from '../../../components/NextStep.astro';
+
+<NextStep 
+  href="/projets/mfa-adm" 
+  title="Authentification à double facteurs" 
+/>

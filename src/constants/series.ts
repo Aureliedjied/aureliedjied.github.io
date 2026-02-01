@@ -9,8 +9,8 @@ export const WIN_INFRA_CORE = [
 // --- SÉRIE 2 : SÉCURITÉ AVANCÉE DES IDENTITÉS ---
 export const WIN_IDENTITY_PRO = [
   { label: "PKI : Déploiement AD CS", href: "/projets/ad-cs" },
+    { label: "LDAPS : Chiffrement d'annuaire", href: "/projets/ldaps" },
   { label: "MFA : Double authentification Admin", href: "/projets/mfa-adm" }, 
-  { label: "LDAPS : Chiffrement d'annuaire", href: "/projets/ldaps" },
 ];
 
 // --- SÉRIE 3 : CONTINUITÉ D'ACTIVITÉ (PRA/PCA) ---

@@ -12,6 +12,18 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await project.render();
+
+// On récupère les dates depuis project.data
+const { title, tags, pubDate, updatedDate } = project.data;
+
+// Petite fonction pour transformer 2026-01-30 en "30 janvier 2026"
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+};
 ---
 
 <Layout>
@@ -25,11 +37,25 @@ const { Content } = await project.render();
           
           <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tighter italic" 
               style="color: var(--text-title);">
-            {project.data.title}
+            {title}
           </h1>
+
+          <div class="flex flex-wrap items-center gap-4 mb-8 text-[10px] uppercase tracking-[0.2em] font-bold" style="color: var(--text-muted);">
+            <div class="flex items-center gap-2">
+              <span class="text-purple-500">●</span>
+              <span>Publié le {formatDate(pubDate)}</span>
+            </div>
+
+            {updatedDate && (
+              <div class="flex items-center gap-2 border-l border-white/10 pl-4">
+                <span class="text-purple-400">●</span>
+                <span class="text-white/70">Mis à jour le {formatDate(updatedDate)}</span>
+              </div>
+            )}
+          </div>
           
           <div class="flex flex-wrap gap-3 mt-2"> 
-            {project.data.tags.map(tag => (
+            {tags.map(tag => (
               <a 
                 href={`/projets?filter=${encodeURIComponent(tag)}`}
                 class="text-[10px] uppercase tracking-widest font-bold bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20 text-purple-500 hover:bg-purple-500 hover:text-white transition-all duration-300"
