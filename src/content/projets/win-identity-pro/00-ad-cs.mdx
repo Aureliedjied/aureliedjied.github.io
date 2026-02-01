@@ -66,7 +66,7 @@ Je génère ensuite une **nouvelle clé privée RSA 4096 bits** avec un algorith
   </div>
   <div class="flex flex-col items-center">
     <img src="/images/projets/win-identity-pro/ad-cs/adcs-fin.png" alt="Résumé final" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Validation des paramètres cryptographiques.</p>
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Confirmation de la configuration réussie</p>
   </div>
 </div>
 
@@ -90,17 +90,17 @@ Cette séparation permet d’identifier clairement les actions PKI dans les jour
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
     <img src="/images/projets/win-identity-pro/ad-cs/adm-pki.png" alt="Création du compte adm-pki" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Création du compte d’administration dédié à la PKI.</p>
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Création du compte d’administration dédié à la PKI, isolé dans son groupe</p>
   </div>
   <div class="flex flex-col items-center">
     <img src="/images/projets/win-identity-pro/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Isolation du compte dans l’OU d’administration PKI.</p>
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Attribution des groupes nécéssaires uniquement</p>
   </div>
 </div>
 
 ---
 
-### 📜 Gestion du groupe **Certificate Publishers**
+### 📜 Gestion du groupe **Editeurs de certificats**
 
 Le groupe **Éditeurs de certificats** permet de publier des certificats dans Active Directory (attributs des objets utilisateurs et ordinateurs).
 
@@ -148,13 +148,13 @@ Ainsi, le compte **`adm-pki`** est un compte d’**exploitation**, pas un compte
 
 ---
 
-## 🔍 Étape 4 : Activer l’audit et corriger les conflits GPO
+## 🔍 Étape 4 : Activer l’audit 
 
 Une PKI sans journalisation fiable constitue un angle mort de sécurité.  
-J’active donc l’audit des événements directement dans les propriétés de l’autorité de certification en modifiant la GPO **DOM - S - Advanced_Auditing** pour activer l’option " Auditer les services de certifications " :
+J’active donc l’audit des événements de l’autorité de certification en modifiant la GPO **DOM - S - Advanced_Auditing** pour activer l’option " Auditer les services de certifications " :
 
 
-Après application, la sous-catégorie **Services de certification** passe bien en **Succès et Échec**, vérifiable via powershell.
+Après application, la sous-catégorie **Services de certification** passe bien en **Succès et Échec**, que l'on peut vérifier directement via powershell.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
@@ -204,6 +204,56 @@ Tous les indicateurs sont au vert : la chaîne de confiance est fonctionnelle et
 </div>
 
 ---
+
+## 🧩 Étape 7 : Vérifier le certificat via la console MMC
+
+Une fois la PKI validée côté infrastructure, je vérifie que le **certificat de l’autorité de certification** est bien installé dans le magasin de certificats du serveur.
+
+Pour cela, j’utilise la **console MMC** afin d’inspecter les certificats de l’ordinateur local.
+
+### 🔧 Ajout du composant logiciel enfichable Certificats
+
+1. Lancer `mmc.exe`
+2. Menu **Fichier → Ajouter/Supprimer un composant logiciel enfichable**
+3. Sélectionner **Certificats**, "ajouter"
+4. Choisir **Compte d’ordinateur**
+5. Sélectionner **Ordinateur local**
+
+Cette manipulation permet d’accéder au magasin de certificats système, et non au magasin utilisateur.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+  <img src="/images/projets/win-identity-pro/ad-cs/mmc1.png" alt="Ajout composant enfichable MMC" class="rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/win-identity-pro/ad-cs/mmc2.png" alt="Choix du composant Certificats" class="rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/win-identity-pro/ad-cs/mmc3.png" alt="Sélection compte ordinateur" class="rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/win-identity-pro/ad-cs/mmc4.png" alt="Ordinateur local" class="rounded-lg border border-white/10 shadow-md" />
+</div>
+
+---
+
+### 🔍 Vérification du certificat de la CA
+
+Une fois le composant ajouté, je navigue dans :
+
+**Certificats (ordinateur local) → Autorités de certification racines de confiance → Certificats**
+
+Le certificat de mon autorité de certification d’entreprise apparaît bien dans le magasin.  
+Cela confirme que :
+
+- la CA est correctement installée
+- le certificat racine est bien approuvé localement
+- la chaîne de confiance peut fonctionner pour les services du serveur
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center;">
+    <img src="/images/projets/win-identity-pro/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.75rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le certificat de l’autorité est bien présent dans le magasin racine de confiance</p>
+  </div>
+</div>
+
+---
+
+Cette vérification côté système complète les contrôles PKIView : on valide à la fois l’infrastructure de confiance **et** sa présence effective sur le serveur.
+
 
 
 La PKI interne est désormais **opérationnelle, segmentée et correctement auditée**.  
