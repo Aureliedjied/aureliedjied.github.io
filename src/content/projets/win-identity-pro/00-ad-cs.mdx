@@ -168,22 +168,29 @@ Après application, la sous-catégorie **Services de certification** passe bien 
 </div>
 ---
 
-## 🧬 Étape 5 : Gérer les modèles de certificats
+## 🧬 Étape 5 : Vérifier la publication de la PKI dans Active Directory
 
-Je duplique un modèle Kerberos afin de créer une version adaptée à mon environnement de lab.
+Même sans créer de modèle personnalisé, une autorité de certification **Enterprise** publie automatiquement des informations dans l’annuaire.
 
-J’y configure notamment :
-- l’ajout du **SAN DNS**, indispensable pour la compatibilité avec les usages TLS modernes  
-- l’**exportation de la clé privée** (choix volontairement pédagogique pour le lab, déconseillé pour des comptes sensibles en production)
+J’utilise **ADSI Edit** pour vérifier que le **certificat de l’autorité de certification** est bien publié dans la partition de configuration d’Active Directory.
 
-Je vérifie ensuite via **ADSI Edit** que le modèle est bien publié dans la partition de configuration d’Active Directory, au sein des objets de services de clé publique.
+Chemin observé :
+`CN=Configuration → CN=Services → CN=Public Key Services → CN=Certification Authorities`
+
+La présence de cet objet confirme que :
+- la CA est correctement intégrée à Active Directory  
+- les machines du domaine peuvent récupérer le certificat racine automatiquement  
+- la chaîne de confiance peut être construite sans action manuelle
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 450px;">
-    <img src="/images/projets/win-identity-pro/ad-cs/cert-ad-inscrit.png" alt="ADSI console" style="width: 130%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le certificat est bien généré et enregistré dans l'ADSI</p>
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ad-cs/cert-ad-inscrit.png" alt="Publication du certificat de la CA dans ADSI" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 8px; font-style: italic;">Le certificat de l’autorité de certification est bien publié dans Active Directory.</p>
   </div>
 </div>
+
+Cette vérification confirme que l’infrastructure PKI est correctement ancrée dans l’annuaire avant de passer aux étapes suivantes.
+
 ---
 
 ## ✅ Étape 6 : Vérifier la santé de la PKI
