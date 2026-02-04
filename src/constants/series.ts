@@ -8,8 +8,9 @@ export const WIN_INFRA_CORE = [
 
 // --- SÉRIE 2 : SÉCURITÉ AVANCÉE DES IDENTITÉS ---
 export const WIN_IDENTITY_PRO = [
+  { label: "DNS : Résolution Inverse", href: "/projets/dns" }, 
   { label: "PKI : Déploiement AD CS", href: "/projets/ad-cs" },
-    { label: "LDAPS : Chiffrement d'annuaire", href: "/projets/ldaps" },
+  { label: "LDAPS : Chiffrement d'annuaire", href: "/projets/ldaps" },
   { label: "MFA : Double authentification Admin", href: "/projets/mfa-adm" }, 
 ];
 
@@ -17,6 +18,7 @@ export const WIN_IDENTITY_PRO = [
 // La stratégie de sauvegarde 3-2-1-1-0
 export const WIN_BACKUP_STRATEGY = [
   { label: "Sauvegarde 3-2-1-1-0 (Veeam/Windows)", href: "/projets/backup-strategy" }, 
+  { label: "Réplication & Failover : Haute Disponibilité", href: "/projets/veeam-replication" },
 ];
 
 // --- SÉRIE 4 : GOUVERNANCE & GESTION DES RESSOURCES ---

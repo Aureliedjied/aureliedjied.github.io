@@ -1,0 +1,132 @@
+---
+title: "DNS : Configuration de la Recherche Inversée"
+description: "Mise en place de la zone de recherche inversée pour une infrastructure AD cohérente." 
+tags: ["Active Directory", "Sécurité", "DNS"]
+pubDate: 2026-01-20
+category: "windows"
+slug: "dns"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import { WIN_IDENTITY_PRO } from '../../../constants/series';
+import NextStep from '../../../components/NextStep.astro';
+
+<SeriesStepper 
+  seriesTitle="Configurer le DNS" 
+  steps={WIN_IDENTITY_PRO} 
+  currentStepIndex={0} 
+/>
+
+Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est installé automatiquement. Cependant, seule la **zone de recherche directe** était configurée.  
+Pour obtenir une infrastructure propre et exploitable en environnement professionnel, il est préférable de mettre en place une **zone de recherche inversée**, qui permet d’associer une adresse IP à un nom DNS.
+
+> 💡 La résolution inverse est importante pour :
+> - La lisibilité des journaux de sécurité  
+> - Le bon fonctionnement de certains services AD  
+> - Les serveurs Linux et équipements réseau  
+> - Les outils de supervision et d’audit  
+
+---
+
+## 🔍 Étape 1 : Identifier le problème de résolution inverse
+
+Avant toute modification, je vérifie le comportement actuel du serveur DNS.  
+En interrogeant l’adresse IP du contrôleur de domaine, la résolution échoue : le serveur apparaît comme **Unknown**. Cela indique qu’aucune zone de recherche inversée n’est configurée.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+    <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+        <img src="/images/projets/win-identity-pro/dns/dns0.png" alt="Erreur nslookup Unknown" class="rounded-lg border border-white/10 shadow-md max-w-2xl w-full" /> 
+        <p class="text-[0.7rem] italic opacity-50 mt-2 text-center max-w-xl">Le serveur ne parvient pas à se résoudre lui-même via son adresse IP, signe de l’absence de zone PTR.</p>
+    </div>
+</div>
+
+Il est préférable de corriger cela afin d’assurer une cohérence DNS complète dans l’infrastructure.
+
+---
+
+## 🏗️ Étape 2 : Créer une zone de recherche inversée intégrée à l’AD
+
+Je crée une nouvelle zone dans le gestionnaire DNS.  
+Cette zone permettra d’établir la correspondance entre les adresses IP et les noms FQDN.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/dns/dns.png" alt="Création d’une nouvelle zone DNS" class="rounded-lg border border-white/10 shadow-md max-w-2xl w-full" /> 
+    <p class="text-[0.7rem] italic opacity-50 mt-2 text-center max-w-xl">L’assistant de création de zone DNS permet d’ajouter une zone de recherche inversée.</p>
+    </div>
+</div>
+
+Lors de la configuration, je choisis les options suivantes :
+
+- **Type de zone :** Zone principale intégrée à Active Directory  
+- **Étendue de réplication :** Tous les serveurs DNS du domaine  
+- **Version IP :** IPv4  
+- **ID Réseau :** `192.168.174` (réseau de mon lab)
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8 justify-items-center">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dns2.png" alt="Zone principale" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Sélection d’une zone principale intégrée à l’AD pour permettre la réplication automatique.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dns3.png" alt="Réplication Active Directory" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Réplication vers tous les serveurs DNS du domaine pour garantir la cohérence.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dns4.png" alt="Choix IPv4" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Création d’une zone de recherche inversée pour le protocole IPv4.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dns5.png" alt="ID réseau" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Saisie de l’identifiant réseau correspondant à l’adressage du lab.</p>
+  </div>
+</div>
+
+Une fois la zone créée, on aura une structure prête à accueillir les enregistrements PTR.
+
+---
+
+## 🔗 Étape 3 : Activer la création automatique du pointeur PTR
+
+La zone existe maintenant, mais il faut lier l’enregistrement du serveur à cette zone inversée.
+
+Je me rends dans les propriétés de l’enregistrement A de mon serveur, afin d’activer la mise à jour automatique du pointeur PTR.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8 justify-items-center">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dns6.png" alt="Propriétés du serveur DNS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Accès aux propriétés de l’enregistrement A du serveur dans la zone directe.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dns7.png" alt="Activation du PTR" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Activation de l’option permettant de créer automatiquement l’enregistrement PTR associé.</p>
+  </div>
+</div>
+
+Il est préférable d’activer cette option pour éviter d’avoir à gérer manuellement les enregistrements inversés.
+
+---
+
+## 🌐 Étape 4 : Vérifier la configuration DNS globale
+
+Pour terminer, je vérifie également les **redirecteurs DNS** afin d’assurer la résolution des noms externes, en complément de la résolution interne.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8 justify-items-center">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dnsredirect.png" alt="Configuration des redirecteurs DNS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Configuration des redirecteurs pour permettre la résolution des noms Internet.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-identity-pro/dns/dnsok.png" alt="Validation de la résolution DNS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">La résolution inverse fonctionne désormais : l’adresse IP renvoie correctement le nom du serveur.</p>
+  </div>
+</div>
+
+L'infrastructure réseau étant désormais saine et capable de résoudre les identités dans les deux sens, nous avons posé les fondations nécessaires au déploiement de notre autorité de certification
+Cette cohérence de nommage est le pilier du futur service LDAPS : elle garantit que les clients pourront authentifier le serveur sans erreur de certificat, permettant ainsi le passage d'un protocole LDAP en clair vers un canal chiffré et intègre
+
+
+<NextStep 
+  href="/projets/ad-cs" 
+  title="PKI : Déploiement AD CS" 
+/>

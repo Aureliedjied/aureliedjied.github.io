@@ -7,7 +7,7 @@ const sortedProjects = projects.sort((a, b) => b.data.pubDate.valueOf() - a.data
 
 const filters = [
   { label: "Tout", tag: "all" },
-  { label: "Windows", tag: "Windows Server" },
+  { label: "Windows Server", tag: "Windows Server" },
   { label: "Linux", tag: "Debian" },
   { label: "Sécurité & VPN", tag: "Sécurité" },
   { label: "Monitoring & Audit", tag: "Monitoring" },
@@ -18,7 +18,7 @@ const filters = [
 // Dictionnaire des thèmes visuels
 const themeMap = {
   pfsense: { border: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)', icon: '🛡️' },
-  windows: { border: '#00a4ef', bg: 'rgba(0, 164, 239, 0.1)', icon: '🪟' },
+  windows : { border: '#00a4ef', bg: 'rgba(0, 164, 239, 0.1)', icon: '🪟' },
   zabbix: { border: '#e0291e', bg: 'rgba(224, 41, 30, 0.1)', icon: '📊' },
   linux: { border: '#fdb900', bg: 'rgba(253, 185, 0, 0.1)', icon: '🐧' },
   default: { border: '#a855f7', bg: 'rgba(168, 85, 247, 0.1)', icon: '📁' }
@@ -29,7 +29,7 @@ const themeMap = {
   <div class="space-y-8">
     <header class="space-y-4">
       <h1 class="text-4xl font-bold tracking-tighter" style="color: var(--text-title);">
-        Mes Travaux
+        Mes Projets
       </h1>
       <p class="max-w-2xl" style="color: var(--text-main);">
         Exploration de l'infrastructure IT : du déploiement de serveurs Windows à la sécurisation d'environnements Linux.

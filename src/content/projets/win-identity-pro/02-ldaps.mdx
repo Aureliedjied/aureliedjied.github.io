@@ -6,18 +6,20 @@ tags: ["Windows Server", "Active Directory"]
 pubDate: 2026-01-13
 slug: "ldaps"
 ---
+
+
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_IDENTITY_PRO} from '../../../constants/series';
+import { WIN_IDENTITY_PRO } from '../../../constants/series';
+import NextStep from '../../../components/NextStep.astro';
 
 <SeriesStepper 
-  seriesTitle="LDAPS" 
+  seriesTitle="LDAPS : Chiffrement d'annuaire" 
   steps={WIN_IDENTITY_PRO} 
-  currentStepIndex={1} 
+  currentStepIndex={2} 
 />
 
 Contenu à venir ..
 
-import NextStep from '../../../components/NextStep.astro';
 
 <NextStep 
   href="/projets/mfa-adm" 

@@ -1,9 +1,9 @@
 ---
 title: "PKI : Déploiement du rôle AD CS"
 description: "Mise en place d’une autorité de certification d’entreprise pour établir la confiance numérique au sein du domaine."
-tags: ["Active Directory", "Sécurité", "PKI", "Audit"]
-pubDate: 2026-01-30
+tags: ["Active Directory", "Sécurité", "Audit"]
 category: "windows"
+pubDate: 2026-01-30
 slug: "ad-cs"
 ---
 
@@ -14,7 +14,7 @@ import NextStep from '../../../components/NextStep.astro';
 <SeriesStepper 
   seriesTitle="Certificat AD CS" 
   steps={WIN_IDENTITY_PRO} 
-  currentStepIndex={0} 
+  currentStepIndex={1} 
 />
 
 L’**Active Directory Certificate Services (AD CS)** constitue la fondation de la confiance numérique d’un environnement Windows.  
@@ -28,6 +28,7 @@ Le déploiement d'une **PKI (Public Key Infrastructure)** est donc abordé ici a
 
 Je commence par ajouter le rôle **Services de certificats Active Directory** depuis le Gestionnaire de serveur.  
 L’objectif est de rester sur une **installation minimale** :
+
 
 - Je sélectionne uniquement **Autorité de certification**
 - Je **n’active pas l’inscription Web** afin d’éviter d’installer IIS et d’augmenter la surface d’attaque du serveur
@@ -257,7 +258,7 @@ Cela confirme que :
   </div>
 </div>
 
----
+
 
 Cette vérification côté système complète les contrôles PKIView : on valide à la fois l’infrastructure de confiance **et** sa présence effective sur le serveur.
 
