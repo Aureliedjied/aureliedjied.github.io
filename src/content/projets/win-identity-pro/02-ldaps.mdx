@@ -1,27 +1,254 @@
 ---
-title: "LDAPS"
-description: "Mise en place des Unités d'Organisation (OU), gestion des comptes d'administration et hygiène informatique."
+title: "LDAPS : Chiffrement et audit des flux d'annuaire"
+description: "Sécurisation des accès LDAP via TLS et mise en place d'un audit de signature pour durcir l'infrastructure Active Directory."
+tags: ["Active Directory", "Sécurité", "LDAPS", "Audit", "ANSSI"]
+pubDate: 2026-02-05
 category: "windows"
-tags: ["Windows Server", "Active Directory"]
-pubDate: 2026-01-13
 slug: "ldaps"
 ---
-
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import { WIN_IDENTITY_PRO } from '../../../constants/series';
 import NextStep from '../../../components/NextStep.astro';
 
 <SeriesStepper 
-  seriesTitle="LDAPS : Chiffrement d'annuaire" 
+  seriesTitle="Sécuriser les Identités" 
   steps={WIN_IDENTITY_PRO} 
   currentStepIndex={2} 
 />
 
-Contenu à venir ..
+Par défaut, les requêtes LDAP circulent en clair sur le réseau via le **port 389**.  
+Cela expose potentiellement :
 
+- des identifiants  
+- des informations d’annuaire  
+- des requêtes d’authentification  
+
+Dans une infrastructure durcie selon les recommandations de l’**ANSSI**, il est indispensable de protéger ces échanges.
+
+Le passage au **LDAPS (LDAP over TLS – port 636)** permet de chiffrer le canal de communication. Cette sécurisation repose directement sur :
+
+- la **PKI interne** déployée précédemment  
+- la **cohérence DNS**, nécessaire à la validation du certificat du contrôleur de domaine  
+
+Sans certificat valide côté DC, le service LDAPS ne peut tout simplement pas fonctionner.
+
+---
+
+## 🛠️ Étape 1 : Création du modèle de certificat "Lab-DC-LDAPS"
+
+Pour que LDAPS soit activé, le contrôleur de domaine doit disposer d’un certificat contenant l’usage **Authentification du serveur**.
+
+Sur l’autorité de certification, j’ouvre la console **`certtmpl.msc`** et je duplique le modèle **Authentification Kerberos** afin de créer un modèle dédié et maîtrisé.
+
+### 🔧 Paramétrage du modèle
+
+- **Nom du modèle :** `Lab-DC-LDAPS`  
+- **Compatibilité :** versions modernes de Windows  
+- **Cryptographie :** fournisseur de stockage de clés (KSP)  
+- **Sécurité :**  
+  - Groupe **Contrôleurs de domaine d'entreprise**  
+  - Droits : **Lecture** et **Inscrire**
+
+Ce modèle permettra aux DC d’obtenir automatiquement un certificat adapté à l’usage LDAPS, sans modifier les modèles par défaut.
+
+<div style="
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+">
+
+  <div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 700px;
+    flex: 1 1 300px;
+  ">
+    <img src="/images/projets/win-identity-pro/ldaps/mmc1.png" alt="Ajout du composant Certificats" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">
+      Ajout du composant Certificats dans MMC.
+    </p>
+  </div>
+
+  <div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 700px;
+    flex: 1 1 300px;">
+    <img src="/images/projets/win-identity-pro/ldaps/mmc2.png" alt="Sélection du compte ordinateur" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">
+      Sélection du compte ordinateur local.
+    </p>
+  </div>
+
+</div>
+
+
+
+---
+
+## 📜 Étape 2 : Publication du modèle sur la CA
+
+Une fois le modèle configuré, il doit être publié pour être utilisable.
+
+Dans **`certsrv.msc`** :
+
+1. Clic droit sur **Modèles de certificats**
+2. **Nouveau → Modèle de certificat à délivrer**
+3. Sélection du modèle **Lab-DC-LDAPS**
+
+Le modèle est désormais disponible pour l’enrôlement par les contrôleurs de domaine.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/publier-modele.png" alt="Publication du modèle de certificat" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Publication du modèle sur l’autorité de certification.</p>
+  </div>
+</div>
+
+---
+
+## 🖥️ Étape 3 : Inscription manuelle du certificat sur le DC
+
+Pour garder un contrôle précis dans ce lab, j’effectue une **inscription manuelle** plutôt qu’un auto-enrôlement via GPO.
+
+### 🔧 Ajout du composant Certificats
+
+1. Lancer `mmc.exe`  
+2. **Fichier → Ajouter/Supprimer un composant logiciel enfichable**  
+3. Sélectionner **Certificats**  
+4. Choisir **Compte d’ordinateur**  
+5. Sélectionner **Ordinateur local**
+
+<div style="display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin: 2rem 0;"> 
+
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/mmc1.png" alt="Ajout du composant Certificats" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Ajout du composant Certificats dans MMC.</p>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/mmc2.png" alt="Sélection du compte ordinateur" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Sélection du compte ordinateur local.</p>
+  </div>
+</div>
+
+
+### 📥 Demande du certificat
+
+Dans **Certificats (ordinateur local)** :
+
+1. Aller dans **Personnel → Certificats**
+2. Clic droit **Toutes les tâches → Demander un nouveau certificat**
+3. Sélectionner le modèle **Lab-DC-LDAPS**
+4. Valider l’inscription
+
+<div style="display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin: 2rem 0;">
+
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/mmc3.png" alt="Inscription du certificat LDAPS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/mmc4.png" alt="Certificat LDAPS installé" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+  </div>
+
+</div>
+
+<p class="text-[0.65rem] italic opacity-50 mt-2 text-center">
+  Le certificat LDAPS est installé dans le magasin personnel du DC.
+</p>
+
+
+🔍 Points de vérification :
+- Le certificat contient l’usage **Authentification du serveur**
+
+---
+
+## 🔍 Étape 4 : Vérification de l’écoute LDAPS
+
+Une fois le certificat installé, le service Active Directory active automatiquement LDAPS.  
+Une vérification du système confirme que le DC écoute bien sur le **port 636**.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/netstat.png" alt="Vérification port 636" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Le contrôleur de domaine écoute sur le port LDAPS.</p>
+  </div>
+</div>
+
+En complément de l’écoute locale du service, un test de connexion TCP permet de valider que le port 636 est réellement accessible.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/ldaps-tcp.png" alt="Test de connexion TCP vers le port 636" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" /> 
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Test de connectivité TCP réussi vers le port LDAPS.</p> 
+  </div>
+</div>
+
+---
+
+## 🧪 Étape 5 : Test fonctionnel avec LDP.exe
+
+Pour valider le chiffrement réel du flux :
+
+1. Lancer `ldp.exe`
+2. **Connexion → Se connecter**
+3. Serveur : FQDN du DC  
+4. Port : **636**  
+5. Cocher **SSL**
+
+L’affichage du **RootDSE** confirme que la session LDAP est établie via TLS.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/mmc6.png" alt="Connexion LDAPS réussie" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Connexion LDAPS établie avec succès via TLS.</p>
+  </div>
+</div>
+
+---
+
+## 🛡️ Étape 6 : Signature LDAP obligatoire (Durcissement)
+
+LDAPS chiffre les communications sur le port 636.  
+La **signature LDAP**, elle, protège l’intégrité des échanges sur le port 389.
+
+Ces deux mécanismes sont **complémentaires** dans une stratégie de durcissement.
+
+### 🔒 Côté contrôleurs de domaine
+
+GPO :  
+**Contrôleur de domaine : exigences de signature de serveur LDAP**  
+→ **Exiger la signature**
+
+➡️ Le DC refuse les connexions LDAP simples non signées.
+
+### 💻 Côté postes et serveurs membres
+
+GPO :  
+**Sécurité réseau : exigences de signature de client LDAP**  
+→ **Exiger la signature**
+
+➡️ Les machines du domaine refusent de dialoguer avec un serveur LDAP ne supportant pas la signature.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
+    <img src="/images/projets/win-identity-pro/ldaps/gpo-ldap.png" alt="GPO Signature LDAP" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Mise en place de la signature LDAP obligatoire via GPO.</p>
+  </div>
+</div>
+
+
+L’annuaire communique désormais via des canaux protégés, garantissant la **confidentialité** et l’**intégrité** des échanges d’authentification.
+
+Cette étape marque la fin de la sécurisation du socle d’identité.  
+La prochaine phase consistera à renforcer la protection des comptes à privilèges avec la mise en place d’une **authentification multifacteur (MFA)**.
 
 <NextStep 
   href="/projets/mfa-adm" 
-  title="Authentification à double facteurs" 
+  title="MFA : Double authentification Admin" 
 />
