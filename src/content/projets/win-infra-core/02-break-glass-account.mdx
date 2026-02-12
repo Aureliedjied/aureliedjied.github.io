@@ -65,8 +65,7 @@ C'est l'étape cruciale de la stratégie : on veut s'assurer qu'aucune erreur de
   </div>
 </div>
 
-> 🛡️ **Note de sécurité** : Le blocage de l’héritage sur l’OU 99-EMERGENCY empêche les GPO de configuration utilisateur définies au niveau du domaine d’affecter le compte de secours.  
-> Les paramètres de sécurité appliqués aux **contrôleurs de domaine** via leur propre OU restent toutefois actifs, garantissant que l’audit et les protections système du DC demeurent en place quel que soit le compte utilisé.
+> 💡 **Note de sécurité** : Bien que l'héritage soit bloqué, les stratégies appliquées directement au niveau des contrôleurs de domaine restent actives. L'audit et la protection du système ne sont donc jamais compromis.
 ---
 
 ## 👁️ Surveillance et Audit

@@ -55,19 +55,10 @@ NetBIOS est un protocole particulièrement bavard qui expose inutilement le nom 
 
 Sa désactivation constitue une étape clé du durcissement réseau, en particulier avant l’introduction du serveur dans un environnement Active Directory.
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/promo/netbios-active.png" alt="NetBIOS Activé" class="rounded-lg border border-white/10 w-full shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">État initial : NetbiosOptions " Activé""</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/promo/netbios-desactived.png" alt="NetBIOS Désactivé" class="rounded-lg border border-white/10 w-full shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Exécution du script de désactivation avec valeur = 2</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/promo/netbios-verif.png" alt="Vérification NetBIOS" class="rounded-lg border border-white/10 w-full shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Audit final : NetbiosOptions " Désactivé "</p>
-  </div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
+  <img src="/images/projets/win-infra-core/promo/netbios-active.png" alt="État initial" class="rounded-lg border border-white/10 w-full" />
+  <img src="/images/projets/win-infra-core/promo/netbios-desactived.png" alt="Script désactivation" class="rounded-lg border border-white/10 w-full" />
+  <img src="/images/projets/win-infra-core/promo/netbios-verif.png" alt="Audit final" class="rounded-lg border border-white/10 w-full" />
 </div>
 
 ---
@@ -139,12 +130,7 @@ Une délégation n’est pertinente que dans un scénario de sous-domaine ou d�
 </div>
 
 
-**Mot de passe DSRM**:
-Le mot de passe **Directory Services Restore Mode (DSRM)** est défini à cette étape. J'ai choisi une passphrase composée de chiffres et caractères spéciaux.
-Il permet l’accès au contrôleur de domaine en mode restauration et doit être :
-- robuste,
-- stocké de manière sécurisée,
-- distinct des comptes administrateurs du domaine.
+> 🔑 **Sécurité DSRM :** Le mot de passe du mode de restauration des services d'annuaire (DSRM) est défini avec une complexité élevée et stocké hors-ligne. Il est distinct de tout autre compte d'administration.
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
@@ -214,11 +200,11 @@ Il est indispensable de valider que notre serveur est bien le référent du doma
 </div>
 
 ### Configuration du rôle PDC Emulator
-En tant que premier Contrôleur de Domaine de la forêt, `SRV-AD-01` détient le rôle FSMO **PDC Emulator**. Il doit donc servir de source de temps de référence pour l'ensemble du domaine en se synchronisant sur une source externe fiable. 
+En tant que détenteur du rôle FSMO **PDC Emulator**, `SRV-AD-01` est configuré pour se synchroniser sur un pool NTP externe fiable (fr.pool.ntp.org), assurant ainsi une source de temps autoritaire pour les clients et serveurs membres.
 
-<div class="flex flex-col items-center my-8">
-  <img src="/images/projets/win-infra-core/promo/ntp-config.png" alt="Configuration NTP" class="rounded-lg border border-white/10 shadow-md w-full max-w-[600px]" />
-  <p class="text-[0.65rem] italic opacity-50 mt-2">Définition du pool NTP français et marquage du serveur comme source fiable.</p>
+<div class="flex flex-col items-center my-8 space-y-4">
+  <img src="/images/projets/win-infra-core/promo/ntp-config.png" alt="Configuration NTP" class="rounded-lg border border-white/10 shadow-xl max-w-2xl w-full" />
+  <p class="text-xs italic opacity-50">Configuration de la source NTP externe</p>
 </div>
 
 > 🛡️ **Note de sécurité** : Une horloge synchronisée est indispensable pour la cohérence des journaux (Logs). Sans une base de temps commune, la corrélation d'événements lors d'un audit ou d'un incident devient impossible.
@@ -268,9 +254,9 @@ La **Default Domain Policy** a donc été durcie afin d’élever le niveau de s
 
 Une politique de verrouillage a été mise en place afin de bloquer les attaques par dictionnaire en ligne :
 
-- Seuil de verrouillage : **5 tentatives**
-- Durée de verrouillage : **30 minutes**
-- Réinitialisation automatique du compteur
+* **Longueur minimale :** 14 caractères.
+* **Historique :** 24 derniers mots de passe mémorisés.
+* **Seuil de verrouillage :** 5 tentatives infructueuses (Protection contre le Brute Force).
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
@@ -388,8 +374,7 @@ Cette étape marque la mise en place des fondations du domaine Active Directory 
 
 Les premières mesures de durcissement appliquées, combinées à une politique de sécurité renforcée dès l’origine, permettent de réduire significativement la surface d’attaque et d’établir un socle fiable pour les configurations à venir.
 
-La prochaine phase sera consacrée à l’audit de sécurité du domaine, afin d’évaluer objectivement le niveau de sécurité de l’infrastructure et d’identifier les axes d’amélioration possibles.
-
+La prochaine phase sera consacrée à la création d'un compte Administrateur de secours, en cas de compromission du domaine.
 <NextStep 
   href="/projets/break-glass-account" 
   title="Mettre en place un compte de secours" 
