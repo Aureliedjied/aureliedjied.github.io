@@ -129,7 +129,7 @@ Le socle système est désormais sain et durci. Nous passons à l'étape critiqu
         class="w-full h-auto" 
       />
     </div>
-    <p class="text-[0.6rem] uppercase tracking-widest text-center opacity-40 mt-3 font-bold">Assistant de configuration AD DS</p>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Assistant de configuration AD DS</p>
   </div>
 </div>
 
@@ -280,9 +280,9 @@ La **Default Domain Policy** a donc été durcie afin d’élever le niveau de s
 
 Une politique de verrouillage a été mise en place afin de bloquer les attaques par dictionnaire en ligne :
 
-* **Longueur minimale :** 14 caractères.
-* **Historique :** 24 derniers mots de passe mémorisés.
-* **Seuil de verrouillage :** 5 tentatives infructueuses (Protection contre le Brute Force).
+* **Durée de vérouillage :** 30 minutes
+* **Réinitialisation :** 30 minutes
+* **Seuil de verrouillage :** 5 tentatives infructueuses
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
@@ -291,7 +291,7 @@ Une politique de verrouillage a été mise en place afin de bloquer les attaques
   </div>
 </div>
 
-⚠️ **Note de sécurité**  
+> 🛡️ **Note de sécurité** :
 Le verrouillage de compte est une mesure à double tranchant : mal calibrée, elle peut être exploitée pour provoquer un déni de service.  
 Elle reste néanmoins indispensable pour bloquer efficacement les attaques automatisées.
 
@@ -306,7 +306,7 @@ Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait 
     <div class="overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-transform group-hover:scale-[1.02]">
       <img src="/images/projets/win-infra-core/promo/gpo-modif.png" alt="GPO Edit" class="w-full h-auto" />
     </div>
-    <p class="text-[0.6rem] uppercase tracking-widest text-center opacity-40 mt-3 font-bold">Édition de la stratégie de groupe racine</p>
+    <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Édition de la stratégie de groupe racine</p>
   </div>
 </div>
 
@@ -335,7 +335,7 @@ Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait 
   </div>
 </div>
 
-- Désactivation complète du compte **Invité**
+- Désactivation complète du compte Invité
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
@@ -396,7 +396,6 @@ Pour respecter le principe du moindre privilège et assurer la traçabilité, j'
 
 Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShell pour créer mon compte d'administration nominatif. Ce script applique immédiatement les durcissements recommandés (Isolation en OU, chiffrement AES uniquement et interdiction de délégation). Le compte Administrateur renommé sera lui aussi protégé de la délégation.
 
-> 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "au coffre".
 
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
@@ -414,6 +413,9 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
   </div>
 </div>
 
+> 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "off".
+
+
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
     <img src="/images/projets/win-infra-core/promo/adm-aurelie-session.png" alt="Session adm-aurelie" class="rounded-lg border border-white/10 shadow-md w-full"/>
@@ -430,15 +432,12 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm opacity-80">
-          <span class="text-blue-400 font-bold">•</span>
           <span><strong>Domaine opérationnel :</strong> Forêt <code>infra.formation.local</code> initialisée.</span>
         </li>
         <li class="flex items-start gap-3 text-sm opacity-80">
-          <span class="text-blue-400 font-bold">•</span>
           <span><strong>Hygiène respectée :</strong> Comptes Administrateur et Invité renommés par GPO.</span>
         </li>
         <li class="flex items-start gap-3 text-sm opacity-80">
-          <span class="text-blue-400 font-bold">•</span>
           <span><strong>Accès sécurisé :</strong> Mise en place d'un compte nominatif avec protection AES.</span>
         </li>
       </ul>

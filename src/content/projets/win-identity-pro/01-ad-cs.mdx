@@ -26,28 +26,32 @@ Le déploiement d'une **PKI (Public Key Infrastructure)** est donc abordé ici a
 
 ## 🏗️ Étape 1 : Installer le rôle
 
-Je commence par ajouter le rôle **Services de certificats Active Directory** depuis le Gestionnaire de serveur.  
-L’objectif est de rester sur une **installation minimale** :
+Je commence par ajouter le rôle **Services de certificats Active Directory**. L’objectif est de rester sur une installation strictement nécessaire à la fonction d'Autorité de Certification (CA).
 
-
-- Je sélectionne uniquement **Autorité de certification**
-- Je **n’active pas l’inscription Web** afin d’éviter d’installer IIS et d’augmenter la surface d’attaque du serveur
-
-Avant de lancer la configuration, je vérifie que le **nom DNS du serveur est définitif**, car il sera inscrit dans les certificats émis par la CA.
-
-> ❗ Une autorité de certification ne doit pas changer d’identité réseau après son déploiement.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-      <img src="/images/projets/win-identity-pro/ad-cs/install-adcs.png" alt="Installation du rôle AD CS" class="rounded-lg border border-white/10 shadow-md" /> 
-      <p class="text-[0.65rem] italic opacity-50 mt-2">Sélection du rôle Autorité de certification.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+  
+  <div class="space-y-3">
+    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <img src="/images/projets/win-identity-pro/ad-cs/install-adcs.png" alt="Installation du rôle AD CS" class="rounded-lg w-full h-auto" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sélection du rôle racine AD CS</p>
   </div>
-    <div class="flex flex-col items-center">
-      <img src="/images/projets/win-identity-pro/ad-cs/install-ca.png" alt="Installation minimale" class="rounded-lg border border-white/10 shadow-md" /> 
-      <p class="text-[0.65rem] italic opacity-50 mt-2">Installation sans service Web pour réduire l’exposition.</p>
+
+<div class="space-y-3">
+    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <img src="/images/projets/win-identity-pro/ad-cs/install-ca.png" alt="Installation minimale" class="rounded-lg w-full h-auto" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Installation minimale : CA uniquement</p>
   </div>
+
 </div>
 
+<div class="flex items-center gap-4 p-4 bg-amber-50 dark:bg-amber-500/5 border-l-4 border-amber-400 rounded-r-xl my-8">
+  <span class="text-2xl">❗</span>
+  <p class="text-xs text-amber-900 dark:text-amber-200 font-medium">
+    <strong>Règle d'or :</strong> Une autorité de certification ne doit jamais changer de nom ou de domaine après son déploiement, sous peine de rendre tous les certificats émis invalides.
+  </p>
+</div>
 ---
 
 ## 🔐 Étape 2 : Configurer l’Autorité de Certification

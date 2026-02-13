@@ -79,7 +79,7 @@ Le rapport initial agit comme une radiographie du domaine. Avec un **Risk Score 
         <span class="text-[10px] font-bold uppercase tracking-widest text-white">Score Global : 60</span>
       </div>
     </div>
-    <p class="text-[0.65rem] italic opacity-40 mt-6 font-bold uppercase tracking-tighter">Répartition du risque</p>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Répartition du risque</p>
   </div>
 
   <div class="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -308,6 +308,17 @@ Le service de spouleur sur un contrôleur de domaine présente un risque majeur 
 
 </div>
 
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/audit-sessions.png" alt="llmnr1" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Activation d e l'audit des connexions.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/win-infra-core/audit/audit-comptes.png" alt="llmnr2" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Activation de l'audit des comptes.</p>
+  </div>
+</div>
+
 Afin d’assurer la cohérence de la configuration, j’ai également activé l’option :
 
 **“Forcer les sous-catégories de stratégie d’audit à remplacer les catégories de stratégie d’audit”**
@@ -362,7 +373,7 @@ Afin de garantir la disponibilité du domaine, j'ai activé la **protection cont
 </div>
 
 ## Restriction du privilège de jonction via Powershell (ms-DS-MachineAccountQuota)
-Par défaut, n'importe quel utilisateur peut joindre 10 machines au domaine. C'est un risque majeur de déni de service et d'usurpation. J'ai modifié cet attribut pour ramener le quota à **0**, verrouillant ainsi la création sauvage de comptes ordinateurs.
+Par défaut, n'importe quel utilisateur peut joindre 10 machines au domaine. C'est un risque majeur de déni de service et d'usurpation. J'ai modifié cet attribut pour ramener le quota à **0**, verrouillant ainsi la création de comptes ordinateurs.
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
@@ -406,12 +417,6 @@ Après l’application des mesures de durcissement, un second audit PingCastle a
 
 Ce nouveau scan montre une **réduction significative du niveau de risque**, notamment sur les catégories liées aux protocoles obsolètes et aux mauvaises pratiques par défaut.
 
-Les améliorations principales concernent :
-- la disparition de NTLMv1  
-- la restriction du quota de création de machines  
-- la réduction de la surface d’attaque liée aux services inutiles  
-- une meilleure traçabilité des actions sensibles grâce à l’audit avancé  
-
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
   <div class="flex flex-col items-center">
      <img src="/images/projets/win-infra-core/audit/pingcastle-radar2.png" alt="Radar de sécurité après remédiation" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
@@ -433,15 +438,12 @@ Les améliorations principales concernent :
       </h3>
       <ul class="space-y-3 text-sm">
         <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
-          <span class="text-blue-500 font-bold">•</span>
           <span><strong>Surface d'attaque :</strong> Protocoles hérités (LLMNR/NBT-NS) désactivés.</span>
         </li>
         <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
-          <span class="text-blue-500 font-bold">•</span>
           <span><strong>Traçabilité :</strong> Audit avancé actif sur les actions sensibles du DC.</span>
         </li>
         <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
-          <span class="text-blue-500 font-bold">•</span>
           <span><strong>Structure :</strong> Topologie réseau (Subnets) déclarée et flux RPC filtrés.</span>
         </li>
       </ul>
