@@ -16,55 +16,191 @@ import NextStep from '../../../components/NextStep.astro';
   currentStepIndex={3} 
 />
 
-Après avoir promu notre domaine et configuré les services de base, il est crucial de confronter l'installation à la réalité de la cybersécurité. Pour cela, j'utilise **PingCastle**, un outil d'audit spécialisé dans l'évaluation du niveau de risque des infrastructures Active Directory.
-
-### Lancement de l'audit
-
-L'outil ne nécessite pas d'installation complexe : dans un environnement de production, l’outil devrait être exécuté depuis un poste d’administration sécurisé (PAW). Dans ce lab, il est exécuté directement sur le DC à des fins pédagogiques.. Ce premier scan sert de **"Baseline"** (point de référence) pour identifier les vulnérabilités par défaut de Windows Server.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/choix-install.png" alt="Choix mode" class="rounded-lg border border-white/10 shadow-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Sélection du mode Healthcheck.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/pingcastle-exe.png" alt="Lancement exe" class="rounded-lg border border-white/10 shadow-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Exécution en tant qu'administrateur.</p>
-  </div>
-</div>
-
-### État des lieux
-
-Le premier rapport généré sert de point de référence. Avec un **Risk Score global de 60/100**, l'infrastructure présente des vulnérabilités héritées des configurations par défaut de Windows Server.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
-  <div class="flex flex-col items-center">
-     <img src="/images/projets/win-infra-core/audit/pingcastle-radar.png" alt="Radar de sécurité" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
-     <p class="text-[0.65rem] italic opacity-50 mt-2">Répartition du risque initial.</p>
-  </div>
+<section class="my-10 space-y-8">
   
-  <div>
-| Indicateur | Score |  | Commentaire |
-| :--- | :--- | :--- | :--- |
-| **Anomalies** | <span style="color:#ef4444">60</span> | 🟠 Critique | Protocoles obsolètes (NTLMv1) et DNS permissif. |
-| **Privileged Accounts** | <span style="color:#f97316">40</span> | 🟠 Important | Besoin de durcissement des comptes admins. |
-| **Stale Objects** | <span style="color:#eab308">31</span> | 🟡 Moyen | Objets inactifs à nettoyer dans l'annuaire. |
-| **Trusts** | <span style="color:#22c55e">0</span> | 🟢 Sain | Aucune relation d'approbation externe. |
+  <div class="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
+    <div class="flex items-center gap-3 text-blue-400 mb-4">
+      <span class="text-xs font-bold uppercase tracking-widest">Phase d'Audit : Scan Initial</span>
+    </div>
+    
+    <p class="text-sm sm:text-base leading-relaxed opacity-80">
+      Après la promotion du domaine, il est crucial de confronter l'installation à la réalité du terrain. J'utilise <strong>PingCastle</strong> pour établir une <strong>"Baseline"</strong> (point de référence) et identifier les vulnérabilités natives du système.
+    </p>
+
+    <div class="mt-6 flex items-start gap-4 bg-amber-500/5 border border-amber-500/20 p-4 rounded-xl">
+      <span class="text-xl">🛡️</span>
+      <p class="text-[11px] sm:text-xs opacity-70 italic leading-relaxed">
+        <strong>Note TSSR :</strong> En production, cet audit s'exécute depuis un <strong>PAW</strong> (Poste d’Administration Sécurisé). Ici, pour l'exercice pédagogique, il sera déployé localement.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+    
+    <div class="space-y-3">
+      <div class="aspect-video overflow-hidden rounded-xl border border-white/10 shadow-lg bg-[#0c0c0c]">
+        <div class="bg-white/10 px-3 py-1.5 flex gap-1 items-center border-b border-white/10">
+          <div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+          <span class="text-[9px] font-mono opacity-40 ml-2 italic">healthcheck_mode</span>
+        </div>
+        <img src="/images/projets/win-infra-core/audit/choix-install.png" alt="Mode Healthcheck" class="w-full h-full object-contain p-2" />
+      </div>
+      <p class="text-[0.65rem] italic opacity-50 text-center">Sélection du mode <strong>Healthcheck</strong> (Audit de domaine).</p>
+    </div>
+
+    <div class="space-y-3">
+      <div class="aspect-video overflow-hidden rounded-xl border border-white/10 shadow-lg bg-[#0c0c0c]">
+        <div class="bg-white/10 px-3 py-1.5 flex gap-1 items-center border-b border-white/10">
+          <div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+          <span class="text-[9px] font-mono opacity-40 ml-2 italic">runtime_admin</span>
+        </div>
+        <img src="/images/projets/win-infra-core/audit/pingcastle-exe.png" alt="Lancement" class="w-full h-full object-contain p-2" />
+      </div>
+      <p class="text-[0.65rem] italic opacity-50 text-center">Exécution du binaire avec privilèges élevés.</p>
+    </div>
+
+  </div>
+</section>
+
+### État des lieux (Baseline)
+
+Le rapport initial agit comme une radiographie du domaine. Avec un **Risk Score global de 60/100**, l'infrastructure révèle les vulnérabilités natives d'une installation Windows Server non durcie.
+
+<div class="flex flex-col lg:flex-row gap-8 items-center my-12">
+  
+  <div class="w-full lg:w-1/3 flex flex-col items-center group">
+    <div class="relative p-4 bg-white/5 border border-white/10 rounded-3xl shadow-2xl transition-all group-hover:border-blue-500/30">
+      <img 
+        src="/images/projets/win-infra-core/audit/pingcastle-radar.png" 
+        alt="Radar de sécurité" 
+        class="w-full max-w-[280px] h-auto rounded-xl grayscale-[0.3] group-hover:grayscale-0 transition-all" 
+      />
+      <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-blue-600 px-4 py-1 rounded-full shadow-lg">
+        <span class="text-[10px] font-bold uppercase tracking-widest text-white">Score Global : 60</span>
+      </div>
+    </div>
+    <p class="text-[0.65rem] italic opacity-40 mt-6 font-bold uppercase tracking-tighter">Répartition du risque</p>
+  </div>
+
+  <div class="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    
+    <div class="bg-white/5 border-l-4 border-red-500 p-4 rounded-r-xl">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-[10px] font-bold uppercase opacity-50">Anomalies</span>
+        <span class="text-red-500 font-mono font-bold text-lg leading-none text-right">60</span>
+      </div>
+      <p class="text-[11px] opacity-70 leading-relaxed italic">
+        Risque Critique : Protocoles obsolètes (NTLMv1) et DNS trop permissif détectés.
+      </p>
+    </div>
+
+    <div class="bg-white/5 border-l-4 border-orange-500 p-4 rounded-r-xl">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-[10px] font-bold uppercase opacity-50 text-balance">Privileged Accounts</span>
+        <span class="text-orange-500 font-mono font-bold text-lg leading-none">40</span>
+      </div>
+      <p class="text-[11px] opacity-70 leading-relaxed italic">
+        Important : Nécessité de renforcer la politique de délégation des comptes admins.
+      </p>
+    </div>
+
+    <div class="bg-white/5 border-l-4 border-yellow-500 p-4 rounded-r-xl">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-[10px] font-bold uppercase opacity-50">Stale Objects</span>
+        <span class="text-yellow-500 font-mono font-bold text-lg leading-none">31</span>
+      </div>
+      <p class="text-[11px] opacity-70 leading-relaxed italic">
+        Moyen : Présence d'objets inactifs nécessitant un nettoyage dans l'annuaire.
+      </p>
+    </div>
+
+    <div class="bg-white/5 border-l-4 border-green-500 p-4 rounded-r-xl">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-[10px] font-bold uppercase opacity-50">Trusts</span>
+        <span class="text-green-500 font-mono font-bold text-lg leading-none">0</span>
+      </div>
+      <p class="text-[11px] opacity-70 leading-relaxed italic">
+        Sain : Aucune relation d'approbation externe non maîtrisée.
+      </p>
+    </div>
+
   </div>
 </div>
-
----
 
 ## 🛠️ Phase de Hardening (Durcissement par GPO)
 
-Le durcissement (Hardening) a été réalisé principalement via des **GPO (Group Policy Objects)**. Une GPO permet de centraliser et d'automatiser l'application de règles de sécurité sur l'ensemble du domaine. 
+<p class="mt-4 text-sm leading-relaxed text-slate-700 dark:text-white/70">
+  Le durcissement de l’environnement a été réalisé principalement via des
+  <strong class="text-slate-900 dark:text-white font-bold">Group Policy Objects (GPO)</strong>. 
+  Ces stratégies permettent de centraliser et d’automatiser l’application des règles de sécurité à l’échelle du domaine.
+</p>
 
-Pour maintenir une infrastructure lisible, j'ai adopté une nomenclature stricte : `[CIBLE]-[ACTION]-[DESCRIPTION]`. J'ai choisi de créer des GPO dédiées plutôt que de modifier les politiques par défaut (`Default Domain Policy`), permettant un meilleur contrôle et un retour arrière facilité.
+<p class="mt-4 text-sm leading-relaxed text-slate-700 dark:text-white/70">
+  Afin de préserver la lisibilité, j’ai choisi de créer des GPO dédiées plutôt que de modifier les politiques par défaut 
+  (<code class="px-1.5 py-0.5 bg-slate-200 dark:bg-white/10 rounded text-xs font-mono text-slate-800 dark:text-blue-300">Default Domain Policy</code>). 
+  Cette approche facilite le contrôle des changements et le rollback si nécessaire.
+</p>
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/risk-model.png" alt="Risques à améliorer" class="max-w-[600px] w-full rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Le Risk Model détaille les points de contrôle à durcir en priorité.</p>
+<div class="mt-10">
+  <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+    <span class="text-blue-500">🏷️</span> Nomenclature adoptée
+  </h3>
+
+  <p class="mt-3 text-sm text-slate-700 dark:text-white/70">
+    Chaque GPO respecte une convention stricte permettant une identification rapide :
+  </p>
+
+  <div class="mt-5 p-4 bg-slate-100 dark:bg-white/5 border border-slate-300 dark:border-white/10 rounded-xl text-center shadow-sm">
+    <p class="font-mono text-sm font-bold text-blue-700 dark:text-blue-400 break-words tracking-wider">
+      [CIBLE] - [ACTION] - [DESCRIPTION]
+    </p>
+  </div>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-3 text-sm">
+
+    <div class="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <p class="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> CIBLE
+      </p>
+      <p class="text-[11px] leading-relaxed text-slate-600 dark:text-white/60">
+        Périmètre : <span class="font-mono text-blue-600 dark:text-blue-300">DOMAIN, DC, SERVERS...</span>
+      </p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <p class="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> ACTION
+      </p>
+      <p class="text-[11px] leading-relaxed text-slate-600 dark:text-white/60">
+        Nature : <span class="font-mono text-blue-600 dark:text-blue-300">HARDENING, AUDIT, RESTRICT...</span>
+      </p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <p class="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> DESCRIPTION
+      </p>
+      <p class="text-[11px] leading-relaxed text-slate-600 dark:text-white/60">
+        Précision fonctionnelle du contrôle appliqué.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="flex flex-col items-center mt-14">
+  <div class="w-full max-w-xl group">
+    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl transition-all group-hover:shadow-blue-500/10">
+      <img 
+        src="/images/projets/win-infra-core/audit/risk-model.png" 
+        alt="Risk Model PingCastle"
+        class="w-full h-auto rounded-xl grayscale-[0.2] dark:grayscale-0"
+      />
+    </div>
+    <div class="mt-4 flex items-center justify-center gap-2 text-slate-500 dark:text-white/40">
+      <p class="text-[0.65rem] italic opacity-50 mt-2">Analyse PingCastle : Identification des contrôles prioritaires</p>
+    </div>
   </div>
 </div>
 
@@ -126,31 +262,50 @@ Le service de spouleur sur un contrôleur de domaine présente un risque majeur 
 
 
 ### 5. Activation de l'Audit Avancé  
+
 **GPO associée :** `DOM-S-Advanced_Auditing`
-
-L’audit natif de Windows étant trop limité pour une analyse de sécurité pertinente, j’ai déployé une GPO dédiée à la **stratégie d’audit avancée**. Cette configuration permet une journalisation fine des actions sensibles réalisées dans l’annuaire et sur les contrôleurs de domaine.
-
-Les catégories suivantes ont été activées en **Succès et Échec** :
-
-- **Gestion des comptes** : suivi des créations, suppressions et modifications d’utilisateurs et de groupes  
-- **Ouverture et fermeture de session** : traçabilité des connexions interactives, réseau et RDP  
-- **Accès au service d’annuaire** : détection des lectures et modifications d’objets Active Directory  
-- **Modification de stratégie** : détection de tout changement sur les politiques de sécurité ou d’audit  
-
-Cette granularité est indispensable pour détecter :
-- l’utilisation anormale de comptes privilégiés  
-- les tentatives d’élévation de privilèges  
-- les modifications suspectes dans l’annuaire  
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/audit-comptes.png" alt="Audit gestion comptes" class="rounded-lg border border-white/10 shadow-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Traçabilité des modifications sur les utilisateurs et groupes.</p>
+<div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+  
+  <div class="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-xl">👤</span>
+      <h4 class="text-primary mt-0 flex items-center gap-2">Gestion des comptes</h4>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-700 dark:text-white/60 italic font-medium">
+      Suivi des créations, suppressions et modifications d’utilisateurs/groupes.
+    </p>
   </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/audit-sessions.png" alt="Audit sessions" class="rounded-lg border border-white/10 shadow-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Surveillance des ouvertures et fermetures de sessions.</p>
+
+  <div class="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-xl">🔑</span>
+      <h4 class="text-primary mt-0 flex items-center gap-2">Sessions</h4>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-700 dark:text-white/60 italic font-medium">
+      Traçabilité complète des connexions interactives, réseau et sessions RDP.
+    </p>
   </div>
+
+  <div class="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-xl">📁</span>
+      <h4 class="text-primary mt-0 flex items-center gap-2">>Accès Annuaire</h4>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-700 dark:text-white/60 italic font-medium">
+      Détection des lectures et modifications d’objets Active Directory (AD DS).
+    </p>
+  </div>
+
+  <div class="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-xl">⚙️</span>
+      <h4 class="text-primary mt-0 flex items-center gap-2">Stratégies</h4>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-700 dark:text-white/60 italic font-medium">
+      Alerte en cas de changement sur les politiques de sécurité ou d’audit.
+    </p>
+  </div>
+
 </div>
 
 Afin d’assurer la cohérence de la configuration, j’ai également activé l’option :
@@ -221,24 +376,27 @@ Par défaut, n'importe quel utilisateur peut joindre 10 machines au domaine. C'e
 
 Pour parfaire l'audit, j'ai corrigé deux alertes structurelles relevées par l'outil qui impactaient la "propreté" de l'annuaire et la sécurité des flux.
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-    <h4 class="text-primary mt-0 flex items-center gap-2">
-      📍 Sites et Services AD
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+  
+  <div class="bg-slate-50 dark:bg-white/5 p-5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm">
+    <h4 class="text-slate-900 dark:text-blue-400 font-bold mt-0 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
+      <span class="text-blue-500">📍</span> Sites et Services AD
     </h4>
-    <p class="text-sm">
-      Déclaration du sous-réseau IP (Subnet) lié au site <code>Default-First-Site-Name</code>. Cela permet à l'AD de mapper correctement l'infra et d'optimiser les réplications.
+    <p class="text-xs sm:text-sm text-slate-700 dark:text-white/70 leading-relaxed">
+      Déclaration du sous-réseau IP (Subnet) lié au site <code class="px-1 py-0.5 bg-slate-200 dark:bg-white/10 rounded text-[10px] font-mono text-blue-700 dark:text-blue-300">Default-First-Site-Name</code>. 
+      Cela permet à l'AD de mapper correctement l'infra et d'optimiser les réplications.
     </p>
   </div>
 
-  <div class="bg-white/5 p-4 rounded-lg border border-white/10">
-    <h4 class="text-primary mt-0 flex items-center gap-2">
-      🔥 Filtrage PowerShell
+  <div class="bg-slate-50 dark:bg-white/5 p-5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm border-l-4 border-l-blue-500">
+    <h4 class="text-slate-900 dark:text-blue-400 font-bold mt-0 mb-3 flex items-center gap-2 text-sm uppercase tracking-wide text-balance">
+      <span class="text-blue-500">🛡️</span> Filtrage des flux RPC
     </h4>
-    <p class="text-sm">
-      Création d'une règle de pare-feu sortante bloquant <code>powershell.exe</code>. Mesure expérimentale en environnement de lab visant à limiter les exfiltrations simples via PowerShell pour empêcher le téléchargement de payloads malveillants depuis l'extérieur.
+    <p class="text-xs sm:text-sm text-slate-700 dark:text-white/70 leading-relaxed">
+      Restriction des ports dynamiques <strong>RPC</strong> pour limiter la surface d'exposition du contrôleur de domaine, répondant ainsi à une recommandation majeure de <strong>PingCastle</strong>.
     </p>
   </div>
+
 </div>
 
 
@@ -266,14 +424,56 @@ Les améliorations principales concernent :
   </div>
 </div>
 
-Ce second rapport ne marque pas la fin du travail : il met en évidence les **axes d’amélioration restants**, qui seront traités dans les prochaines étapes du projet, notamment :
-- la mise en place de LAPS pour la gestion des mots de passe locaux  
-- le déploiement d’une autorité de certification interne (AD CS)  
-- le renforcement de l’authentification des comptes privilégiés ( MFA)
+<section class="mt-16 border-t border-white/10 pt-12">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8">
+    <div>
+      <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+        <span class="text-green-500">🏆</span> Bilan de l'audit initial
+      </h3>
+      <ul class="space-y-3 text-sm">
+        <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
+          <span class="text-blue-500 font-bold">•</span>
+          <span><strong>Surface d'attaque :</strong> Protocoles hérités (LLMNR/NBT-NS) désactivés.</span>
+        </li>
+        <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
+          <span class="text-blue-500 font-bold">•</span>
+          <span><strong>Traçabilité :</strong> Audit avancé actif sur les actions sensibles du DC.</span>
+        </li>
+        <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
+          <span class="text-blue-500 font-bold">•</span>
+          <span><strong>Structure :</strong> Topologie réseau (Subnets) déclarée et flux RPC filtrés.</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
+       <div>
+          <div class="text-4xl mb-2">📈</div>
+          <p class="text-[10px] uppercase tracking-tighter font-bold text-slate-500 dark:text-white/40">Score en progression</p>
+       </div>
+    </div>
+  </div>
 
-La sécurité d’un Active Directory s’inscrit dans une démarche continue d’amélioration, basée sur la mesure régulière du risque et l’application progressive des recommandations.
+  <div class="max-w-2xl mx-auto text-center space-y-6 mt-12 px-4">
+    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+      "La sécurité d’un Active Directory est une démarche continue. Ce rapport n'est pas une fin, mais une feuille de route pour les prochaines étapes du projet."
+    </p>
+    
+    <div class="flex flex-wrap justify-center gap-2">
+      <span class="px-3 py-1 bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase rounded-full border border-blue-200 dark:border-blue-500/20">DNS</span>
+      <span class="px-3 py-1 bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 text-[10px] font-bold uppercase rounded-full border border-purple-200 dark:border-purple-500/20">AD CS (Certificats)</span>
+      <span class="px-3 py-1 bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[10px] font-bold uppercase rounded-full border border-amber-200 dark:border-amber-500/20">MFA (Authentification)</span>
+    </div>
+
+    <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-white/30 pt-4">
+      Objectif suivant : Mise en place du DNS pour la résolution de noms
+    </p>
+  </div>
+
+</section>
 
 <NextStep 
-  href="/projets/ad-cs" 
-  title="Installation de l’Autorité de Certification (AD CS)" 
+  href="/projets/dns" 
+  title="Configurer le DNS" 
 />

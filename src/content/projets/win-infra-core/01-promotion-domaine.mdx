@@ -3,7 +3,7 @@ title: "Hardening et Promotion du domaine"
 description: "Déploiement d'une nouvelle forêt Active Directory et application des premières mesures de durcissement selon les préconisations ANSSI."
 category: "windows"
 tags: ["Windows Server", "Active Directory", "Sécurité"]
-pubDate: 2026-01-14
+pubDate: 2026-01-11
 slug: "promotion-domaine"
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
@@ -16,9 +16,12 @@ import { WIN_INFRA_CORE } from '../../../constants/series';
   currentStepIndex={1} 
 />
 
-La préparation d'un Contrôleur de Domaine (DC) ne se limite pas à l'installation des rôles Active Directory. Pour garantir un niveau de sécurité conforme aux attentes de l'ANSSI, le système doit être durci **avant même la création de la forêt**, lorsque le serveur est encore vierge de toute stratégie de domaine.
-
-Cette approche permet de réduire drastiquement la surface d’attaque dès l’origine et d’éviter l’introduction de protocoles obsolètes dans l’environnement Active Directory.
+  <div class="space-y-4">
+    <p class="text-sm opacity-80 leading-relaxed">
+      Installer l'AD ne suffit pas. Pour l'<strong>ANSSI</strong>, la sécurité se joue avant la promotion. 
+      Intervenir sur un serveur hors-domaine permet de neutraliser les vecteurs d'attaque hérités avant qu'ils ne soient répliqués dans toute la forêt.
+    </p>
+  </div>
 
 ## 🛡️ Durcissement Pré-Promotion 
 
@@ -36,7 +39,7 @@ En cas d'échec DNS, LLMNR diffuse la requête en clair sur le réseau local, ce
   </div>
   <div class="flex flex-col items-center">
     <img src="/images/projets/win-infra-core/promo/llmnr-verif-0.png" alt="Vérification LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Audit : Valeur positionnée à 0 (Désactivé)</p>
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification : Valeur positionnée à 0 (Désactivé)</p>
   </div>
 </div>
 
@@ -46,14 +49,22 @@ Protocole historique désormais obsolète, SMBv1 est dépourvu de mécanismes de
 Dans ce cas précis, la fonctionnalité **SMB 1.0/CIFS** n’est pas installée sur le système : le protocole est donc déjà absent, ce qui confirme une configuration conforme aux standards de sécurité actuels.
 
 <div class="flex flex-col items-center my-8">
-  <img src="/images/projets/win-infra-core/promo/smb1-desactived.png" alt="Désactivation SMBv1" class="max-w-[400px] w-full rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/win-infra-core/promo/smb1-desactived.png" alt="Désactivation SMBv1" class="max-w-[350px] w-full rounded-lg border border-white/10 shadow-md" />
   <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'état du rôle : Available (Non installé)</p>
 </div>
 
 ### 3. Désactivation de NetBIOS
-NetBIOS est un protocole particulièrement bavard qui expose inutilement le nom et certaines informations du serveur aux autres machines du segment réseau. Son maintien augmente la surface d’attaque et facilite la reconnaissance par un attaquant.
-
-Sa désactivation constitue une étape clé du durcissement réseau, en particulier avant l’introduction du serveur dans un environnement Active Directory.
+<div class="space-y-4">
+    <p class="text-sm opacity-80 leading-relaxed">
+      NetBIOS est un protocole "bavard" : il diffuse inutilement le nom du serveur et ses métadonnées sur le segment réseau. 
+      C'est un cadeau pour un attaquant en phase de reconnaissance.
+    </p>
+    <div class="bg-white/5 border-l-2 border-blue-500 p-4 rounded-r-lg">
+      <p class="text-xs opacity-70 italic">
+        "Sa désactivation est un prérequis indispensable avant l'introduction du serveur dans l'Active Directory."
+      </p>
+    </div>
+  </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
   <img src="/images/projets/win-infra-core/promo/netbios-active.png" alt="État initial" class="rounded-lg border border-white/10 w-full" />
@@ -79,30 +90,46 @@ Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont 
 Cette validation volontairement simple permet de s’assurer qu’aucun service superflu n’est exposé avant la promotion du serveur en Contrôleur de Domaine.
 
 
-
 ## 🚀 Promotion : Création de la Forêt
 
-Le socle système est désormais sain, maîtrisé et conforme aux bonnes pratiques de sécurité.  
-La promotion du serveur `SRV-AD-01` peut être engagée pour créer la forêt racine Active Directory.
+Le socle système est désormais sain et durci. Nous passons à l'étape critique : l'élévation du serveur `SRV-AD-01` pour initialiser la forêt racine.
 
-Les paramètres appliqués localement lors de cette phase seront par la suite consolidés et renforcés via des stratégies de groupe (GPO) au niveau du domaine.
-
-### 1. Configuration du Domaine
-<div class="my-6">
-  <ul>
-    <li><strong>Nom de la forêt :</strong> <code>infra.formation.local</code></li>
-    <li><strong>Niveau fonctionnel :</strong> <code>Windows Server 2016</code></li>
-    <li><strong>Services:</strong> Catalogue global et DNS </li>
-  </ul>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+  <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+    <span class="text-[10px] uppercase tracking-widest opacity-40 mb-2">Nom de la Forêt</span>
+    <code class="text-blue-400 text-sm font-bold">infra.formation.local</code>
+  </div>
+  <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+    <span class="text-[10px] uppercase tracking-widest opacity-40 mb-2">Niveau Fonctionnel</span>
+    <code class="text-blue-400 text-sm font-bold">Windows Server 2016</code>
+  </div>
+  <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+    <span class="text-[10px] uppercase tracking-widest opacity-40 mb-2">Services Actifs</span>
+    <p class="text-blue-400 text-sm font-bold">DNS & Catalogue Global</p>
+  </div>
 </div>
 
-La promotion du serveur en Contrôleur de Domaine s’effectue via l’assistant Active Directory. Pour y accéder, ouvrir le drapeau jaune qui proposera de " Promouvoir ce serveur en controleur de domaine ".
-Les choix effectués à cette étape conditionnent la stabilité, la sécurité et l’évolutivité de la forêt.
+<div class="flex flex-col lg:flex-row gap-8 items-start my-12">
+  <div class="flex-1 space-y-4">
+    <p class="text-sm opacity-80 leading-relaxed">
+      L'assistant Active Directory est lancé depuis le drapeau de notification du <strong>Gestionnaire de serveur</strong>. 
+    </p>
+    <div class="bg-blue-500/10 border-l-2 border-blue-500 p-4 rounded-r-lg">
+      <p class="text-xs leading-relaxed">
+        <strong>Note :</strong> Le choix du niveau fonctionnel 2016 assure la compatibilité avec la <em>Corbeille AD</em> et les dernières protections de sécurité de l'annuaire.
+      </p>
+    </div>
+  </div>
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/promotion-ad.png" alt="Lancement de la promotion Active Directory" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Lancement de la promotion du serveur en Contrôleur de Domaine</p>
+  <div class="lg:w-1/2 w-full">
+    <div class="overflow-hidden rounded-lg border border-white/10 shadow-2xl">
+      <img 
+        src="/images/projets/win-infra-core/promo/promotion-ad.png" 
+        alt="Lancement de la promotion Active Directory" 
+        class="w-full h-auto" 
+      />
+    </div>
+    <p class="text-[0.6rem] uppercase tracking-widest text-center opacity-40 mt-3 font-bold">Assistant de configuration AD DS</p>
   </div>
 </div>
 
@@ -117,8 +144,7 @@ Le choix **« Ajouter une nouvelle forêt »** permet d’initialiser un environ
 </div>
 
 **Délégation DNS**  
-La création d’une délégation DNS **n’est pas cochée**.  
-Dans le cadre d’une nouvelle forêt racine, le serveur héberge lui-même le service DNS intégré à Active Directory.  
+La création d’une délégation DNS **n’est pas cochée**, puisque le serveur héberge lui-même le service DNS intégré à Active Directory.  
 Une délégation n’est pertinente que dans un scénario de sous-domaine ou d’intégration à une infrastructure DNS existante.
 
 
@@ -272,30 +298,40 @@ Elle reste néanmoins indispensable pour bloquer efficacement les attaques autom
 
 ### 3. Hygiène des comptes intégrés
 
-Le compte **Administrateur intégré** possède un **SID prévisible**, ce qui en fait une cible prioritaire lors des phases de reconnaissance.  
-Pour limiter les attaques automatisées, les actions suivantes ont été appliquées via GPO :
 
+Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait une cible triviale pour les attaques par force brute. Pour entraver la reconnaissance, j'applique des mesures de renommage via la *Default Domain Policy*.
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/gpo-modif.png" alt="Modifier la GPO Domain Policy" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Modification de la GPO racine</p>
+<div class="flex flex-col items-center my-10">
+  <div class="max-w-md w-full group">
+    <div class="overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-transform group-hover:scale-[1.02]">
+      <img src="/images/projets/win-infra-core/promo/gpo-modif.png" alt="GPO Edit" class="w-full h-auto" />
+    </div>
+    <p class="text-[0.6rem] uppercase tracking-widest text-center opacity-40 mt-3 font-bold">Édition de la stratégie de groupe racine</p>
   </div>
 </div>
 
-- Renommage du compte **Administrateur**
-- Renommage du compte **Invité**
-- Description volontairement neutre et non identifiable
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center my-8">
-    <img src="/images/projets/win-infra-core/promo/gpo-rename-admin.png" alt="Renommage du compte Administrateur" class="rounded-lg border border-white/10 shadow-md w-full" />
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Renommage du compte Administrateur intégré</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+  
+  <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+    <div class="flex items-center gap-3">
+      <span class="bg-red-500/20 text-red-400 p-2 rounded-lg text-xs font-bold">SID 500</span>
+      <h4 class="font-bold text-sm">Compte Administrateur</h4>
+    </div>
+    <div class="aspect-video rounded-lg overflow-hidden border border-white/5">
+      <img src="/images/projets/win-infra-core/promo/gpo-rename-admin.png" alt="Rename Admin" class="w-full h-full object-cover object-top" />
+    </div>
+    <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Action : Renommage du compte racine</p>
   </div>
 
-  <div class="flex flex-col items-center my-8">
-    <img src="/images/projets/win-infra-core/promo/gpo-rename-guest.png" alt="Renommage du compte Invité" class="rounded-lg border border-white/10 shadow-md w-full"/>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Renommage du compte Invité</p>
+  <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+    <div class="flex items-center gap-3">
+      <span class="bg-amber-500/20 text-amber-400 p-2 rounded-lg text-xs font-bold">SID 501</span>
+      <h4 class="font-bold text-sm">Compte Invité</h4>
+    </div>
+    <div class="aspect-video rounded-lg overflow-hidden border border-white/5">
+      <img src="/images/projets/win-infra-core/promo/gpo-rename-guest.png" alt="Rename Guest" class="w-full h-full object-cover object-top" />
+    </div>
+    <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Action : Renommage du compte invité</p>
   </div>
 </div>
 
@@ -331,21 +367,36 @@ Pour limiter les attaques automatisées, les actions suivantes ont été appliqu
 
 ## 👤 Création du compte d'administration nominatif
 
-Pour respecter le principe du moindre privilège et assurer la traçabilité, j'abandonne l'usage du compte générique au profit d'un compte nominatif sécurisé.
+Pour respecter le principe du moindre privilège et assurer la traçabilité, j'abandonne l'usage du compte générique au profit d'un compte nominatif hautement sécurisé.
 
-### Mesures de protection appliquées :
-<div class="my-6">
-  <ul>
-    <li><strong>Isolation :</strong> <code>Stocké dans une OU dédiée aux comptes à hauts privilèges</code></li>
-    <li><strong>Délégation interdite :</strong> <code>Activation de l'option "Account is sensitive and cannot be delegated" pour contrer les attaques de type Delegation Attack.</code></li>
-    <li><strong>Chiffrement fort :</strong> Restriction au chiffrement AES (128/256 bits) uniquement </li>
-  </ul>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
+  <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+    <div class="text-blue-400 mb-2">📂</div>
+    <h4 class="text-xs font-bold uppercase tracking-tight mb-1">Isolation OU</h4>
+    <p class="text-[10px] opacity-60 leading-tight text-balance">Positionné en zone Tier-0 (Haute Sécurité)</p>
+  </div>
+
+  <div class="bg-white/5 border border-white/10 p-4 rounded-xl border-l-amber-500/50">
+    <div class="text-amber-400 mb-2">🛡️</div>
+    <h4 class="text-xs font-bold uppercase tracking-tight mb-1">Anti-Delegation</h4>
+    <p class="text-[10px] opacity-60 leading-tight text-balance">Protection contre les attaques de relais Kerberos</p>
+  </div>
+
+  <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+    <div class="text-green-400 mb-2">🔐</div>
+    <h4 class="text-xs font-bold uppercase tracking-tight mb-1">Crypto Forte</h4>
+    <p class="text-[10px] opacity-60 leading-tight text-balance">Restriction stricte au chiffrement AES 128/256</p>
+  </div>
 </div>
 
-> 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "au coffre".
+<div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-xl text-sm opacity-80 leading-relaxed italic">
+  "L'activation de l'option <strong>Account is sensitive and cannot be delegated</strong> est une recommandation ANSSI majeure pour prévenir l'usurpation de ticket via des services tiers compromis."
+</div>
+
 
 Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShell pour créer mon compte d'administration nominatif. Ce script applique immédiatement les durcissements recommandés (Isolation en OU, chiffrement AES uniquement et interdiction de délégation). Le compte Administrateur renommé sera lui aussi protégé de la délégation.
 
+> 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "au coffre".
 
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
@@ -370,11 +421,48 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
   </div>
 </div>
 
-Cette étape marque la mise en place des fondations du domaine Active Directory : un contrôleur de domaine promu dans un environnement maîtrisé, reposant sur une configuration cohérente et des choix structurants dès la création de la forêt.
+<section class="mt-16 space-y-12">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8">
+    <div>
+      <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-400">✅</span> Bilan de l'étape 02
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm opacity-80">
+          <span class="text-blue-400 font-bold">•</span>
+          <span><strong>Domaine opérationnel :</strong> Forêt <code>infra.formation.local</code> initialisée.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm opacity-80">
+          <span class="text-blue-400 font-bold">•</span>
+          <span><strong>Hygiène respectée :</strong> Comptes Administrateur et Invité renommés par GPO.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm opacity-80">
+          <span class="text-blue-400 font-bold">•</span>
+          <span><strong>Accès sécurisé :</strong> Mise en place d'un compte nominatif avec protection AES.</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-white/10 pl-8">
+       <div class="text-center">
+          <div class="text-4xl mb-2">🌳</div>
+          <p class="text-[10px] uppercase tracking-tighter opacity-40 font-bold">Forêt racine créée</p>
+       </div>
+    </div>
+  </div>
 
-Les premières mesures de durcissement appliquées, combinées à une politique de sécurité renforcée dès l’origine, permettent de réduire significativement la surface d’attaque et d’établir un socle fiable pour les configurations à venir.
+  <div class="max-w-2xl mx-auto text-center space-y-4">
+    <p class="text-base leading-relaxed opacity-90 italic">
+      "Une infrastructure robuste doit prévoir l'imprévisible. Une fois le domaine créé, la priorité est de garantir un accès de secours infaillible."
+    </p>
+    <p class="text-sm opacity-60">
+      Objectif suivant : Configurer un compte <strong>Break-Glass</strong> isolé pour reprendre la main sur l'infrastructure en cas de compromission majeure.
+    </p>
+  </div>
 
-La prochaine phase sera consacrée à la création d'un compte Administrateur de secours, en cas de compromission du domaine.
+</section>
+
 <NextStep 
   href="/projets/break-glass-account" 
   title="Mettre en place un compte de secours" 

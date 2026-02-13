@@ -17,114 +17,180 @@ import NextStep from '../../../components/NextStep.astro';
   currentStepIndex={0} 
 />
 
-Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est installé automatiquement. Cependant, seule la **zone de recherche directe** était configurée.  
-Pour obtenir une infrastructure propre et exploitable en environnement professionnel, il est préférable de mettre en place une **zone de recherche inversée**, qui permet d’associer une adresse IP à un nom DNS.
+<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
+Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est installé automatiquement. Cependant, seule la <strong>zone de recherche directe</strong> était configurée. Pour une infrastructure professionnelle, la <strong>zone de recherche inversée</strong> (Reverse DNS) est indispensable.
+</p>
 
-> 💡 La résolution inverse est importante pour :
-> - La lisibilité des journaux de sécurité  
-> - Le bon fonctionnement de certains services AD  
-> - Les serveurs Linux et équipements réseau  
-> - Les outils de supervision et d’audit  
+<div class="my-8 p-6 bg-blue-50 dark:bg-blue-500/5 border-l-4 border-blue-500 rounded-r-xl">
+  <h4 class="text-xs font-black uppercase tracking-widest text-blue-800 dark:text-blue-400 mb-4">
+    💡 Pourquoi la résolution inverse ?
+  </h4>
+  <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+      <span class="text-blue-500">✔</span> Lisibilité des logs de sécurité
+    </li>
+    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+      <span class="text-blue-500">✔</span> Services AD (Kerberos, réplication)
+    </li>
+    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+      <span class="text-blue-500">✔</span> Intégration Linux & Network
+    </li>
+    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+      <span class="text-blue-500">✔</span> Outils d'audit (PingCastle)
+    </li>
+  </ul>
+</div>
 
 ---
 
-## 🔍 Étape 1 : Identifier le problème de résolution inverse
+## 🔍 Étape 1 : Identifier le problème de résolution
 
-Avant toute modification, je vérifie le comportement actuel du serveur DNS.  
-En interrogeant l’adresse IP du contrôleur de domaine, la résolution échoue : le serveur apparaît comme **Unknown**. Cela indique qu’aucune zone de recherche inversée n’est configurée.
+Avant toute modification, je vérifie le comportement actuel. En interrogeant l’adresse IP du DC via `nslookup`, le serveur apparaît comme **Unknown**.
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-    <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-        <img src="/images/projets/win-identity-pro/dns/dns0.png" alt="Erreur nslookup Unknown" class="rounded-lg border border-white/10 shadow-md max-w-2xl w-full" /> 
-        <p class="text-[0.7rem] italic opacity-50 mt-2 text-center max-w-xl">Le serveur ne parvient pas à se résoudre lui-même via son adresse IP, signe de l’absence de zone PTR.</p>
+<div class="flex flex-col items-center my-10 group">
+  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl transition-all group-hover:border-blue-500/30">
+    <img src="/images/projets/win-identity-pro/dns/dns0.png" alt="Erreur nslookup Unknown" class="rounded-xl w-full max-w-2xl" />
+  </div>
+  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Échec de résolution : absence d'enregistrement PTR</p>
+</div>
+
+---
+
+## 🏗️ Étape 2 : Création de la Zone Inversée (AD-Integrated)
+
+Je crée une nouvelle zone permettant d’établir la correspondance entre les adresses IP et les noms FQDN.
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-10">
+  
+  <div class="space-y-3">
+    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
+      <img src="/images/projets/win-identity-pro/dns/dns2.png" alt="Zone principale" class="w-full h-full object-contain" />
     </div>
-</div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Type :</strong> Zone principale intégrée à l’Active Directory.</p>
+  </div>
 
-Il est préférable de corriger cela afin d’assurer une cohérence DNS complète dans l’infrastructure.
-
----
-
-## 🏗️ Étape 2 : Créer une zone de recherche inversée intégrée à l’AD
-
-Je crée une nouvelle zone dans le gestionnaire DNS.  
-Cette zone permettra d’établir la correspondance entre les adresses IP et les noms FQDN.
-
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/dns/dns.png" alt="Création d’une nouvelle zone DNS" class="rounded-lg border border-white/10 shadow-md max-w-2xl w-full" /> 
-    <p class="text-[0.7rem] italic opacity-50 mt-2 text-center max-w-xl">L’assistant de création de zone DNS permet d’ajouter une zone de recherche inversée.</p>
+  <div class="space-y-3">
+    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
+      <img src="/images/projets/win-identity-pro/dns/dns3.png" alt="Réplication" class="w-full h-full object-contain" />
     </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Réplication :</strong> Propagation à tous les serveurs DNS du domaine.</p>
+  </div>
+
+  <div class="space-y-3">
+    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
+      <img src="/images/projets/win-identity-pro/dns/dns4.png" alt="IPv4" class="w-full h-full object-contain" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Protocole :</strong> Création de la zone pour l'adressage IPv4.</p>
+  </div>
+
+  <div class="space-y-3">
+    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
+      <img src="/images/projets/win-identity-pro/dns/dns5.png" alt="ID réseau" class="w-full h-full object-contain" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Réseau :</strong> Saisie de l'ID réseau <code class="text-blue-600 dark:text-blue-400">192.168.174</code>.</p>
+  </div>
+
 </div>
-
-Lors de la configuration, je choisis les options suivantes :
-
-- **Type de zone :** Zone principale intégrée à Active Directory  
-- **Étendue de réplication :** Tous les serveurs DNS du domaine  
-- **Version IP :** IPv4  
-- **ID Réseau :** `192.168.174` (réseau de mon lab)
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8 justify-items-center">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dns2.png" alt="Zone principale" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Sélection d’une zone principale intégrée à l’AD pour permettre la réplication automatique.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dns3.png" alt="Réplication Active Directory" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Réplication vers tous les serveurs DNS du domaine pour garantir la cohérence.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dns4.png" alt="Choix IPv4" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Création d’une zone de recherche inversée pour le protocole IPv4.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dns5.png" alt="ID réseau" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Saisie de l’identifiant réseau correspondant à l’adressage du lab.</p>
-  </div>
-</div>
-
-Une fois la zone créée, on aura une structure prête à accueillir les enregistrements PTR.
 
 ---
 
-## 🔗 Étape 3 : Activer la création automatique du pointeur PTR
+## 🔗 Étape 3 : Automatisation du pointeur PTR
 
-La zone existe maintenant, mais il faut lier l’enregistrement du serveur à cette zone inversée.
+Il est préférable d’activer la création automatique du pointeur pour éviter une gestion manuelle fastidieuse. Je lie l’enregistrement **A** du serveur à la zone inversée via ses propriétés.
 
-Je me rends dans les propriétés de l’enregistrement A de mon serveur, afin d’activer la mise à jour automatique du pointeur PTR.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8 justify-items-center">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dns6.png" alt="Propriétés du serveur DNS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Accès aux propriétés de l’enregistrement A du serveur dans la zone directe.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dns7.png" alt="Activation du PTR" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Activation de l’option permettant de créer automatiquement l’enregistrement PTR associé.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-8 my-10 items-center">
+  <img src="/images/projets/win-identity-pro/dns/dns7.png" alt="Activation PTR" class="rounded-xl border border-slate-200 dark:border-white/10 shadow-lg" />
+  <div class="bg-slate-50 dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10">
+    <p class="text-[11px] text-slate-700 dark:text-white/70 leading-relaxed">L'option <span class="text-blue-600 dark:text-blue-400 font-bold">"Mettre à jour l'enregistrement de pointeur (PTR) associé"</span> garantit qu'à chaque changement d'IP, le DNS inverse se mettra à jour dynamiquement.</p>
   </div>
 </div>
-
-Il est préférable d’activer cette option pour éviter d’avoir à gérer manuellement les enregistrements inversés.
 
 ---
 
-## 🌐 Étape 4 : Vérifier la configuration DNS globale
+---
+## 🌐 Étape 4 : Configuration des Redirecteurs et Validation
 
-Pour terminer, je vérifie également les **redirecteurs DNS** afin d’assurer la résolution des noms externes, en complément de la résolution interne.
+Une fois les zones locales configurées, il est nécessaire de permettre au serveur de résoudre les noms de domaines externes (Internet). 
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8 justify-items-center">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dnsredirect.png" alt="Configuration des redirecteurs DNS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Configuration des redirecteurs pour permettre la résolution des noms Internet.</p>
+### Pourquoi configurer des redirecteurs ?
+Mon contrôleur de domaine ne connaît que les machines de mon lab. Pour que les clients puissent naviguer sur le web, j'utilise des **redirecteurs DNS**. Le serveur local va ainsi interroger des résolveurs publics (comme ceux de Google ou Cloudflare) pour toutes les requêtes qu'il ne sait pas traiter lui-même.
+
+<div class="my-10 flex flex-col items-center">
+  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm group">
+    <img src="/images/projets/win-identity-pro/dns/dnsredirect.png" alt="Configuration des redirecteurs DNS" class="rounded-xl max-w-full h-auto" />
   </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/dns/dnsok.png" alt="Validation de la résolution DNS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">La résolution inverse fonctionne désormais : l’adresse IP renvoie correctement le nom du serveur.</p>
+  <div class="mt-4 flex items-center gap-2 text-slate-500 dark:text-white/40 font-medium">
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Propriétés du serveur : Ajout des DNS de Google (8.8.8.8)</p>
   </div>
 </div>
 
-L'infrastructure réseau étant désormais saine et capable de résoudre les identités dans les deux sens, nous avons posé les fondations nécessaires au déploiement de notre autorité de certification.
-Cette cohérence de nommage est le pilier du futur service LDAPS : elle garantit que les clients pourront authentifier le serveur sans erreur de certificat, permettant ainsi le passage d'un protocole LDAP en clair vers un canal chiffré et intègre
+### Validation finale
+Je termine par un test de cohérence. La résolution inverse doit maintenant fonctionner parfaitement : le serveur doit être capable de retourner son propre nom FQDN à partir de son adresse IP.
 
+<div class="my-10 flex flex-col items-center">
+  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
+    <img src="/images/projets/win-identity-pro/dns/dnsok.png" alt="Validation DNS OK" class="rounded-xl max-w-full h-auto" />
+  </div>
+  <div class="mt-4 flex items-center gap-2 text-slate-500 dark:text-white/40 font-medium">
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Test NSLOOKUP : Correspondance IP/Nom validée</p>
+  </div>
+</div>
+
+<div class="mt-12 space-y-6 border-t border-slate-200 dark:border-white/10 pt-8 text-balance">
+  <p class="text-sm leading-relaxed text-slate-700 dark:text-white/80 italic">
+    L'infrastructure réseau est désormais saine et capable de résoudre les identités dans les deux sens. Cette cohérence de nommage est le pilier du futur service <strong>LDAPS</strong>.
+  </p>
+  <p class="text-sm leading-relaxed text-slate-700 dark:text-white/80">
+    Elle garantit que les clients pourront authentifier le serveur sans erreur de certificat (Hostname mismatch), permettant ainsi le passage d'un protocole LDAP en clair vers un canal chiffré et intègre.
+  </p>
+</div>
+
+<section class="mt-16 space-y-12">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+        <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : DNS
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Cohérence réseau :</strong> Zone de recherche inversée (PTR) fonctionnelle sur le subnet.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Automatisation :</strong> Mise à jour dynamique des enregistrements activée.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Ouverture maîtrisée :</strong> Redirecteurs DNS configurés pour la résolution externe.</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8">
+        <div class="text-center">
+          <div class="text-4xl mb-2 transition-transform hover:scale-110 duration-300">🌍</div>
+          <p class="text-[10px] uppercase tracking-widest text-slate-900 dark:text-white/40 font-black">Infrastructure Saine</p>
+          <p class="text-[9px] text-slate-500 mt-1 italic">Prêt pour la PKI</p>
+        </div>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
+    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+      "Le DNS est le système nerveux de l'Active Directory. Sans une résolution parfaite, la sécurité et les certificats ne peuvent reposer sur des bases solides."
+    </p>
+    
+    <div class="space-y-2">
+       <p class="text-sm text-slate-600 dark:text-white/60">
+        <strong>Objectif suivant :</strong> Déployer l'Autorité de Certification (AD CS) pour chiffrer les flux LDAPS et sécuriser les échanges d'identités.
+      </p>
+      
+    </div>
+  </div>
+
+</section>
 
 <NextStep 
   href="/projets/ad-cs" 

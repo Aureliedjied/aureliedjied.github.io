@@ -3,7 +3,7 @@ title: "Sécurité : Compte de secours Break-Glass"
 description: "Mise en place d'une procédure d'urgence pour prévenir la perte d'accès au domaine après durcissement."
 category: "windows"
 tags: ["Sécurité", "Active Directory", "Windows Server"]
-pubDate: 2026-01-24
+pubDate: 2026-01-12
 slug: "break-glass-account"
 ---
 
@@ -17,21 +17,63 @@ import { WIN_INFRA_CORE } from '../../../constants/series';
   currentStepIndex={2} 
 />
 
-Le durcissement (Hardening) d'une infrastructure peut paradoxalement mener à un déni de service administratif. Si une panne majeure affecte le MFA ou si une GPO bloque les accès nominaux, le compte **Break-Glass** est l'ultime recours pour reprendre la main sur l'annuaire.
-
-## 💻 Création automatisée via PowerShell
-
-Pour garantir une configuration rigoureuse, j'ai automatisé la création du compte et de son environnement. Ce compte est membre du groupe **Admins du domaine** afin de garantir une capacité de restauration totale en cas de sinistre.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/account-glass/script-secu-1.png" alt="Script partie 1" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Phase 1 : Création de l'OU 99-EMERGENCY et définition des variables</p>
+<section class="my-10 space-y-8">
+  
+  <div class="flex flex-col md:flex-row gap-8 items-start">
+    <div class="flex-1 space-y-4">
+      <p class="text-base leading-relaxed opacity-90">
+        Le durcissement (<em>Hardening</em>) d'une infrastructure peut paradoxalement mener à un <strong>déni de service administratif</strong>. 
+      </p>
+      <div class="bg-amber-500/10 border-l-4 border-amber-500 p-4 rounded-r-xl">
+        <p class="text-sm leading-relaxed text-amber-200/80">
+          Si une panne majeure affecte le MFA ou si une GPO restrictive bloque les accès nominaux, le compte <strong>Break-Glass</strong> est l'ultime recours pour reprendre la main sur l'annuaire.
+        </p>
+      </div>
+    </div>
   </div>
 
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/account-glass/script-secu-2.png" alt="Script partie 2" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Phase 2 : Création de l'utilisateur et durcissement (Non-délégation)</p>
+  <div class="pt-6 border-t border-white/5">
+    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+      <span class="text-blue-400">💻</span> Création automatisée via PowerShell
+    </h2>
+    <p class="text-sm opacity-60 mt-2">
+      Pour garantir une configuration rigoureuse et reproductible, j'ai automatisé la création du compte <code class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-md border border-blue-500/30 font-mono text-sm font-bold shadow-sm">secu-adm-urgency</code>. L'automatisation élimine l'erreur humaine sur des paramètres de sécurité critiques.
+    </p>
+  </div>
+
+</section>
+
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-10">
+  
+  <div class="space-y-3">
+    <div class="aspect-video overflow-hidden rounded-xl border border-white/10 shadow-lg bg-[#012456]">
+      <div class="bg-white/10 px-3 py-2 flex gap-1.5 items-center">
+        <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+        <div class="text-[9px] text-white/40 font-mono ml-2 uppercase tracking-widest">Phase 1 : Init</div>
+      </div>
+      <img 
+        src="/images/projets/win-infra-core/account-glass/script-secu-1.png" 
+        alt="Script PowerShell Phase 1" 
+        class="w-full h-full object-contain p-4" 
+      />
+    </div>
+    <p class="text-[0.65rem] italic opacity-50 text-center px-4">Provisioning de l'OU <code>99-EMERGENCY</code> et initialisation des variables sécurisées.</p>
+  </div>
+
+  <div class="space-y-3">
+    <div class="aspect-video overflow-hidden rounded-xl border border-white/10 shadow-lg bg-[#012456]">
+      <div class="bg-white/10 px-3 py-2 flex gap-1.5 items-center">
+        <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+        <div class="text-[9px] text-white/40 font-mono ml-2 uppercase tracking-widest">Phase 2 : Hardening</div>
+      </div>
+      <img 
+        src="/images/projets/win-infra-core/account-glass/script-secu-2.png" 
+        alt="Script PowerShell Phase 2" 
+        class="w-full h-full object-contain p-4" 
+      />
+    </div>
+    <p class="text-[0.65rem] italic opacity-50 text-center px-4">Création de l'objet utilisateur et application des flags de non-délégation Kerberos.</p>
   </div>
 </div>
 ---
@@ -133,29 +175,70 @@ L'audit local est une base indispensable, mais la sécurité moderne repose sur 
 </div>
 
 
-<section class="mt-16 border-t border-white/10 pt-8">
-  <div class="bg-red-500/10 border-l-4 border-red-500 p-6 my-8">
-    <h4 class="text-red-400 font-bold mb-2 flex items-center gap-2">
-      ⚠️ Règle de Gouvernance
-    </h4>
-    <p class="text-base leading-relaxed opacity-90">
-      Ce compte ne doit <strong>jamais</strong> être utilisé pour des tâches d’administration courantes. 
-      Son usage est strictement réservé aux situations de crise. Chaque activation impose :
-    </p>
-    <ul class="list-disc list-inside mt-3 space-y-2 opacity-80 text-sm">
-      <li>Une justification consignée dans le registre d'incidents.</li>
-      <li>Une rotation <strong>immédiate</strong> du mot de passe après usage.</li>
-      <li>Une analyse post-mortem systématique des logs de session.</li>
-    </ul>
+<section class="mt-16 border-t border-white/10 pt-12">
+  
+  <div class="relative overflow-hidden bg-red-500/5 border border-red-500/20 rounded-2xl p-6 sm:p-8">
+    <div class="absolute top-0 right-0 p-4 opacity-10 text-red-500 text-6xl font-bold select-none">!</div>
+    
+    <div class="relative z-10">
+      <h4 class="text-red-400 font-bold text-lg mb-4 flex items-center gap-3">
+        <span class="p-2 bg-red-500/20 rounded-lg">⚠️</span>
+        Règle de Gouvernance
+      </h4>
+      
+      <p class="text-sm sm:text-base leading-relaxed opacity-90 mb-6">
+        Ce compte ne doit <strong>jamais</strong> être utilisé pour l'administration courante. Son usage est réservé aux crises majeures avec un protocole strict :
+      </p>
+
+      <div class="grid grid-cols-1 gap-3">
+        <div class="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+          <span class="text-lg">📝</span>
+          <p class="text-[11px] sm:text-xs font-medium opacity-80 uppercase tracking-wide">Justification au registre d'incidents</p>
+        </div>
+        <div class="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+          <span class="text-lg">🔄</span>
+          <p class="text-[11px] sm:text-xs font-medium opacity-80 uppercase tracking-wide">Rotation immédiate du mot de passe</p>
+        </div>
+        <div class="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+          <span class="text-lg">🔍</span>
+          <p class="text-[11px] sm:text-xs font-medium opacity-80 uppercase tracking-wide">Audit post-mortem des logs</p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <p class="text-base leading-relaxed opacity-90 mt-8">
-    La mise en place de cette issue de secours termine la préparation de notre socle. L'infrastructure est désormais prête pour un audit de vulnérabilités approfondi.
-  </p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8 mt-12">
+    <div>
+      <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-400">✅</span> Bilan de l'étape 03
+      </h3>
+      <ul class="space-y-3 text-sm opacity-80">
+        <li class="flex items-start gap-3">
+          <span><strong>Compte Break-Glass :</strong> <code>secu-adm-urgency</code> opérationnel.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span><strong>Automatisation :</strong> Création via script PowerShell validée.</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-white/10 pl-8 text-center">
+       <div>
+          <div class="text-4xl mb-2">🏰</div>
+          <p class="text-[10px] uppercase tracking-tighter opacity-40 font-bold">Prêt pour l'audit</p>
+       </div>
+    </div>
+  </div>
 
-  <p class="text-base leading-relaxed opacity-90 mt-4">
-    La prochaine phase utilisera l'outil <strong>PingCastle</strong> pour valider notre niveau de sécurité et corriger les derniers points de faiblesse du domaine.
-  </p>
+  <div class="max-w-2xl mx-auto text-center space-y-4 mt-12">
+    <p class="text-base leading-relaxed opacity-90 italic">
+      "Le socle est prêt. Place maintenant à l'épreuve de vérité."
+    </p>
+    <p class="text-sm opacity-60">
+      Objectif suivant : Audit de vulnérabilités avec <strong>PingCastle</strong> pour valider notre score de sécurité.
+    </p>
+  </div>
+
 </section>
 
 <NextStep 

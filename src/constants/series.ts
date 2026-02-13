@@ -11,7 +11,7 @@ export const WIN_IDENTITY_PRO = [
   { label: "DNS : Résolution Inverse", href: "/projets/dns" }, 
   { label: "PKI : Déploiement AD CS", href: "/projets/ad-cs" },
   { label: "LDAPS : Chiffrement d'annuaire", href: "/projets/ldaps" },
-  { label: "MFA : Double authentification Admin", href: "/projets/mfa-adm" }, 
+  { label: "Lier un client au domaine", href: "/projets/client-domaine" }, 
 ];
 
 // --- SÉRIE 3 : CONTINUITÉ D'ACTIVITÉ (PRA/PCA) ---
