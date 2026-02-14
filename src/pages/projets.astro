@@ -85,7 +85,7 @@ const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].
       ))}
     </div>
 
-    <div id="projects-results" class="hidden grid grid-cols-1 gap-4">
+<div id="projects-results" class="hidden flex flex-col gap-4">
       {allProjects.map((project) => (
         <a 
           href={`/projets/${project.slug}`} 
@@ -93,16 +93,29 @@ const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].
           data-tags={project.data.tags?.join(',').toLowerCase()}
           style="background-color: var(--card-bg); border-color: var(--card-border);"
         >
-          <div class="flex justify-between items-center">
-             <div class="flex items-center gap-4">
-               <h3 class="text-xl font-bold" style="color: var(--text-title);">{project.data.title}</h3>
-               {project.data.tags?.map(tag => (
-                 <span class="text-[9px] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 opacity-50">#{tag}</span>
-               ))}
-             </div>
-             <span class="text-purple-500 text-xl">→</span>
+          <div class="flex flex-col gap-4">
+            {/* Titre et Flèche */}
+            <div class="flex justify-between items-start">
+              <h3 class="text-xl font-bold leading-tight pr-4" style="color: var(--text-title);">
+                {project.data.title}
+              </h3>
+              <span class="text-purple-500 text-xl shrink-0">→</span>
+            </div>
+
+            {/* Tags : Passage en flex-wrap pour éviter le débordement */}
+            <div class="flex flex-wrap gap-2">
+              {project.data.tags?.map(tag => (
+                <span class="text-[9px] px-2 py-1 rounded-md bg-white/5 border border-white/10 opacity-50 whitespace-nowrap">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Description */}
+            <p class="text-sm opacity-60 leading-relaxed" style="color: var(--text-main);">
+              {project.data.description}
+            </p>
           </div>
-          <p class="text-sm opacity-60 mt-2">{project.data.description}</p>
         </a>
       ))}
     </div>
