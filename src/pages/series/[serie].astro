@@ -1,0 +1,105 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { SERIES } from '../../constants/series';
+
+export async function getStaticPaths() {
+  const allProjects = await getCollection('projets');
+  
+  // TRI DES ARTICLES PAR DATE 
+  const sortedProjects = allProjects.sort((a, b) => {
+    const dateA = new Date(a.data.pubDate || 0).getTime();
+    const dateB = new Date(b.data.pubDate || 0).getTime();
+    return dateA - dateB; // Date A - Date B = Croissant
+  });
+
+  return Object.keys(SERIES).map((key) => {
+    // On utilise maintenant les projets déjà triés
+    const filteredProjects = sortedProjects.filter((p) => p.data.serie === key);
+    
+    return {
+      params: { serie: key },
+      props: { 
+        projects: filteredProjects,
+        serieKey: key 
+      },
+    };
+  });
+}
+
+const { serie } = Astro.params;
+const { projects, serieKey } = Astro.props;
+
+// On récupère les informations de la série (titre, description)
+const serieInfo = SERIES[serieKey as keyof typeof SERIES];
+---
+
+<Layout title={serieInfo?.title}>
+  <div class="max-w-5xl mx-auto py-12 px-4">
+    <a href="/projets" class="text-sm mb-8 inline-block transition-all opacity-60 hover:opacity-100 hover:text-purple-400" style="color: var(--text-main);">
+      ← Retour aux séries de projets
+    </a>
+
+    <header class="mb-16">
+      <div class="flex items-center gap-4 mb-4">
+        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border" 
+              style={`background-color: ${serieInfo?.color}11; color: ${serieInfo?.color}; border-color: ${serieInfo?.color}33;`}>
+          Dossier Technique
+        </span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6" style="color: var(--text-title);">
+        {serieInfo?.title || serie}
+      </h1>
+      <p class="text-lg max-w-3xl leading-relaxed opacity-80" style="color: var(--text-main);">
+        {serieInfo?.description}
+      </p>
+    </header>
+
+    <div class="grid gap-8">
+      {projects.length > 0 ? (
+        projects.map((project) => (
+        <a 
+          href={`/projets/${project.slug}`} 
+          class="group p-8 rounded-[2rem] border transition-all duration-500 hover:-translate-y-1"
+          style={`background-color: var(--card-bg); border-color: var(--card-border); --hover-color: ${serieInfo?.color};`}
+        >
+            <div class="flex justify-between items-start mb-4">
+              <div class="space-y-1">
+                <h2 class="text-2xl font-bold group-hover:text-purple-400 transition-colors" style="color: var(--text-title);">
+                  {project.data.title}
+                </h2>
+                <p class="text-sm opacity-50" style="color: var(--text-main);">
+                   {project.data.pubDate ? new Date(project.data.pubDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Date non définie'}
+                </p>
+              </div>
+              <span class="text-2xl opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all text-purple-500">→</span>
+            </div>
+            
+            <p class="text-base leading-relaxed mb-6 line-clamp-2 opacity-80" style="color: var(--text-main);">
+              {project.data.description}
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+              {project.data.tags && project.data.tags.map(tag => (
+                <span class="text-[10px] font-mono px-2 py-1 rounded-md bg-white/5 border border-white/10" style="color: var(--text-muted);">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))
+      ) : (
+        <div class="py-20 text-center border-2 border-dashed rounded-[2rem]" style="border-color: var(--card-border);">
+          <p style="color: var(--text-muted);">Aucun article n'a encore été associé à cette série.</p>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .group:hover {
+    border-color: var(--hover-color) !important;
+    box-shadow: 0 10px 30px -15px var(--hover-color);
+  }
+</style>

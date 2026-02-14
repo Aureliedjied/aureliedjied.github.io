@@ -1,181 +1,180 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { SERIES } from '../constants/series';
 
-const projects = await getCollection('projets');
-const sortedProjects = projects.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const allProjects = await getCollection('projets');
 
-const filters = [
-  { label: "Tout", tag: "all" },
-  { label: "Windows Server", tag: "Windows Server" },
-  { label: "Linux", tag: "Debian" },
-  { label: "Sécurité & VPN", tag: "Sécurité" },
-  { label: "Monitoring & Audit", tag: "Monitoring" },
-  { label: "Virtualisation & Cloud", tag: "Virtualisation" },
-  { label: "Support Client & Ticketing", tag: "Support" } 
-];
+const seriesStats = Object.entries(SERIES).map(([key, data]) => {
+  const projectsInSerie = allProjects.filter(p => p.data.serie === key);
+  const tagsInSerie = [...new Set(projectsInSerie.flatMap(p => p.data.tags || []))];
+  
+  return {
+    key,
+    ...data, // On récupère ici title, description, icon, color
+    count: projectsInSerie.length,
+    tags: tagsInSerie
+  };
+});
 
-// Dictionnaire des thèmes visuels
-const themeMap = {
-  pfsense: { border: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)', icon: '🛡️' },
-  windows : { border: '#00a4ef', bg: 'rgba(0, 164, 239, 0.1)', icon: '🪟' },
-  zabbix: { border: '#e0291e', bg: 'rgba(224, 41, 30, 0.1)', icon: '📊' },
-  linux: { border: '#fdb900', bg: 'rgba(253, 185, 0, 0.1)', icon: '🐧' },
-  default: { border: '#a855f7', bg: 'rgba(168, 85, 247, 0.1)', icon: '📁' }
-};
+const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].sort();
 ---
 
-<Layout>
-  <div class="space-y-8">
-    <header class="space-y-4">
-      <h1 class="text-4xl font-bold tracking-tighter" style="color: var(--text-title);">
-        Mes Projets
-      </h1>
-      <p class="max-w-2xl" style="color: var(--text-main);">
-        Exploration de l'infrastructure IT : du déploiement de serveurs Windows à la sécurisation d'environnements Linux.
+<Layout title="Expertises Techniques">
+  <div class="max-w-6xl mx-auto py-12 px-4">
+    <header class="mb-12">
+      <h1 class="text-4xl font-bold tracking-tighter" style="color: var(--text-title);">Projets personnels</h1>
+      <p class="mt-4 text-lg opacity-70 max-w-3xl leading-relaxed" style="color: var(--text-main);">
+        Bienvenue dans mon laboratoire technique. Ces projets sont issus de mes <strong>travaux pratiques et labs personnels</strong> ; ils documentent mon apprentissage et sont amenés à évoluer au fil de mes découvertes et de mes montées en compétence.
       </p>
     </header>
 
-    <div class="flex flex-wrap gap-3 py-4 border-y" style="border-color: var(--card-border);">
-      {filters.map(filter => (
-        <button 
-          class="filter-btn px-4 py-1.5 rounded-full border text-xs font-medium transition-all [&.active]:bg-purple-500/10 [&.active]:border-purple-500 [&.active]:text-purple-500" 
-          style="border-color: var(--card-border); color: var(--text-main);"
-          data-filter={filter.tag}
-          class:list={[{ 'active': filter.tag === 'all' }]} 
-        >
-          {filter.label}
-        </button>
+    <div class="flex flex-wrap gap-3 mb-16">
+      <button class="filter-btn active" data-filter="all">Tous les domaines</button>
+      {allUniqueTags.map(tag => (
+        <button class="filter-btn" data-filter={tag.toLowerCase()}>#{tag}</button>
       ))}
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedProjects.map((project) => {
-          // On récupère le thème selon la catégorie, sinon default
-          const theme = (project.data.category && themeMap[project.data.category]) 
-              ? themeMap[project.data.category] 
-              : themeMap.default;
+    <div id="series-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {seriesStats.map((serie) => (
+        <a 
+          href={`/series/${serie.key}`} 
+          class="group relative p-8 rounded-[2rem] border transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between min-h-[320px]" 
+          style={`background-color: var(--card-bg); border-color: var(--card-border); --serie-color: ${serie.color || '#a855f7'};`}
+        >
+          <div class="absolute top-6 right-8 px-3 py-1 rounded-full text-[10px] font-bold border"
+               style={`background-color: ${serie.color}11; color: ${serie.color}; border-color: ${serie.color}33;`}>
+            {serie.count} Articles
+          </div>
 
-          return (
-            <a 
-              href={`/projets/${project.slug}`} 
-              class="project-card group relative flex flex-col justify-between p-6 min-h-[300px] rounded-[1.5rem] border shadow-2xl transition-all duration-300 hover:-translate-y-1"
-              style={`background-color: var(--card-bg); border-color: ${theme.border}44;`}
-              data-tags={`${project.data.tags.join(' ')} ${project.data.category || ''}`}
-            >
-            
-            {/* Icône flottante en haut à droite */}
-            <div class="absolute top-6 right-6 text-2xl opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
-              {theme.icon}
+          <div class="space-y-6">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border transition-all group-hover:scale-110 group-hover:shadow-lg"
+                 style={`background-color: ${serie.color}11; border-color: ${serie.color}22; color: ${serie.color}; shadow-color: ${serie.color}44;`}>
+                    {serie.icon === 'windows' && <i class="ri-microsoft-fill"></i>}
+                    {serie.icon === 'linux' && <i class="ri-ubuntu-fill"></i>}
+                    {serie.icon === 'network' && <i class="ri-router-line"></i>}
+                    {serie.icon === 'security' && <i class="ri-shield-keyhole-line"></i>}
+                    {serie.icon === 'backup' && <i class="ri-database-2-line"></i>}
+                    {serie.icon === 'monitoring' && <i class="ri-dashboard-3-line"></i>}
+                    {serie.icon === 'itsm' && <i class="ri-customer-service-2-line"></i>}
+                  </div>
+
+            <div>
+              <h2 class="text-2xl font-bold group-hover:text-[var(--serie-color)] transition-colors" style="color: var(--text-title);">
+                {serie.title}
+              </h2>
+              <p class="text-sm opacity-70 mt-2" style="color: var(--text-main);">
+                {serie.description}
+              </p>
             </div>
+          </div>
 
-            <div class="space-y-4 relative z-10">
-                <div class="flex flex-wrap gap-2">
-                    {project.data.tags.map(tag => (
-                        <span 
-                          class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded-md border"
-                          style={`background-color: ${theme.bg}; color: ${theme.border}; border-color: ${theme.border}33;`}
-                        >
-                            {tag}
-                        </span>
-                    ))}
-                </div>
-                
-                <div class="space-y-2">
-                    <h3 class="text-xl font-bold transition-colors leading-tight" style={`color: var(--text-title);`}>
-                        {project.data.title}
-                    </h3>
-                    <p class="text-sm leading-relaxed line-clamp-4" style="color: var(--text-main);">
-                        {project.data.description}
-                    </p>
-                </div>
-            </div>
+          <div class="flex flex-wrap gap-2 mt-4">
+            {serie.tags.slice(0, 3).map(tag => (
+              <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-white/5 bg-white/5 opacity-40">
+                #{tag}
+              </span>
+            ))}
+          </div>
 
-            <div class="flex justify-between items-center mt-6 relative z-10">
-                <div class="flex flex-col gap-1">
-                    <span class="text-[10px] font-mono opacity-50 uppercase tracking-tighter" style="color: var(--text-main);">
-                      Publié en {new Date(project.data.pubDate).toLocaleDateString('fr-FR', {month: 'short', year: 'numeric'})}
-                    </span>
-                    
-                    {project.data.updatedDate && (
-                        <span class="text-[9px] font-bold text-purple-400 flex items-center gap-1">
-                            <span class="relative flex h-1.5 w-1.5">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-purple-500"></span>
-                            </span>
-                            MAJ {new Date(project.data.updatedDate).toLocaleDateString('fr-FR', {month: 'short', year: 'numeric'})}
-                        </span>
-                    )}
-                </div>
+          <div class="mt-8 text-xs font-bold uppercase tracking-widest" style={`color: ${serie.color};`}>
+            Explorer le dossier <span class="inline-block transition-transform group-hover:translate-x-2">→</span>
+          </div>
+        </a>
+      ))}
+    </div>
 
-                <div class="opacity-50 group-hover:opacity-100 transition-all" style={`color: ${theme.border};`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-                </div>
-            </div>
-            
-            {/* Overlay de couleur au survol basé sur le thème */}
-            <div 
-              class="absolute inset-0 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-              style={`background: linear-gradient(135deg, ${theme.bg} 0%, transparent 100%);`}
-            ></div>
-            </a>
-          );
-        })}
+    <div id="projects-results" class="hidden grid grid-cols-1 gap-4">
+      {allProjects.map((project) => (
+        <a 
+          href={`/projets/${project.slug}`} 
+          class="project-card p-6 rounded-2xl border transition-all hover:border-purple-500/50" 
+          data-tags={project.data.tags?.join(',').toLowerCase()}
+          style="background-color: var(--card-bg); border-color: var(--card-border);"
+        >
+          <div class="flex justify-between items-center">
+             <div class="flex items-center gap-4">
+               <h3 class="text-xl font-bold" style="color: var(--text-title);">{project.data.title}</h3>
+               {project.data.tags?.map(tag => (
+                 <span class="text-[9px] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 opacity-50">#{tag}</span>
+               ))}
+             </div>
+             <span class="text-purple-500 text-xl">→</span>
+          </div>
+          <p class="text-sm opacity-60 mt-2">{project.data.description}</p>
+        </a>
+      ))}
     </div>
   </div>
 </Layout>
 
+<style>
+ 
 
-<script>
-  const buttons = document.querySelectorAll('.filter-btn');
-  const projectCards = document.querySelectorAll('.project-card');
-
-  // --- 1. FONCTION DE FILTRAGE PRINCIPALE ---
-  function filterProjects(filterValue: string) {
-    projectCards.forEach(card => {
-      const cardTags = card.getAttribute('data-tags') || '';
-      const cardElement = card as HTMLElement;
-      
-      // On utilise includes() pour permettre des filtres partiels
-      if (filterValue === 'all' || cardTags.toLowerCase().includes(filterValue.toLowerCase())) {
-        cardElement.style.display = 'flex';
-      } else {
-        cardElement.style.display = 'none';
-      }
-    });
-
-    // Mise à jour visuelle des boutons
-    buttons.forEach(btn => {
-      const btnFilter = btn.getAttribute('data-filter') || 'all';
-      if (btnFilter === filterValue) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    color: var(--text-main);
+    cursor: pointer;
   }
 
-  // --- 2. ÉCOUTEURS DE CLIC SUR LES BOUTONS ---
+  .filter-btn.active {
+    opacity: 1;
+    border-color: rgba(168, 85, 247, 0.5);
+    background-color: rgba(168, 85, 247, 0.1);
+    color: rgb(168, 85, 247);
+  }
+
+  .hidden { 
+    display: none; 
+  }
+</style>
+
+<script>
+  /* ... Le script reste identique, il gère déjà parfaitement le basculement ... */
+  const buttons = document.querySelectorAll('.filter-btn');
+  const seriesGrid = document.getElementById('series-grid');
+  const projectsResults = document.getElementById('projects-results');
+  const projectCards = document.querySelectorAll('.project-card');
+
+  function applyFilter(filterValue: string) {
+    buttons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-filter') === filterValue));
+
+    if (filterValue === 'all') {
+      seriesGrid?.classList.remove('hidden');
+      projectsResults?.classList.add('hidden');
+    } else {
+      seriesGrid?.classList.add('hidden');
+      projectsResults?.classList.remove('hidden');
+      
+      projectCards.forEach(card => {
+        const tags = card.getAttribute('data-tags') || '';
+        (card as HTMLElement).style.display = tags.includes(filterValue.toLowerCase()) ? 'block' : 'none';
+      });
+    }
+  }
+
   buttons.forEach(button => {
     button.addEventListener('click', () => {
       const filter = button.getAttribute('data-filter') || 'all';
-      filterProjects(filter);
-      
-      // Optionnel : Nettoyer l'URL si on clique manuellement sur un filtre
+      applyFilter(filter);
       const url = new URL(window.location.href);
-      url.searchParams.delete('filter');
+      filter === 'all' ? url.searchParams.delete('filter') : url.searchParams.set('filter', filter);
       window.history.pushState({}, '', url);
     });
   });
 
-  // --- 3. LOGIQUE AU CHARGEMENT (LECTURE URL) ---
   window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const filterParam = urlParams.get('filter');
-
-    if (filterParam) {
-      // On applique le filtre récupéré de l'URL
-      filterProjects(filterParam);
-    }
+    const filterParam = new URLSearchParams(window.location.search).get('filter');
+    if (filterParam) applyFilter(filterParam);
   });
 </script>

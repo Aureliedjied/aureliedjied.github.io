@@ -1,64 +1,71 @@
-// --- SÉRIE 1 : FONDATIONS & HARDENING ---
-export const WIN_INFRA_CORE = [
-  { label: "Virtualisation Server 2022", href: "/projets/vmware-setup" },
-  { label: "Promotion du Domaine AD DS", href: "/projets/promotion-domaine" },
-  { label: "Comptes de secours (Break-Glass)", href: "/projets/break-glass-account" }, 
-  { label: "Audit PingCastle", href: "/projets/audit-pingcastle" },
-];
+// src/constants/series.ts
 
-// --- SÉRIE 2 : SÉCURITÉ AVANCÉE DES IDENTITÉS ---
-export const WIN_IDENTITY_PRO = [
-  { label: "DNS : Résolution Inverse", href: "/projets/dns" }, 
-  { label: "PKI : Déploiement AD CS", href: "/projets/ad-cs" },
-  { label: "LDAPS : Chiffrement d'annuaire", href: "/projets/ldaps" },
-  { label: "Lier un client au domaine", href: "/projets/client-domaine" }, 
-];
+export interface Serie {
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+}
 
-// --- SÉRIE 3 : CONTINUITÉ D'ACTIVITÉ (PRA/PCA) ---
-// La stratégie de sauvegarde 3-2-1-1-0
-export const WIN_BACKUP_STRATEGY = [
-  { label: "Sauvegarde 3-2-1-1-0 (Veeam/Windows)", href: "/projets/backup-strategy" }, 
-  { label: "Réplication & Failover : Haute Disponibilité", href: "/projets/veeam-replication" },
-];
-
-// --- SÉRIE 4 : GOUVERNANCE & GESTION DES RESSOURCES ---
-// Organisation de l'annuaire et des données
-export const WIN_ADMIN_GOV = [
-  { label: "Structure OU & Automatisation PS", href: "/projets/powershell-ou" },
-  { label: "Modèle AGDLP : Groupes & Rôles", href: "/projets/agdlp-identites" },
-  { label: "DFS & Permissions NTFS", href: "/projets/partages-fichiers" }
-];
-
-// --- SÉRIE 5 : GESTION DU PARC CLIENT ---
-// Postes de travail et conformité globale
-export const WIN_CLIENT_SECURITY = [
-  { label: "Intégration & Tests Clients", href: "/projets/tests-clients" },
-  { label: "Mappage & Profils par GPO", href: "/projets/gpo-mappage" },
-  { label: "BitLocker (Sans TPM)", href: "/projets/bitlocker-lab" }
-];
-
-// --- SÉRIE 6 : RÉSEAU & PÉRIMÈTRE (PFSENSE) ---
-export const PFSENSE = [
-  { label: "Installation & WAN/LAN", href: "/projets/pfsense-install" },
-  { label: "VLANs & Segmentation", href: "/projets/pfsense-vlans" },
-  { label: "VPN IPsec Site-à-Site", href: "/projets/pfsense-vpn" }
-];
-
-// --- Série 7 Supervision et Monitoring ---
-export const MONITORING_OPS = [
-  { label: "Zabbix : Installation & Dashboard", href: "/projets/zabbix-setup" },
-  { label: "SNMP & Agents (Windows/Linux)", href: "/projets/zabbix-agents" },
-  { label: "Alerting Slack/Mail & Seuils", href: "/projets/zabbix-alerting" },
-];
-
-export const ITSM_INVENTORY = [
-  { label: "GLPI : Inventaire automatisé (Fusion)", href: "/projets/glpi-fusion" },
-  { label: "Gestion des Tickets & SLA", href: "/projets/glpi-ticketing" },
-  { label: "Base de Connaissances & Actifs", href: "/projets/glpi-kb" },
-];
-
-export const STORAGE_BACKUP = [
-  { label: "RAID & Configuration NAS (TrueNAS/Synology)", href: "/projets/nas-config" },
-  { label: "Acronis : Sauvegarde Cloud & Immuabilité", href: "/projets/acronis-backup" },
-  { label: "Récupération après Sinistre (Bare Metal)", href: "/projets/disaster-recovery" },
-];
+export const SERIES: Record<string, Serie> = {
+  "architecture-ad": {
+    title: "Architecture Active Directory",
+    description: "Conception, déploiement et promotion de contrôleurs de domaine (AD DS). Gestion des rôles FSMO et catalogues globaux.",
+    icon: "windows",
+    color: "#0078d4" // Bleu Microsoft
+  },
+  "identity-security": {
+    title: "Sécurité des Identités & PKI",
+    description: "Mise en place d'autorités de certification (AD CS), certificats SSL/TLS, LDAPS et sécurisation des comptes privilèges.",
+    icon: "windows",
+    color: "#0078d4" // Bleu Microsoft
+  },
+  "backup-resilience": {
+    title: "Sauvegarde & Continuité d’Activité",
+    description: "Mise en œuvre de solutions Backup. Application de la règle 3-2-1-1-0 et tests de restauration PRA/PCA.",
+    icon: "backup",
+    color: "#107c10" // Vert "Healthy"
+  },
+  "governance-access": {
+    title: "Gouvernance & Gestion des Accès",
+    description: "Administration des ressources via le modèle AGDLP. Audit des droits NTFS, partage de fichiers et délégations d'administration.",
+    icon: "windows",
+    color: "#0078d4"
+  },
+  "linux-infra": {
+    title: "Infrastructure Linux",
+    description: "Maîtrise des distributions (Debian, Ubuntu, RedHat, Mint). Déploiement de services auto-hébergés comme Nextcloud et durcissement système.SSH et scripting Bash",
+    icon: "linux",
+    color: "#fdb813" // Jaune-Orange Linux
+  },
+  "client-security": {
+    title: "Sécurisation des Postes Clients",
+    description: "Maîtrise du cycle de vie du poste de travail : Masterisation, déploiement par GPO, BitLocker et conformité de sécurité.",
+    icon: "windows",
+    color: "#0078d4"
+  },
+  "network-security": {
+    title: "Sécurité Réseau & Commutation Cisco",
+    description: "Conception de topologies sous Cisco Packet Tracer. Maîtrise de l'IOS, configuration de VLANs (802.1Q), Trunking, et routage inter-VLAN.",
+    icon: "network",
+    color: "#e81123" // Rouge Cisco
+  },
+  "firewalling-edge": {
+      title: "Sécurité Périmétrique (pfSense / OPNsense)",
+      description: "Mise en place de pare-feu, filtrage, sous-réseaux et tunnels VPN sécurisés pour le télétravail.",
+      icon: "security",
+      color: "#e81123"
+    },
+  "monitoring-logging": {
+      title: "Supervision & Analyse de Logs",
+      description: "Observabilité complète de l'infra : monitoring temps réel avec Zabbix et centralisation des logs avec Graylog.",
+      icon: "monitoring",
+      color: "#107c10"
+    },
+  "itsm": {
+      title: "ITSM & Gestion du Parc",
+      description: "Installation de GLPI, inventaire et gestion du cycle de vie des incidents.",
+      icon: "itsm",
+      color: "#4b5563"
+    }
+};

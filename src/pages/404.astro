@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Erreur 404 - Page introuvable">
+  <div class="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
+    <div class="mb-6 py-2 px-4 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 font-mono text-sm">
+      Error: STATUS_CODE_404_NOT_FOUND
+    </div>
+
+    <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4" style="color: var(--text-title);">
+      Oups !
+    </h1>
+    
+    <p class="text-xl opacity-70 max-w-md mb-12" style="color: var(--text-main);">
+      La procédure que vous recherchez a probablement été déplacée, renommée ou n'existe plus dans mon inventaire.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4">
+      <a href="/" class="px-8 py-4 rounded-2xl bg-white text-black font-bold hover:scale-105 transition-transform">
+        Retour à l'accueil
+      </a>
+      <a href="/projets" class="px-8 py-4 rounded-2xl border border-white/10 hover:bg-white/5 transition-colors" style="color: var(--text-title);">
+        Voir tous les projets
+      </a>
+    </div>
+
+    <div class="mt-20 opacity-20 text-[120px]">
+       <i class="ri-alarm-warning-line"></i>
+    </div>
+  </div>
+</Layout>

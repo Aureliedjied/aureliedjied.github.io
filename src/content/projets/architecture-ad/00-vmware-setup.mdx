@@ -1,21 +1,16 @@
 ---
 title: "Virtualisation & Installation OS"
 description: "Préparation de l'environnement virtuel sous VMware et installation de Windows Server 2022."
-category: "windows"
+category: "windows-server" 
 tags: ["VMware", "Virtualisation", "Windows Server", "Installation"]
 pubDate: 2026-01-10
-slug: "vmware-setup"
+slug: "installation"
+serie: "architecture-ad" 
+serieOrder: 1
 ---
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
-import { WIN_INFRA_CORE } from '../../../constants/series';
-
-<SeriesStepper 
-  seriesTitle="Fondations & Mise en place" 
-  steps={WIN_INFRA_CORE} 
-  currentStepIndex={0} 
-/>
 
 
 Avant de configurer nos services, nous devons bâtir une machine virtuelle (VM) robuste et optimisée. Ce chapitre traite de la création de l'hôte virtuel et de l'installation du système d'exploitation.

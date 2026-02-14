@@ -4,17 +4,22 @@ import Search from "astro-pagefind/components/Search";
 ---
 
 <Layout>
-  <section class="py-12">
-    <h1 class="text-4xl font-bold mb-8 italic tracking-tighter" style="color: var(--text-title);">
-      Rechercher dans les projets
-    </h1>
+  <section class="py-12 max-w-4xl mx-auto">
+    <header class="mb-12">
+      <h1 class="text-4xl md:text-5xl font-black tracking-tighter mb-4" style="color: var(--text-title);">
+        Rechercher <span class="text-purple-500">.</span>
+      </h1>
+      <p style="color: var(--text-main);">
+        Trouvez un projet, une technologie ou une problématique technique spécifique parmi mes documentations.
+      </p>
+    </header>
     
     <div class="search-page-container">
       <Search 
         id="search" 
         className="pagefind-custom-full"
         uiOptions={{ 
-          placeholder: "Tapez un mot-clé (ex: Active Directory, GPO, PfSense...)", 
+          placeholder: "Active Directory, GPO, PfSense, Docker...", 
           showImages: false 
         }} 
       />
@@ -23,86 +28,74 @@ import Search from "astro-pagefind/components/Search";
 </Layout>
 
 <style is:global>
-  /* --- Style adaptatif pour Pagefind --- */
-  
-  .pagefind-custom-full {
-    --pagefind-ui-primary: #a855f7; /* Violet pour les focus */
+  :root {
+    --pagefind-ui-primary: #9333ea; /* Ton violet */
     --pagefind-ui-text: var(--text-main);
-    --pagefind-ui-background: transparent;
+    --pagefind-ui-background: var(--card-bg);
     --pagefind-ui-border: var(--card-border);
+    --pagefind-ui-font: inherit;
   }
 
-  /* L'input de recherche s'adapte au thème */
   .pagefind-custom-full .pagefind-ui__search-input {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     padding: 15px 15px 15px 50px !important;
-    border-radius: 12px !important;
+    border-radius: 16px !important;
     color: var(--text-title) !important;
     transition: all 0.3s ease !important;
+    font-weight: 600 !important;
   }
 
+  /* Focus : On passe du jaune au violet */
   .pagefind-custom-full .pagefind-ui__search-input:focus {
-    border-color: #facc15 !important; /* Bordure jaune au focus */
-    box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.1) !important;
+    border-color: #9333ea !important;
+    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1) !important;
   }
 
-  /* Affichage en liste fixe */
-  .pagefind-custom-full .pagefind-ui__drawer {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    margin-top: 2rem !important;
-  }
-
-  /* Le fameux surlignage JAUNE des mots trouvés */
+  /* Surlignage (Mark) : Plus élégant en violet léger */
   mark {
-    background-color: rgba(250, 204, 21, 0.3) !important; /* Plus opaque pour le mode clair */
-    color: #854d0e !important; /* Texte marron foncé pour lisibilité sur jaune en mode clair */
+    background-color: rgba(147, 51, 234, 0.2) !important;
+    color: #9333ea !important;
     padding: 0 2px;
-    border-radius: 2px;
+    border-radius: 4px;
     font-weight: bold;
   }
 
-  /* En mode sombre, on garde le jaune flashy */
   [data-theme='dark'] mark {
-    color: #facc15 !important;
-    background-color: rgba(250, 204, 21, 0.2) !important;
+    color: #d8b4fe !important; /* purple-300 pour le mode sombre */
+    background-color: rgba(168, 85, 247, 0.3) !important;
   }
 
-  /* Cartes de résultats adaptatives */
+  /* Résultats */
   .pagefind-ui__result {
     background: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     padding: 1.5rem !important;
-    border-radius: 12px !important;
-    margin-bottom: 1rem !important;
-    transition: all 0.2s ease !important;
+    border-radius: 20px !important;
+    margin-bottom: 1.5rem !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    list-style-type: none !important;
   }
 
   .pagefind-ui__result:hover {
-    transform: translateX(5px);
-    border-color: #facc15 !important; /* Rappel du jaune au survol */
+    transform: scale(1.01) translateX(8px);
+    border-color: #9333ea !important;
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1) !important;
   }
 
-  /* Liens des titres de résultats */
   .pagefind-ui__result-link {
     color: var(--text-title) !important;
     font-size: 1.25rem !important;
+    font-weight: 800 !important;
     text-decoration: none !important;
-    font-weight: 700 !important;
   }
 
   .pagefind-ui__result-link:hover {
-    color: #a855f7 !important; /* Devient violet au survol */
+    color: #9333ea !important;
   }
 
-  /* Texte de description sous le titre */
-  .pagefind-ui__result-excerpt {
-    color: var(--text-main) !important;
-    margin-top: 0.5rem !important;
+  /* Suppression des puces de liste par défaut de Pagefind */
+  .pagefind-ui__results-list {
+    padding: 0 !important;
   }
 </style>

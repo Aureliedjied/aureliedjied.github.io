@@ -21,11 +21,10 @@ const { steps, currentStepIndex, seriesTitle } = Astro.props;
     <div class="h-px flex-1 opacity-10" style="background-color: var(--text-main)"></div>
   </div>
 
-  <div class="grid grid-cols-1 sm:flex sm:flex-wrap gap-3">
-    {steps.map((step, index) => {
-      const isCurrent = index === currentStepIndex;
-      
-      return (
+<div class="grid grid-cols-1 sm:flex sm:flex-wrap gap-3">
+  {steps && steps.map((step, index) => {
+    const isCurrent = index === currentStepIndex;
+    return (
         <a 
           href={step.href}
           class={`group flex items-center gap-4 px-4 py-3 rounded-xl border transition-all duration-300 min-w-fit flex-1 sm:flex-none ${

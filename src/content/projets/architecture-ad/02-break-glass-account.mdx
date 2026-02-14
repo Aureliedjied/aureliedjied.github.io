@@ -1,21 +1,17 @@
 ---
 title: "Sécurité : Compte de secours Break-Glass"
 description: "Mise en place d'une procédure d'urgence pour prévenir la perte d'accès au domaine après durcissement."
-category: "windows"
+category: "windows-server"
 tags: ["Sécurité", "Active Directory", "Windows Server"]
 pubDate: 2026-01-12
 slug: "break-glass-account"
+serie: "architecture-ad" 
+serieOrder: 3
 ---
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
-import { WIN_INFRA_CORE } from '../../../constants/series';
 
-<SeriesStepper 
-  seriesTitle="Compte Admin de secours" 
-  steps={WIN_INFRA_CORE} 
-  currentStepIndex={2} 
-/>
 
 <section class="my-10 space-y-8">
   

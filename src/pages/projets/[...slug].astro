@@ -1,0 +1,160 @@
+---
+import { getCollection } from 'astro:content';
+// On utilise PostLayout qui contient la barre de progression
+import PostLayout from '../../layouts/PostLayout.astro'; 
+import { SERIES } from '../../constants/series';
+import SeriesStepper from '../../components/SeriesStepper.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projets');
+  return projects.map(project => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+// --- LOGIQUE D'AUTOMATISATION DU STEPPER ---
+const allProjects = await getCollection('projets');
+
+const seriesProjects = allProjects
+  .filter(p => p.data.serie === project.data.serie)
+  .sort((a, b) => {
+    const orderA = Number(a.data.serieOrder) || 99;
+    const orderB = Number(b.data.serieOrder) || 99;
+    return orderA - orderB;
+  });
+
+const steps = seriesProjects.map(p => ({
+  label: p.data.title,
+  href: `/projets/${p.slug}`
+}));
+
+const currentStepIndex = seriesProjects.findIndex(p => p.slug === project.slug);
+
+const seriesTitle = SERIES[project.data.serie as keyof typeof SERIES]?.title || "Documentation";
+const serieColor = SERIES[project.data.serie as keyof typeof SERIES]?.color;
+
+const { title, tags, pubDate, updatedDate } = project.data;
+
+const formatDate = (date: Date) => {
+  if (!(date instanceof Date) || isNaN(date.getTime())) return "Date non définie";
+  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+};
+---
+
+<PostLayout frontmatter={{...project.data, color: serieColor}}>
+  <article class="max-w-none" data-pagefind-body>
+    <header class="mb-10">
+      <a href="/projets" data-pagefind-ignore 
+        class="text-sm transition-colors flex items-center gap-2 mb-8 group"
+        style="color: var(--text-muted);">
+        <span class="group-hover:-translate-x-1 transition-transform">←</span> Retour aux projets
+      </a>
+
+      {seriesProjects.length > 1 && (
+        <SeriesStepper 
+          steps={steps} 
+          currentStepIndex={currentStepIndex} 
+          seriesTitle={seriesTitle} 
+        />
+      )}
+
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tighter italic" 
+          style="color: var(--text-title);">
+        {title}
+      </h1>
+      
+      <div class="flex flex-wrap gap-3 mb-4">
+        {tags?.map((tag) => (
+          <span class="text-xs px-2 py-1 rounded-md bg-white/5 border border-white/10" style="color: var(--text-muted);">#{tag}</span>
+        ))}
+      </div>
+      <p style="color: var(--text-muted);" class="text-sm italic">Publié le {formatDate(pubDate)}</p>
+    </header>
+
+    <div class="prose-content">
+      <Content />
+    </div>
+  </article>
+</PostLayout>
+
+<style is:global>
+  /* Style du corps de l'article - STRICTEMENT IDENTIQUE */
+  .prose-content {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: var(--text-main);
+  }
+
+  .prose-content h2 { 
+    color: var(--text-title) !important;
+    border-bottom: 1px solid var(--card-border) !important;
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .prose-content h3 { 
+    color: var(--text-title) !important;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .prose-content p, .prose-content li { 
+    color: var(--text-main) !important; 
+    margin-bottom: 1.5rem;
+  }
+
+  .prose-content ul { 
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 2rem;
+  }
+
+  .prose-content li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose-content li::before {
+    content: '▹';
+    color: #a855f7;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .prose-content pre {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+  }
+
+  .prose-content blockquote {
+    border-left: 4px solid #a855f7;
+    background-color: rgba(168, 85, 247, 0.05);
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 0.75rem 0.75rem 0;
+    font-style: italic;
+  }
+
+  .prose-content img {
+    border-radius: 1rem;
+    border: 1px solid var(--card-border);
+    margin: 2.5rem 0;
+    width: 100%;
+    height: auto;
+  }
+</style>

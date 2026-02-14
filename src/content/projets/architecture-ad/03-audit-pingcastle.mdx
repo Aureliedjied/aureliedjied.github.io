@@ -1,20 +1,16 @@
 ---
 title: "Audit PingCastle"
 description: "Audit du domaine et durcissement via GPO selon recommandations ANSSI."
-category: "windows"
+category: "windows-server"
 tags: ["Windows Server", "Installation", "Sécurité", "Active Directory"]
 pubDate: 2026-01-15
 slug: "audit-pingcastle"
+serie: "architecture-ad" 
+serieOrder: 4
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_INFRA_CORE } from '../../../constants/series';
 import NextStep from '../../../components/NextStep.astro';
 
-<SeriesStepper 
-  seriesTitle="Auditer la sécurité" 
-  steps={WIN_INFRA_CORE} 
-  currentStepIndex={3} 
-/>
 
 <section class="my-10 space-y-8">
   

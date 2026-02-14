@@ -1,20 +1,16 @@
 ---
 title: "Hardening et Promotion du domaine"
 description: "Déploiement d'une nouvelle forêt Active Directory et application des premières mesures de durcissement selon les préconisations ANSSI."
-category: "windows"
+category: "windows-server"
 tags: ["Windows Server", "Active Directory", "Sécurité"]
 pubDate: 2026-01-11
 slug: "promotion-domaine"
+serie: "architecture-ad" 
+serieOrder: 2
 ---
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
-import { WIN_INFRA_CORE } from '../../../constants/series';
 
-<SeriesStepper 
-  seriesTitle="Hardening et Promotion du domaine"
-  steps={WIN_INFRA_CORE} 
-  currentStepIndex={1} 
-/>
 
   <div class="space-y-4">
     <p class="text-sm opacity-80 leading-relaxed">

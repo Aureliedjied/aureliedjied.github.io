@@ -7,7 +7,6 @@ const lastProjects = allProjects
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 
-
 const skills = [
   { 
     category: "Virtualisation & Cloud", 
@@ -30,53 +29,80 @@ const skills = [
 
 <Layout>
   <section class="py-12 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-10 items-center overflow-hidden">
-    <div class="space-y-6 order-2 md:order-1">
-      <div class="space-y-4">
-        <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight" style="color: var(--text-title);">
-          Bonjour, je suis <span class="text-purple-500">Aurélie</span>.
-        </h1>
-        <p class="text-lg leading-relaxed italic" style="color: var(--text-main);">
-          "Technicienne TSSR en formation, architecte système en devenir."
-        </p>
-        <p class="text-base md:text-lg max-w-xl leading-relaxed" style="color: var(--text-main);">
-          Passionnée par l'architecture système et la sécurité, je prépare actuellement mon entrée en <strong>Bachelor Systèmes, Cloud & Réseaux</strong>.
-        </p>
-      </div>
+<div class="space-y-6 order-2 md:order-1">
+  <div class="space-y-4">
+    <h1 class="text-4xl md:text-5xl font-black tracking-tight leading-tight" style="color: var(--text-title);">
+      Bonjour, je suis <span class="text-purple-500">Aurélie</span>.
+    </h1>
+    
+    <p class="text-lg leading-relaxed italic" style="color: var(--text-main);">
+      "Technicienne TSSR en formation, administrateur système et réseaux en devenir."
+    </p>
 
-      <div class="flex flex-col sm:flex-row gap-4 pt-4">
-        <a href="/contact" class="px-8 py-3 rounded-full font-bold transition-all text-sm shadow-xl text-center hover:scale-105" 
-           style="background-color: var(--text-title); color: var(--bg-color);">
-          Me contacter
-        </a>
-        <a href="/projets" class="px-8 py-3 rounded-full font-bold border transition-all text-sm text-center hover:border-purple-500 hover:text-purple-500"
-           style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-main);">
-          Voir mes projets
-        </a>
-      </div>
+    <div class="space-y-5 max-w-xl">
+      <p class="text-base md:text-lg leading-relaxed" style="color: var(--text-main);">
+        Passionnée par l'architecture système et la sécurité, je prépare actuellement mon entrée en <strong>Bachelor Systèmes, Cloud & Réseaux</strong>.
+      </p>
+      
+      <p class="text-sm md:text-base leading-relaxed border-l-2 border-purple-500/30 pl-4" style="color: var(--text-muted);">
+        Ce portfolio est mon terrain d'expérimentation. J'y mets en pratique les compétences acquises en formation, en <span class="text-purple-500 font-semibold">approfondissant mes recherches</span> et en complexifiant chaque scénario pour me confronter aux réalités du terrain.
+      </p>
     </div>
+  </div>
 
-    <div class="order-1 md:order-2 flex justify-center md:justify-end">
-      <div class="relative group w-full max-w-[280px] md:max-w-none">
-        <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+  <div class="flex flex-col sm:flex-row gap-4 pt-4">
+    <a href="/contact" 
+       class="px-8 py-3 rounded-full font-black transition-all text-sm shadow-lg shadow-purple-500/20 text-center hover:scale-105 active:scale-95 text-white" 
+       style="background-color: #9333ea;">
+      Me contacter
+    </a>
+
+    <a href="/projets" 
+       class="px-8 py-3 rounded-full font-black border transition-all text-sm text-center hover:scale-105 active:scale-95 hover:border-purple-500 hover:text-purple-500"
+       style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-main);">
+      Voir mes projets
+    </a>
+  </div>
+</div>
+
+<div class="order-1 md:order-2 flex justify-center items-center relative py-10">
+    <div class="relative group">
+      
+      <div class="absolute -inset-4 bg-gradient-to-tr from-purple-600/20 to-blue-600/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+      <div class="hidden md:block absolute -top-4 -right-4 w-24 h-24 border-t-2 border-r-2 border-purple-500/30 rounded-tr-3xl"></div>
+      <div class="hidden md:block absolute -bottom-4 -left-4 w-24 h-24 border-b-2 border-l-2 border-blue-500/30 rounded-bl-3xl"></div>
+
+      <div class="relative overflow-hidden rounded-[2.5rem] border-2 transition-all duration-500 group-hover:scale-[1.02] shadow-2xl"
+           style="border-color: var(--card-border); background-color: var(--card-bg);">
+        
         <img 
           src="/photo-aurelie.jpg" 
           alt="Aurélie Djied" 
-          class="relative w-full aspect-square md:w-80 md:h-80 object-cover rounded-3xl border transition-all duration-500 shadow-2xl grayscale group-hover:grayscale-0"
-          style="border-color: var(--card-border);"
+          class="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"
         />
+
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        
+        <div class="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
+          <span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+          <span class="text-[10px] font-bold text-white uppercase tracking-widest">Disponible pour alternance</span>
+        </div>
       </div>
+
     </div>
-  </section>
+  </div>
+</section>
 
   <section class="py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
     {skills.map(skill => (
       <div class="group p-6 rounded-3xl border backdrop-blur-sm transition-all duration-300 hover:border-purple-500/50 shadow-sm"
-           style="background-color: var(--card-bg); border-color: var(--card-border);">
+           style={`background-color: var(--card-bg); border-color: var(--card-border); box-shadow: var(--card-shadow);`}>
         <div class="mb-4 inline-flex p-2 rounded-xl bg-purple-500/10 text-purple-500">
           <div class="h-2 w-2 rounded-full bg-current shadow-[0_0_10px_currentColor]"></div>
         </div>
         
-        <h3 class="text-xs font-bold uppercase tracking-widest mb-4" style="color: var(--text-title);">
+        <h3 class="text-xs font-black uppercase tracking-widest mb-4" style="color: var(--text-title);">
           {skill.category}
         </h3>
         
@@ -96,31 +122,31 @@ const skills = [
 
   <section class="py-12 space-y-8">
     <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold tracking-tight" style="color: var(--text-title);">Derniers projets</h2>
-        <a href="/projets" class="text-sm transition-colors hover:text-purple-500 shrink-0" style="color: var(--text-muted);">Voir tout →</a>
+        <h2 class="text-2xl font-black tracking-tight" style="color: var(--text-title);">Derniers projets</h2>
+        <a href="/projets" class="text-sm font-bold transition-colors hover:text-purple-500 shrink-0" style="color: var(--text-muted);">Voir tout →</a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {lastProjects.map(project => (
         <a href={`/projets/${project.slug}`} 
-           class="group relative flex flex-col justify-between p-6 min-h-[220px] rounded-[1.5rem] border transition-all duration-300 shadow-xl overflow-hidden"
+           class="group relative flex flex-col justify-between p-6 min-h-[220px] rounded-[1.5rem] border transition-all duration-300 shadow-sm hover:shadow-xl overflow-hidden"
            style="background-color: var(--card-bg); border-color: var(--card-border);">
             
             <div class="space-y-3 relative z-10">
                 <div class="flex flex-wrap gap-2">
                     {project.data.tags.slice(0, 2).map(tag => (
-                        <span class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest rounded border shrink-0"
+                        <span class="px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded border shrink-0"
                               style="background-color: var(--bg-color); color: var(--text-purple); border-color: var(--purple-border);">
                             {tag}
                         </span>
                     ))}
                 </div>
-                <h3 class="text-lg font-bold group-hover:text-purple-500 transition-colors break-words" style="color: var(--text-title);">
+                <h3 class="text-lg font-black group-hover:text-purple-500 transition-colors break-words" style="color: var(--text-title);">
                   {project.data.title}
                 </h3>
-                <p class="text-xs line-clamp-3" style="color: var(--text-main);">{project.data.description}</p>
+                <p class="text-xs line-clamp-3 leading-relaxed" style="color: var(--text-main);">{project.data.description}</p>
             </div>
-            <div class="group-hover:text-purple-500 self-end transition-colors" style="color: var(--text-muted);">↗</div>
+            <div class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform self-end" style="color: var(--text-muted);">↗</div>
         </a>
       ))}
     </div>
