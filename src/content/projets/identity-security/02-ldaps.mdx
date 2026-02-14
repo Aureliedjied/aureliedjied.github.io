@@ -3,19 +3,15 @@ title: "LDAPS : Chiffrement et audit des flux d'annuaire"
 description: "Sécurisation des accès LDAP via TLS et mise en place d'un audit de signature pour durcir l'infrastructure Active Directory."
 tags: ["Active Directory", "Windows server", "Sécurité", "LDAPS", "Audit"]
 pubDate: 2026-02-05
+serie: "identity-security"
+serieOrder: 3
 category: "windows-server"
 slug: "ldaps"
 ---
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_IDENTITY_PRO } from '../../../constants/series';
 import NextStep from '../../../components/NextStep.astro';
 
-<SeriesStepper 
-  seriesTitle="Sécuriser les Identités" 
-  steps={WIN_IDENTITY_PRO} 
-  currentStepIndex={2} 
-/>
 
 Par défaut, les requêtes LDAP circulent en clair sur le réseau via le **port 389**.  
 Cela expose potentiellement :

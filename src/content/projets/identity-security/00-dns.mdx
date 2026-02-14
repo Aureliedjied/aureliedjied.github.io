@@ -4,18 +4,13 @@ description: "Mise en place de la zone de recherche inversée pour une infrastru
 tags: ["Active Directory", "Sécurité", "DNS"]
 pubDate: 2026-01-20
 category: "windows-server"
+serie: "identity-security"
+serieOrder: 1
 slug: "dns"
 ---
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_IDENTITY_PRO } from '../../../constants/series';
 import NextStep from '../../../components/NextStep.astro';
-
-<SeriesStepper 
-  seriesTitle="Configurer le DNS" 
-  steps={WIN_IDENTITY_PRO} 
-  currentStepIndex={0} 
-/>
 
 <p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
 Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est installé automatiquement. Cependant, seule la <strong>zone de recherche directe</strong> était configurée. Pour une infrastructure professionnelle, la <strong>zone de recherche inversée</strong> (Reverse DNS) est indispensable.

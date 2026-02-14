@@ -3,19 +3,16 @@ title: "PKI : Déploiement du rôle AD CS"
 description: "Mise en place d’une autorité de certification d’entreprise pour établir la confiance numérique au sein du domaine."
 tags: ["Active Directory", "Sécurité", "Windows server"]
 category: "windows-server"
+serie: "identity-security"
+serieOrder: 2
 pubDate: 2026-01-24
 slug: "ad-cs"
 ---
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
-import { WIN_IDENTITY_PRO } from '../../../constants/series';
 import NextStep from '../../../components/NextStep.astro';
 
-<SeriesStepper 
-  seriesTitle="Certificat AD CS" 
-  steps={WIN_IDENTITY_PRO} 
-  currentStepIndex={1} 
-/>
+
 
 L’**Active Directory Certificate Services (AD CS)** constitue la fondation de la confiance numérique d’un environnement Windows.  
 Dans cette étape du lab, l’objectif n’est pas seulement d’installer une autorité de certification, mais de poser une **racine de confiance propre, maîtrisée et durcie**, capable de supporter les futurs besoins : authentification forte, LDAPS, chiffrement des services et authentification machine.
