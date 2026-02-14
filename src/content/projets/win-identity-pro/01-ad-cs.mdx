@@ -54,15 +54,31 @@ Je commence par ajouter le rôle **Services de certificats Active Directory**. L
 </div>
 ---
 
-## 🔐 Étape 2 : Configurer l’Autorité de Certification
+## 🔐 Étape 2 : Configuration de l'Autorité Racine
 
-Je déploie une **Autorité de certification d’entreprise racine**, intégrée à Active Directory.  
-Ce choix permet plus tard :
+Je déploie une **Autorité de certification d’entreprise racine**, intégrée à l’Active Directory. Ce choix stratégique permet d'automatiser la distribution des certificats via l'**auto-enrôlement** (GPO).
 
-- l’**auto-enrôlement** via GPO  
-- l’approbation automatique des certificats pour les modèles autorisés  
+### Durcissement Cryptographique
+Pour garantir une sécurité à long terme, j'ai configuré des paramètres supérieurs aux standards actuels :
 
-Je génère ensuite une **nouvelle clé privée RSA 4096 bits** avec un algorithme de hachage **SHA512**, dans une logique de durcissement cryptographique au-delà du minimum recommandé (SHA256 restant le standard courant).
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
+  <div class="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-blue-600 font-bold">💎</span>
+      <h4 class="text-[10px] font-black uppercase text-slate-900 dark:text-white">Clé RSA 4096 bits</h4>
+    </div>
+    <p class="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed">Doublement de la taille standard pour une résistance accrue au bruteforce.</p>
+  </div>
+  
+  <div class="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-blue-600 font-bold">🔒</span>
+      <h4 class="text-[10px] font-black uppercase text-slate-900 dark:text-white">Hachage SHA512</h4>
+    </div>
+    <p class="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed">Utilisation d'un algorithme de hachage de pointe, au-delà du SHA256 standard.</p>
+  </div>
+</div>
+
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
@@ -82,76 +98,98 @@ Je génère ensuite une **nouvelle clé privée RSA 4096 bits** avec un algorith
 Administrer une PKI avec un compte **Domain Admin** créerait un point de compromission critique.  
 Je mets donc en place une **identité d’exploitation dédiée** : **`adm-pki`**.
 
+---
+
 ### 👤 Création du compte d’administration PKI
 
-Le compte est :
+Le compte est isolé dans une OU dédiée aux comptes d’administration : <code class="px-2 py-0.5 bg-slate-100 dark:bg-white/10 rounded text-blue-700 dark:text-blue-300 font-mono text-xs">00_ADMINS > PKI</code>. Il est utilisé uniquement pour l’exploitation quotidienne.
 
-- isolé dans une OU dédiée aux comptes d’administration :  
-  **`00_ADMINS > PKI`**
-- utilisé uniquement pour l’exploitation quotidienne de l’autorité de certification
-
-Cette séparation permet d’identifier clairement les actions PKI dans les journaux et de limiter les risques en cas de compromission.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki.png" alt="Création du compte adm-pki" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Création du compte d’administration dédié à la PKI, isolé dans son groupe</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+  <div class="flex flex-col gap-3">
+    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki.png" alt="Création du compte adm-pki" class="rounded-lg w-full h-auto" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Création du compte adm-pki dédié</p>
   </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Attribution des groupes nécéssaires uniquement</p>
+  <div class="flex flex-col gap-3">
+    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg w-full h-auto" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Isolation dans l'OU d'administration</p>
   </div>
 </div>
 
 ---
 
-### 📜 Gestion du groupe **Editeurs de certificats**
+### 📜 Gestion du groupe "Editeurs de certificats"
 
-Le groupe **Éditeurs de certificats** permet de publier des certificats dans Active Directory (attributs des objets utilisateurs et ordinateurs).
+Le groupe **Éditeurs de certificats** permet de publier les certificats dans l’annuaire. Par défaut, le compte machine du serveur possède ces droits. J'ai choisi un modèle plus strict :
 
-Dans une configuration par défaut, le **compte machine du serveur CA** peut en être membre.  
-Ici, je fais le choix d’un modèle plus strict :
-
-- 🔻 Retrait du compte machine **`SRV-AD-01$`**
-- ➕ Ajout exclusif du compte **`adm-pki`**
-
-👉 Cela permet que la publication des certificats dans l’annuaire soit réalisée par une **identité nominative** plutôt que par un compte machine, ce qui améliore la traçabilité. 
-
-Ce choix relève d’un **durcissement organisationnel**, et non d’une obligation technique.
-Depuis la console **`certsrv.msc`**, j’ouvre les propriétés de l’autorité puis l’onglet **Sécurité** afin de déléguer uniquement les droits nécessaires au compte `adm-pki` :
-
-- **Lire**
-- **Émettre et gérer des certificats**
-
-Ces permissions permettent la gestion quotidienne (émission, révocation, suivi des demandes) sans autoriser de modifications structurelles.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki3.png" alt="Membres du groupe Éditeurs de certificats" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Restriction des membres du groupe Certificate Publishers.</p>
+<div class="my-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div class="p-4 bg-red-50 dark:bg-red-500/5 border border-red-100 dark:border-red-500/20 rounded-xl text-center">
+    <span class="text-red-500 font-bold text-lg">🔻</span>
+    <p class="text-[10px] font-black uppercase text-red-800 dark:text-red-400 mt-2">Retrait</p>
+    <p class="text-[10px] text-slate-600 dark:text-white/60 italic">Compte machine SRV-AD-01$</p>
   </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/adm-pki-cert.png" alt="Permissions de la CA" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Délégation des droits d’émission sur l’autorité de certification.</p>
+  <div class="p-4 bg-green-50 dark:bg-green-500/5 border border-green-100 dark:border-green-500/20 rounded-xl text-center">
+    <span class="text-green-500 font-bold text-lg">➕</span>
+    <p class="text-[10px] font-black uppercase text-green-800 dark:text-green-400 mt-2">Ajout</p>
+    <p class="text-[10px] text-slate-600 dark:text-white/60 italic">Identité nominative adm-pki</p>
+  </div>
+</div>
+
+👉 Cette approche améliore la **traçabilité** : chaque publication en AD est liée à une identité humaine et non à un service automatique. 
+
+Depuis la console <code class="text-xs font-mono">certsrv.msc</code>, j'ai délégué uniquement les droits nécessaires : **Lire** et **Émettre/Gérer des certificats**.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+  <div class="flex flex-col gap-3">
+    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki3.png" alt="Membres du groupe" class="rounded-lg w-full h-auto" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Restriction des Certificate Publishers</p>
+  </div>
+  <div class="flex flex-col gap-3">
+    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki-cert.png" alt="Permissions CA" class="rounded-lg w-full h-auto" />
+    </div>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Délégation granulaire des droits</p>
   </div>
 </div>
 
 ---
-
 
 ### 🔐 Séparation des rôles d’administration
 
-La gestion avancée de la PKI reste strictement limitée aux comptes **Tier 0**, notamment :
+Pour respecter le modèle de **Tiering**, j'ai défini une frontière claire entre exploitation et architecture :
 
-- modification de la configuration de la CA  
-- gestion des modèles de certificats sensibles  
-- maintenance de la hiérarchie de certification  
+<div class="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm my-8">
+  <table class="w-full text-[11px] text-left border-collapse">
+    <thead>
+      <tr class="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
+        <th class="p-4 font-black uppercase text-slate-900 dark:text-white">Rôle</th>
+        <th class="p-4 font-black uppercase text-slate-900 dark:text-white">Périmètre adm-pki</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+      <tr>
+        <td class="p-4 font-bold text-slate-700 dark:text-white/80">Exploitation</td>
+        <td class="p-4 text-green-600 dark:text-green-400 font-medium italic">Autorisé (Émission, Révocation, Suivi)</td>
+      </tr>
+      <tr>
+        <td class="p-4 font-bold text-slate-700 dark:text-white/80">Architecture</td>
+        <td class="p-4 text-red-600 dark:text-red-400 font-medium italic">Interdit (Modèles sensibles, Hiérarchie)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-Ainsi, le compte **`adm-pki`** est un compte d’**exploitation**, pas un compte d’**architecture**.
-
-> 🎯 Cette séparation réduit fortement l’impact potentiel d’une compromission et s’aligne avec les bonnes pratiques de sécurisation des environnements Active Directory.
-
----
+<div class="flex items-start gap-4 p-5 bg-blue-50 dark:bg-blue-500/5 border-r-4 border-blue-500 rounded-l-xl my-8">
+  <span class="text-xl">🎯</span>
+  <p class="text-xs text-slate-800 dark:text-blue-100/80 leading-relaxed font-medium">
+    Cette séparation réduit l’impact d’une compromission et s’aligne avec les bonnes pratiques Tier 0 de sécurisation Active Directory.
+  </p>
+</div>
 
 ## 🔍 Étape 4 : Activer l’audit 
 
@@ -215,64 +253,102 @@ Tous les indicateurs sont au vert : la chaîne de confiance est fonctionnelle et
   </div>
 </div>
 
----
-
-## 🧩 Étape 7 : Vérifier le certificat via la console MMC
-
-Une fois la PKI validée côté infrastructure, je vérifie que le **certificat de l’autorité de certification** est bien installé dans le magasin de certificats du serveur.
-
-Pour cela, j’utilise la **console MMC** afin d’inspecter les certificats de l’ordinateur local.
-
-### 🔧 Ajout du composant logiciel enfichable Certificats
-
-1. Lancer `mmc.exe`
-2. Menu **Fichier → Ajouter/Supprimer un composant logiciel enfichable**
-3. Sélectionner **Certificats**, "ajouter"
-4. Choisir **Compte d’ordinateur**
-5. Sélectionner **Ordinateur local**
-
-Cette manipulation permet d’accéder au magasin de certificats système, et non au magasin utilisateur.
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-  <img src="/images/projets/win-identity-pro/ad-cs/mmc1.png" alt="Ajout composant enfichable MMC" class="rounded-lg border border-white/10 shadow-md" />
-  <img src="/images/projets/win-identity-pro/ad-cs/mmc2.png" alt="Choix du composant Certificats" class="rounded-lg border border-white/10 shadow-md" />
-  <img src="/images/projets/win-identity-pro/ad-cs/mmc3.png" alt="Sélection compte ordinateur" class="rounded-lg border border-white/10 shadow-md" />
-  <img src="/images/projets/win-identity-pro/ad-cs/mmc4.png" alt="Ordinateur local" class="rounded-lg border border-white/10 shadow-md" />
-</div>
 
 ---
 
-### 🔍 Vérification du certificat de la CA
+## 🧩 Étape 7 : Vérification locale via la console MMC
 
-Une fois le composant ajouté, je navigue dans :
+Une fois la PKI validée, je vérifie que le **certificat racine** est bien ancré dans le magasin de l’ordinateur local. C'est ce qui permet au serveur (et plus tard aux clients) de faire confiance aux certificats émis.
 
-**Certificats (ordinateur local) → Autorités de certification racines de confiance → Certificats**
+### 🔧 Accès au magasin système
+Pour inspecter les certificats de l’ordinateur local, j'utilise la console `mmc.exe` en ajoutant le composant logiciel enfichable **Certificats**.
 
-Le certificat de mon autorité de certification d’entreprise apparaît bien dans le magasin.  
-Cela confirme que :
-
-- la CA est correctement installée
-- le certificat racine est bien approuvé localement
-- la chaîne de confiance peut fonctionner pour les services du serveur
-
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center;">
-    <img src="/images/projets/win-identity-pro/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.75rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le certificat de l’autorité est bien présent dans le magasin racine de confiance</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 my-8">
+  <div class="space-y-2">
+    <img src="/images/projets/win-identity-pro/ad-cs/mmc1.png" alt="MMC 1" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <p class="text-[8px] text-center font-bold uppercase text-slate-500">1. Lancer MMC</p>
+  </div>
+  <div class="space-y-2">
+    <img src="/images/projets/win-identity-pro/ad-cs/mmc2.png" alt="MMC 2" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <p class="text-[8px] text-center font-bold uppercase text-slate-500">2. Composants</p>
+  </div>
+  <div class="space-y-2">
+    <img src="/images/projets/win-identity-pro/ad-cs/mmc3.png" alt="MMC 3" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <p class="text-[8px] text-center font-bold uppercase text-slate-500">3. Compte Ordinateur</p>
+  </div>
+  <div class="space-y-2">
+    <img src="/images/projets/win-identity-pro/ad-cs/mmc4.png" alt="MMC 4" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <p class="text-[8px] text-center font-bold uppercase text-slate-500">4. Local</p>
   </div>
 </div>
 
+---
 
+### 🔍 Validation du certificat racine
 
-Cette vérification côté système complète les contrôles PKIView : on valide à la fois l’infrastructure de confiance **et** sa présence effective sur le serveur.
+Dans le magasin <code class="text-xs font-mono">Autorités de certification racines de confiance → Certificats</code>, le certificat de mon autorité d’entreprise apparaît bien. 
 
+Cette présence confirme que :
+- La CA est reconnue par le système d'exploitation.
+- Le certificat racine est approuvé localement.
+- La chaîne de confiance est prête pour les services applicatifs (LDAPS, VPN, etc.).
 
+<div class="my-10 flex flex-col items-center">
+  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
+    <img src="/images/projets/win-identity-pro/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" class="rounded-xl w-full max-w-3xl h-auto" />
+  </div>
+  <p class="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 italic">
+    Le certificat est bien présent et valide dans le magasin de confiance local.
+  </p>
+</div>
 
-La PKI interne est désormais **opérationnelle, segmentée et correctement auditée**.  
-Elle constitue la **brique de confiance** nécessaire pour sécuriser les flux critiques du domaine.
+---
 
-La prochaine étape consiste à exploiter cette infrastructure pour chiffrer les communications LDAP via **LDAPS**.
+<section class="mt-16 space-y-12">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+        <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : AD CS
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Confiance établie :</strong> Racine RSA 4096 / SHA512 déployée avec succès.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Sécurité :</strong> Rôles séparés entre exploitation (adm-pki) et architecture (Tier 0).</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Santé validée :</strong> AIA/CDP opérationnels et certificat visible dans le magasin local.</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
+       <div>
+          <div class="text-4xl mb-2">📜</div>
+          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Brique de confiance prête</p>
+          <p class="text-[9px] text-slate-500 mt-1 italic">Flux critiques à sécuriser</p>
+       </div>
+    </div>
+  </div>
 
+  <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
+    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+      "La PKI interne est désormais opérationnelle, segmentée et auditée. Elle constitue la fondation nécessaire pour transformer notre annuaire en un service LDAPS chiffré."
+    </p>
+    
+    <div class="space-y-4">
+      <p class="text-sm text-slate-500 dark:text-white/50">
+        Prochaine phase : Sécuriser les échanges d'annuaire ( LDAPS ).
+      </p>
+    </div>
+  </div>
+
+</section>
 
 <NextStep 
   href="/projets/ldaps" 
