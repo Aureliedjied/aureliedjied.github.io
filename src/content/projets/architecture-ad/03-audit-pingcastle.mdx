@@ -39,7 +39,7 @@ import NextStep from '../../../components/NextStep.astro';
           <div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
           <span class="text-[9px] font-mono opacity-40 ml-2 italic">healthcheck_mode</span>
         </div>
-        <img src="/images/projets/win-infra-core/audit/choix-install.png" alt="Mode Healthcheck" class="w-full h-full object-contain p-2" />
+        <img src="/images/projets/architecture-ad/audit/choix-install.png" alt="Mode Healthcheck" class="w-full h-full object-contain p-2" />
       </div>
       <p class="text-[0.65rem] italic opacity-50 text-center">Sélection du mode <strong>Healthcheck</strong> (Audit de domaine).</p>
     </div>
@@ -50,7 +50,7 @@ import NextStep from '../../../components/NextStep.astro';
           <div class="w-1.5 h-1.5 rounded-full bg-white/20"></div>
           <span class="text-[9px] font-mono opacity-40 ml-2 italic">runtime_admin</span>
         </div>
-        <img src="/images/projets/win-infra-core/audit/pingcastle-exe.png" alt="Lancement" class="w-full h-full object-contain p-2" />
+        <img src="/images/projets/architecture-ad/audit/pingcastle-exe.png" alt="Lancement" class="w-full h-full object-contain p-2" />
       </div>
       <p class="text-[0.65rem] italic opacity-50 text-center">Exécution du binaire avec privilèges élevés.</p>
     </div>
@@ -67,7 +67,7 @@ Le rapport initial agit comme une radiographie du domaine. Avec un **Risk Score 
   <div class="w-full lg:w-1/3 flex flex-col items-center group">
     <div class="relative p-4 bg-white/5 border border-white/10 rounded-3xl shadow-2xl transition-all group-hover:border-blue-500/30">
       <img 
-        src="/images/projets/win-infra-core/audit/pingcastle-radar.png" 
+        src="/images/projets/architecture-ad/audit/pingcastle-radar.png" 
         alt="Radar de sécurité" 
         class="w-full max-w-[280px] h-auto rounded-xl grayscale-[0.3] group-hover:grayscale-0 transition-all" 
       />
@@ -189,7 +189,7 @@ Le rapport initial agit comme une radiographie du domaine. Avec un **Risk Score 
   <div class="w-full max-w-xl group">
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl transition-all group-hover:shadow-blue-500/10">
       <img 
-        src="/images/projets/win-infra-core/audit/risk-model.png" 
+        src="/images/projets/architecture-ad/audit/risk-model.png" 
         alt="Risk Model PingCastle"
         class="w-full h-auto rounded-xl grayscale-[0.2] dark:grayscale-0"
       />
@@ -208,7 +208,7 @@ Le domaine autorisait encore le protocole obsolète NTLMv1, vulnérable aux atta
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/gpo-ntlm.png" alt="Désactivation ntlm" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/gpo-ntlm.png" alt="Désactivation ntlm" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Forçage de NTLMv2 et refus du LM/NTLMv1.</p>
   </div>
 </div>
@@ -221,11 +221,11 @@ LLMNR est un protocole de résolution de noms local qui peut être détourné po
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/llmnr1.png" alt="llmnr1" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <img src="/images/projets/architecture-ad/audit/llmnr1.png" alt="llmnr1" class="rounded-lg border border-white/10 shadow-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Localisation du paramètre de résolution multicast.</p>
   </div>
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/llmnr2.png" alt="llmnr2" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <img src="/images/projets/architecture-ad/audit/llmnr2.png" alt="llmnr2" class="rounded-lg border border-white/10 shadow-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Activation de la restriction LLMNR.</p>
   </div>
 </div>
@@ -238,7 +238,7 @@ L'activation de l'audit PowerShell (Script Block Logging) permet de tracer l'ex�
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/actived-powershell.png" alt="Audit PowerShell" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/actived-powershell.png" alt="Audit PowerShell" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Mise en place de la traçabilité des scripts PowerShell.</p>
   </div>
 </div>
@@ -251,7 +251,7 @@ Le service de spouleur sur un contrôleur de domaine présente un risque majeur 
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/spooler-desactived.png" alt="Spooler désactivé" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/spooler-desactived.png" alt="Spooler désactivé" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Arrêt et désactivation du service de spouleur système.</p>
   </div>
 </div>
@@ -306,11 +306,11 @@ Le service de spouleur sur un contrôleur de domaine présente un risque majeur 
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/audit-sessions.png" alt="llmnr1" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <img src="/images/projets/architecture-ad/audit/audit-sessions.png" alt="llmnr1" class="rounded-lg border border-white/10 shadow-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Activation d e l'audit des connexions.</p>
   </div>
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/audit/audit-comptes.png" alt="llmnr2" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <img src="/images/projets/architecture-ad/audit/audit-comptes.png" alt="llmnr2" class="rounded-lg border border-white/10 shadow-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Activation de l'audit des comptes.</p>
   </div>
 </div>
@@ -323,7 +323,7 @@ Cela garantit que la stratégie d’audit avancée définie par GPO prévaut sur
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/audit-global.png" alt="Option de remplacement des catégories d'audit" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/audit-global.png" alt="Option de remplacement des catégories d'audit" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Forcer la configuration de l'audit par la GPO</p>
   </div>
 </div>
@@ -341,7 +341,7 @@ J'ai intégré mes comptes d'administration nominatifs au groupe de sécurité *
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/protected-users.png" alt="Membres du groupe Protected Users" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/protected-users.png" alt="Membres du groupe Protected Users" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Ajout de l'administrateur nominatif dans le groupe Protected Users.</p>
   </div>
 </div>
@@ -353,7 +353,7 @@ J'ai donc modifié les **ACL (Access Control Lists)** de la zone DNS pour retire
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/dns-security.png" alt="Sécurité DNS" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/dns-security.png" alt="Sécurité DNS" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Suppression des Utilisateurs Authentifiés.</p>
   </div>
 </div>
@@ -363,7 +363,7 @@ Afin de garantir la disponibilité du domaine, j'ai activé la **protection cont
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/protected-ou.png" alt="ou non supprimables" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/protected-ou.png" alt="ou non supprimables" class="max-w-[500px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Empêcher la suppression accidentelle d'une OU.</p>
   </div>
 </div>
@@ -373,7 +373,7 @@ Par défaut, n'importe quel utilisateur peut joindre 10 machines au domaine. C'e
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/audit/ms-ds-desactived.png" alt="Désactivation quota machine" class="max-w-[400px] w-full rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/architecture-ad/audit/ms-ds-desactived.png" alt="Désactivation quota machine" class="max-w-[400px] w-full rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Modification de l'attribut ms-DS-MachineAccountQuota pour interdire la jonction automatique.</p>
   </div>
 </div>
@@ -415,12 +415,12 @@ Ce nouveau scan montre une **réduction significative du niveau de risque**, not
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 items-center">
   <div class="flex flex-col items-center">
-     <img src="/images/projets/win-infra-core/audit/pingcastle-radar2.png" alt="Radar de sécurité après remédiation" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
+     <img src="/images/projets/architecture-ad/audit/pingcastle-radar2.png" alt="Radar de sécurité après remédiation" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
      <p class="text-[0.65rem] italic opacity-50 mt-2">Radar de sécurité après application des mesures de durcissement.</p>
   </div>
   
   <div class="flex flex-col items-center">
-     <img src="/images/projets/win-infra-core/audit/risk-model2.png" alt="Risk model après remédiation" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
+     <img src="/images/projets/architecture-ad/audit/risk-model2.png" alt="Risk model après remédiation" class="rounded-lg border border-white/10 shadow-md w-full max-w-[300px]" />
      <p class="text-[0.65rem] italic opacity-50 mt-2">Détail des indicateurs de risque restants après corrections.</p>
   </div>
 </div>

@@ -44,7 +44,7 @@ Avant toute modification, je vérifie le comportement actuel. En interrogeant l�
 
 <div class="flex flex-col items-center my-10 group">
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl transition-all group-hover:border-blue-500/30">
-    <img src="/images/projets/win-identity-pro/dns/dns0.png" alt="Erreur nslookup Unknown" class="rounded-xl w-full max-w-2xl" />
+    <img src="/images/projets/identity-security/dns/dns0.png" alt="Erreur nslookup Unknown" class="rounded-xl w-full max-w-2xl" />
   </div>
   <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Échec de résolution : absence d'enregistrement PTR</p>
 </div>
@@ -59,28 +59,28 @@ Je crée une nouvelle zone permettant d’établir la correspondance entre les a
   
   <div class="space-y-3">
     <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/win-identity-pro/dns/dns2.png" alt="Zone principale" class="w-full h-full object-contain" />
+      <img src="/images/projets/identity-security/dns/dns2.png" alt="Zone principale" class="w-full h-full object-contain" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Type :</strong> Zone principale intégrée à l’Active Directory.</p>
   </div>
 
   <div class="space-y-3">
     <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/win-identity-pro/dns/dns3.png" alt="Réplication" class="w-full h-full object-contain" />
+      <img src="/images/projets/identity-security/dns/dns3.png" alt="Réplication" class="w-full h-full object-contain" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Réplication :</strong> Propagation à tous les serveurs DNS du domaine.</p>
   </div>
 
   <div class="space-y-3">
     <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/win-identity-pro/dns/dns4.png" alt="IPv4" class="w-full h-full object-contain" />
+      <img src="/images/projets/identity-security/dns/dns4.png" alt="IPv4" class="w-full h-full object-contain" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Protocole :</strong> Création de la zone pour l'adressage IPv4.</p>
   </div>
 
   <div class="space-y-3">
     <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/win-identity-pro/dns/dns5.png" alt="ID réseau" class="w-full h-full object-contain" />
+      <img src="/images/projets/identity-security/dns/dns5.png" alt="ID réseau" class="w-full h-full object-contain" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Réseau :</strong> Saisie de l'ID réseau <code class="text-blue-600 dark:text-blue-400">192.168.174</code>.</p>
   </div>
@@ -94,7 +94,7 @@ Je crée une nouvelle zone permettant d’établir la correspondance entre les a
 Il est préférable d’activer la création automatique du pointeur pour éviter une gestion manuelle fastidieuse. Je lie l’enregistrement **A** du serveur à la zone inversée via ses propriétés.
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 my-10 items-center">
-  <img src="/images/projets/win-identity-pro/dns/dns7.png" alt="Activation PTR" class="rounded-xl border border-slate-200 dark:border-white/10 shadow-lg" />
+  <img src="/images/projets/identity-security/dns/dns7.png" alt="Activation PTR" class="rounded-xl border border-slate-200 dark:border-white/10 shadow-lg" />
   <div class="bg-slate-50 dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10">
     <p class="text-[11px] text-slate-700 dark:text-white/70 leading-relaxed">L'option <span class="text-blue-600 dark:text-blue-400 font-bold">"Mettre à jour l'enregistrement de pointeur (PTR) associé"</span> garantit qu'à chaque changement d'IP, le DNS inverse se mettra à jour dynamiquement.</p>
   </div>
@@ -112,7 +112,7 @@ Mon contrôleur de domaine ne connaît que les machines de mon lab. Pour que les
 
 <div class="my-10 flex flex-col items-center">
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm group">
-    <img src="/images/projets/win-identity-pro/dns/dnsredirect.png" alt="Configuration des redirecteurs DNS" class="rounded-xl max-w-full h-auto" />
+    <img src="/images/projets/identity-security/dns/dnsredirect.png" alt="Configuration des redirecteurs DNS" class="rounded-xl max-w-full h-auto" />
   </div>
   <div class="mt-4 flex items-center gap-2 text-slate-500 dark:text-white/40 font-medium">
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Propriétés du serveur : Ajout des DNS de Google (8.8.8.8)</p>
@@ -124,7 +124,7 @@ Je termine par un test de cohérence. La résolution inverse doit maintenant fon
 
 <div class="my-10 flex flex-col items-center">
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
-    <img src="/images/projets/win-identity-pro/dns/dnsok.png" alt="Validation DNS OK" class="rounded-xl max-w-full h-auto" />
+    <img src="/images/projets/identity-security/dns/dnsok.png" alt="Validation DNS OK" class="rounded-xl max-w-full h-auto" />
   </div>
   <div class="mt-4 flex items-center gap-2 text-slate-500 dark:text-white/40 font-medium">
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Test NSLOOKUP : Correspondance IP/Nom validée</p>

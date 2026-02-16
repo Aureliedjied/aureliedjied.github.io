@@ -13,25 +13,37 @@ import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
 
 
-Par défaut, les requêtes LDAP circulent en clair sur le réseau via le **port 389**.  
-Cela expose potentiellement :
+Par défaut, certaines requêtes LDAP peuvent circuler en clair sur le réseau via le port **389**, notamment lors d’un *simple bind*.  
+LDAP peut toutefois être sécurisé soit par **StartTLS**, soit par **signature LDAP**.
 
-- des identifiants  
-- des informations d’annuaire  
-- des requêtes d’authentification  
+Dans ce lab, nous choisissons d’implémenter **LDAPS (port 636)** afin de disposer d’un canal chiffré explicite et facilement vérifiable.
 
-Dans une infrastructure durcie selon les recommandations de l’**ANSSI**, il est indispensable de protéger ces échanges.
+> 🎯 Objectif du lab  
+> Ce projet s’inscrit dans une démarche de **durcissement volontaire** du socle Active Directory.  
+> Certaines configurations appliquées ici seraient précédées d’une phase d’audit et de compatibilité en production.
 
-Le passage au **LDAPS (LDAP over TLS – port 636)** permet de chiffrer le canal de communication. Cette sécurisation repose directement sur :
+Les risques d’un LDAP non sécurisé incluent :
+
+- l’exposition d’identifiants  
+- la divulgation d’informations d’annuaire  
+- l’interception ou la modification de requêtes d’authentification  
+
+Dans une infrastructure durcie suivant les recommandations de l’**ANSSI**, ces échanges doivent impérativement être protégés.
+
+Le passage au **LDAPS (LDAP over TLS – port 636)** permet d’assurer la confidentialité des communications.  
+Cette sécurisation repose directement sur :
 
 - la **PKI interne** déployée précédemment  
 - la **cohérence DNS**, nécessaire à la validation du certificat du contrôleur de domaine  
 
-Sans certificat valide côté DC, le service LDAPS ne peut tout simplement pas fonctionner.
+LDAPS nécessite la présence d’au moins un certificat valide contenant l’usage **Authentification du serveur** dans le magasin ordinateur du contrôleur de domaine.  
+Dans ce lab, nous gérons explicitement ce certificat afin de maîtriser le fonctionnement du service.
 
----
 
 ## 🛠️ Étape 1 : Création du modèle de certificat "Lab-DC-LDAPS"
+
+Dans un environnement réel, Active Directory fonctionne déjà sans LDAPS obligatoire.  
+Ici, nous forçons volontairement la configuration afin d’observer les mécanismes de sécurisation des flux d’annuaire.
 
 Pour que LDAPS soit activé, le contrôleur de domaine doit disposer d’un certificat contenant l’usage **Authentification du serveur**.
 
@@ -63,10 +75,8 @@ Ce modèle permettra aux DC d’obtenir automatiquement un certificat adapté à
     max-width: 700px;
     flex: 1 1 300px;
   ">
-    <img src="/images/projets/win-identity-pro/ldaps/mmc1.png" alt="Ajout du composant Certificats" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">
-      Ajout du composant Certificats dans MMC.
-    </p>
+    <img src="/images/projets/identity-security/ldaps/mmc1.png" alt="Ajout du composant Certificats" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Ajout du composant Certificats dans MMC.</p>
   </div>
 
   <div style="
@@ -75,15 +85,11 @@ Ce modèle permettra aux DC d’obtenir automatiquement un certificat adapté à
     align-items: center;
     max-width: 700px;
     flex: 1 1 300px;">
-    <img src="/images/projets/win-identity-pro/ldaps/mmc2.png" alt="Sélection du compte ordinateur" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">
-      Sélection du compte ordinateur local.
-    </p>
+    <img src="/images/projets/identity-security/ldaps/mmc2.png" alt="Sélection du compte ordinateur" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Sélection du compte ordinateur local.</p>
   </div>
 
 </div>
-
-
 
 ---
 
@@ -101,7 +107,7 @@ Le modèle est désormais disponible pour l’enrôlement par les contrôleurs d
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/publier-modele.png" alt="Publication du modèle de certificat" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/publier-modele.png" alt="Publication du modèle de certificat" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Publication du modèle sur l’autorité de certification.</p>
   </div>
 </div>
@@ -123,11 +129,11 @@ Pour garder un contrôle précis dans ce lab, j’effectue une **inscription man
 <div style="display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin: 2rem 0;"> 
 
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/mmc1.png" alt="Ajout du composant Certificats" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/mmc1.png" alt="Ajout du composant Certificats" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Ajout du composant Certificats dans MMC.</p>
   </div>
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/mmc2.png" alt="Sélection du compte ordinateur" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/mmc2.png" alt="Sélection du compte ordinateur" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Sélection du compte ordinateur local.</p>
   </div>
 </div>
@@ -145,11 +151,11 @@ Dans **Certificats (ordinateur local)** :
 <div style="display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin: 2rem 0;">
 
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/mmc3.png" alt="Inscription du certificat LDAPS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/mmc3.png" alt="Inscription du certificat LDAPS" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
   </div>
 
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/mmc4.png" alt="Certificat LDAPS installé" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/mmc4.png" alt="Certificat LDAPS installé" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
   </div>
 
 </div>
@@ -171,7 +177,7 @@ Une vérification du système confirme que le DC écoute bien sur le **port 636*
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/netstat.png" alt="Vérification port 636" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/netstat.png" alt="Vérification port 636" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Le contrôleur de domaine écoute sur le port LDAPS.</p>
   </div>
 </div>
@@ -180,7 +186,7 @@ En complément de l’écoute locale du service, un test de connexion TCP permet
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/ldaps-tcp.png" alt="Test de connexion TCP vers le port 636" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" /> 
+    <img src="/images/projets/identity-security/ldaps/ldaps-tcp.png" alt="Test de connexion TCP vers le port 636" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" /> 
     <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Test de connectivité TCP réussi vers le port LDAPS.</p> 
   </div>
 </div>
@@ -201,7 +207,7 @@ L’affichage du **RootDSE** confirme que la session LDAP est établie via TLS.
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/mmc6.png" alt="Connexion LDAPS réussie" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/mmc6.png" alt="Connexion LDAPS réussie" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Connexion LDAPS établie avec succès via TLS.</p>
   </div>
 </div>
@@ -210,10 +216,16 @@ L’affichage du **RootDSE** confirme que la session LDAP est établie via TLS.
 
 ## 🛡️ Étape 6 : Signature LDAP obligatoire (Durcissement)
 
+Cette étape correspond à un durcissement volontaire.
+
+Par défaut, Active Directory tolère encore certaines connexions LDAP non signées pour des raisons de compatibilité applicative.  
+Dans ce lab, nous choisissons volontairement de supprimer ces comportements afin de simuler une politique de sécurité stricte.
+
 LDAPS chiffre les communications sur le port 636.  
 La **signature LDAP**, elle, protège l’intégrité des échanges sur le port 389.
 
 Ces deux mécanismes sont **complémentaires** dans une stratégie de durcissement.
+
 
 ### 🔒 Côté contrôleurs de domaine
 
@@ -233,18 +245,70 @@ GPO :
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ldaps/gpo-ldap.png" alt="GPO Signature LDAP" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
+    <img src="/images/projets/identity-security/ldaps/gpo-ldap.png" alt="GPO Signature LDAP" class="rounded-lg border border-white/10 shadow-md max-w-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2 text-center">Mise en place de la signature LDAP obligatoire via GPO.</p>
   </div>
 </div>
 
 
-L’annuaire communique désormais via des canaux protégés, garantissant la **confidentialité** et l’**intégrité** des échanges d’authentification.
+Dans ce lab, l’annuaire n’accepte désormais plus que des communications LDAP protégées :
 
-Cette étape marque la fin de la sécurisation du socle d’identité.  
-La prochaine phase consistera à renforcer la protection des comptes à privilèges avec la mise en place d’une **authentification multifacteur (MFA)**.
+- LDAP signé
+- LDAPS chiffré
+
+Ce niveau de restriction correspond à une politique de durcissement volontaire.  
+En production, cette configuration serait précédée d’une phase d’audit afin d’identifier les applications héritées.
+
+Cette étape marque la fin de la sécurisation du socle d’identité.
+
+
+<section class="mt-16 space-y-12">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+        <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : LDAPS
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Chiffrement actif :</strong> Port 636 ouvert et sécurisé via certificat Kerberos/Domaine.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Intégrité :</strong> Fin de la transmission des identifiants en clair sur le réseau.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
+          <span><strong>Conformité :</strong> Respect des exigences de sécurité pour les applications tierces (SSO, ERP).</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
+        <div>
+          <div class="text-4xl mb-2">🔒</div>
+          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Tunnel SSL établi</p>
+          <p class="text-[9px] text-slate-500 mt-1 italic">Annuaire protégé contre l'interception</p>
+        </div>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
+    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+      "En activant le LDAPS, nous sécurisons le cœur de notre identité numérique. Chaque requête entre nos serveurs et nos clients est désormais encapsulée dans un tunnel de confiance."
+    </p>
+    
+    <div class="space-y-4">
+      <p class="text-sm text-slate-500 dark:text-white/50">
+        Objectif suivant : Administration granulaire et gestion des accès.
+      </p>
+    </div>
+  </div>
+
+</section>
 
 <NextStep 
-  href="/projets/client-domaine" 
-  title="Joindre un client au domaine" 
+  href="/projets/ou" 
+  title="OUs et Hiérarchie" 
 />

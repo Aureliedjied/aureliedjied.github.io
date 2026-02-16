@@ -14,11 +14,11 @@ export const SERIES: Record<string, Serie> = {
     icon: "windows",
     color: "#0078d4" // Bleu Microsoft
   },
-  "identity-security": {
+"identity-security": {
     title: "Sécurité des Identités & PKI",
-    description: "Mise en place d'autorités de certification (AD CS), chiffrement d'annuaire LDAPS et sécurisation des comptes privilèges. Intégration d'un client au domaine.",
+    description: "Mise en place d'autorités de certification (AD CS), chiffrement d'annuaire LDAPS et sécurisation des comptes privilèges.",
     icon: "windows",
-    color: "#0078d4" // Bleu Microsoft
+    color: "#0078d4" 
   },
   "backup-resilience": {
     title: "Sauvegarde & Continuité d’Activité",
@@ -27,11 +27,11 @@ export const SERIES: Record<string, Serie> = {
     color: "#107c10" // Vert "Healthy"
   },
   "governance-access": {
-    title: "Gouvernance & Gestion des Accès",
-    description: "Administration des ressources via le modèle AGDLP. Audit des droits NTFS, partage de fichiers et délégations d'administration.",
-    icon: "windows",
-    color: "#0078d4"
-  },
+      title: "Structure de l'annuaire & Gestion des Accès",
+      description: "Intégration des postes au domaine, administration via le modèle AGDLP, audit des droits NTFS et délégations.",
+      icon: "windows",
+      color: "#0078d4"
+    },
   "linux-infra": {
     title: "Infrastructure Linux",
     description: "Maîtrise des distributions (Debian, Ubuntu, RedHat, Mint). Déploiement de services auto-hébergés comme Nextcloud et durcissement système.SSH et scripting Bash",

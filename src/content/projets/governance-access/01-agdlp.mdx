@@ -1,0 +1,39 @@
+---
+title: "La méthode AGDLP : Piloter les accès"
+description: "Mise en œuvre d'une stratégie de groupes pour sécuriser les ressources et simplifier l'administration."
+tags: ["Windows Server", "Active Directory", "AGDLP", "Permissions"]
+category: "windows-server"
+serie: "governance-access"
+serieOrder: 2
+pubDate: 2026-02-07
+slug: "methode-agdlp"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+
+<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
+Une fois l'arborescence Active Directory prête, il est crucial d'adopter une méthode rigoureuse pour la gestion des droits. Le modèle <strong>AGDLP</strong> est le standard recommandé par Microsoft pour garantir une gestion des accès évolutive et auditable.
+</p>
+
+---
+
+## 🏗️ Rappel du concept AGDLP
+
+Le modèle repose sur l'imbrication de groupes pour séparer les utilisateurs des permissions finales.
+
+| Lettre | Signification | Rôle technique |
+| :--- | :--- | :--- |
+| **A** | **Accounts** | Les comptes utilisateurs (ex: p.dupont). |
+| **G** | **Global Groups** | Groupes basés sur le rôle métier (ex: G_Comptabilite). |
+| **DL** | **Domain Local** | Groupes basés sur la ressource (ex: DL_Partage_Compta_RW). |
+| **P** | **Permissions** | Les droits NTFS appliqués sur le dossier. |
+
+
+
+
+
+<NextStep 
+  href="/projets/gpo" 
+  title="Mise en place des premières GPO" 
+/>

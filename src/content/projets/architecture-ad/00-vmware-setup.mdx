@@ -36,17 +36,17 @@ Pour ce lab, j'utilise **VMware Workstation**. Le dimensionnement a été choisi
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/vmware-setup/processeur.png" alt="Configuration CPU" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/processeur.png" alt="Configuration CPU" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">2 vCPUs</p>
   </div>
 
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/vmware-setup/allouer-ram.png" alt="Configuration RAM" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/allouer-ram.png" alt="Configuration RAM" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">4 Go de RAM</p>
   </div>
 
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/vmware-setup/espace-disk.png" alt="Configuration Stockage" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/espace-disk.png" alt="Configuration Stockage" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">60 Go (Thin)</p>
   </div>
 </div>
@@ -65,12 +65,12 @@ Le serveur est placé sur le segment **NAT (VMnet8)**. Afin de coller aux exigen
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 350px; flex: 1; min-width: 280px;">
-    <img src="/images/projets/win-infra-core/vmware-setup/vmware-nat-no-dhcp.png" alt="Désactivation DHCP VMware" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/vmware-nat-no-dhcp.png" alt="Désactivation DHCP VMware" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Interface NAT : désactivation du service DHCP</p>
   </div>
 
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 350px; flex: 1; min-width: 280px;">
-    <img src="/images/projets/win-infra-core/vmware-setup/reseau-nat.png" alt="Configuration Réseau NAT" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/reseau-nat.png" alt="Configuration Réseau NAT" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Plan d'adressage : Configuration du segment VMnet8</p>
   </div>
 </div>
@@ -87,7 +87,7 @@ Une fois l'ISO montée, nous démarrons la VM. Lors de la création, nous nommon
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
-    <img src="/images/projets/win-infra-core/vmware-setup/renommer-serveur.png" alt="nommer le serveur" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/renommer-serveur.png" alt="nommer le serveur" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Identification de la VM dans l'inventaire</p>
   </div>
 </div>
@@ -102,11 +102,11 @@ J'ai sélectionné la version **Standard (Expérience Bureau)**.
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
-    <img src="/images/projets/win-infra-core/vmware-setup/experience-bureau.png" alt="experience-bureau" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/experience-bureau.png" alt="experience-bureau" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sélection de l'OS : Windows Server 2022 Standard Desktop Experience</p>
   </div>
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
-    <img src="/images/projets/win-infra-core/vmware-setup/installation.png" alt="Installation" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/vmware-setup/installation.png" alt="Installation" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Processus d'installation de l'OS</p>
   </div>
 </div>
@@ -137,12 +137,12 @@ J'ai sélectionné la version **Standard (Expérience Bureau)**.
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
     <figure class="flex flex-col items-center">
-      <img src="/images/projets/win-infra-core/vmware-setup/mdp-admin-local.png" alt="Mot de passe" class="w-full h-auto rounded-lg border border-white/10 shadow-lg" />
+      <img src="/images/projets/architecture-ad/vmware-setup/mdp-admin-local.png" alt="Mot de passe" class="w-full h-auto rounded-lg border border-white/10 shadow-lg" />
       <figcaption class="text-[0.65rem] text-center opacity-50 mt-3 italic">Définition du MDP Administrateur</figcaption>
     </figure>
 
     <figure class="flex flex-col items-center">
-      <img src="/images/projets/win-infra-core/vmware-setup/vm-tools.png" alt="VMware Tools" class="w-full h-auto rounded-lg border border-white/10 shadow-lg" />
+      <img src="/images/projets/architecture-ad/vmware-setup/vm-tools.png" alt="VMware Tools" class="w-full h-auto rounded-lg border border-white/10 shadow-lg" />
       <figcaption class="text-[0.65rem] text-center opacity-50 mt-3 italic">Optimisation via VMware Tools</figcaption>
     </figure>
   </div>
@@ -159,7 +159,7 @@ J'ai sélectionné la version **Standard (Expérience Bureau)**.
 
     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 60px; margin: 3rem 0;">
         <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px; flex: 1; min-width: 280px;">
-            <img src="/images/projets/win-infra-core/roles/open-admin.png" alt="Saisie mot de passe" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
+            <img src="/images/projets/architecture-ad/roles/open-admin.png" alt="Saisie mot de passe" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
             <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Ouverture de session Administrateur local</p>
         </div>
 
@@ -168,7 +168,7 @@ J'ai sélectionné la version **Standard (Expérience Bureau)**.
     </p>
     
         <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px; flex: 1; min-width: 280px;">
-            <img src="/images/projets/win-infra-core/roles/renommer-ad.png" alt="Renommage serveur" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
+            <img src="/images/projets/architecture-ad/roles/renommer-ad.png" alt="Renommage serveur" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
             <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Changement du nom d'hôte (Redémarrage requis)</p>
         </div>
     </div>
@@ -193,7 +193,7 @@ Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe
       </tbody>
     </table>
   </div>
-  <img src="/images/projets/win-infra-core/roles/ipconf.png" alt="Configuration IP" class="rounded-lg border border-white/10" />
+  <img src="/images/projets/architecture-ad/roles/ipconf.png" alt="Configuration IP" class="rounded-lg border border-white/10" />
 </div>
 
 ---
@@ -204,7 +204,7 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
 
 <div class="flex flex-col items-center my-10">
   <div class="max-w-2xl w-full">
-    <img src="/images/projets/win-infra-core/roles/ajouter-role.png" alt="Menu Gérer" class="rounded-xl border border-white/10 shadow-2xl" />
+    <img src="/images/projets/architecture-ad/roles/ajouter-role.png" alt="Menu Gérer" class="rounded-xl border border-white/10 shadow-2xl" />
     <p class="text-[0.65rem] italic opacity-50 mt-3 text-center text-balance">Lancement de l'assistant "Ajouter des rôles et fonctionnalités" depuis le Dashboard.</p>
   </div>
 </div>
@@ -221,7 +221,7 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
       Installation des <strong>Active Directory Domain Services</strong>. C'est le socle qui permet la gestion centralisée des identités et des stratégies de sécurité (GPO).
     </p>
     <figure>
-      <img src="/images/projets/win-infra-core/roles/ad-install.png" alt="Sélection AD DS" class="rounded-lg border border-white/10 w-full shadow-md" />
+      <img src="/images/projets/architecture-ad/roles/ad-install.png" alt="Sélection AD DS" class="rounded-lg border border-white/10 w-full shadow-md" />
       <figcaption class="text-[10px] uppercase tracking-widest opacity-40 mt-2 text-center">Binaires AD DS</figcaption>
     </figure>
   </div>
@@ -237,7 +237,7 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
       Le service <strong>DNS</strong> est indispensable pour localiser les services du domaine (enregistrements SRV). Sans lui, l'authentification Kerberos est impossible.
     </p>
     <figure>
-      <img src="/images/projets/win-infra-core/roles/serveur-dns.png" alt="Installation DNS" class="rounded-lg border border-white/10 w-full shadow-md" />
+      <img src="/images/projets/architecture-ad/roles/serveur-dns.png" alt="Installation DNS" class="rounded-lg border border-white/10 w-full shadow-md" />
       <figcaption class="text-[10px] uppercase tracking-widest opacity-40 mt-2 text-center">Binaires DNS Server</figcaption>
     </figure>
   </div>

@@ -30,11 +30,11 @@ En cas d'échec DNS, LLMNR diffuse la requête en clair sur le réseau local, ce
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/promo/llmnr-desactived.png" alt="Désactivation LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <img src="/images/projets/architecture-ad/promo/llmnr-desactived.png" alt="Désactivation LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Création de la clé de registre EnableMulticast</p>
   </div>
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/promo/llmnr-verif-0.png" alt="Vérification LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <img src="/images/projets/architecture-ad/promo/llmnr-verif-0.png" alt="Vérification LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification : Valeur positionnée à 0 (Désactivé)</p>
   </div>
 </div>
@@ -45,7 +45,7 @@ Protocole historique désormais obsolète, SMBv1 est dépourvu de mécanismes de
 Dans ce cas précis, la fonctionnalité **SMB 1.0/CIFS** n’est pas installée sur le système : le protocole est donc déjà absent, ce qui confirme une configuration conforme aux standards de sécurité actuels.
 
 <div class="flex flex-col items-center my-8">
-  <img src="/images/projets/win-infra-core/promo/smb1-desactived.png" alt="Désactivation SMBv1" class="max-w-[350px] w-full rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/architecture-ad/promo/smb1-desactived.png" alt="Désactivation SMBv1" class="max-w-[350px] w-full rounded-lg border border-white/10 shadow-md" />
   <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'état du rôle : Available (Non installé)</p>
 </div>
 
@@ -63,9 +63,9 @@ Dans ce cas précis, la fonctionnalité **SMB 1.0/CIFS** n’est pas installée 
   </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
-  <img src="/images/projets/win-infra-core/promo/netbios-active.png" alt="État initial" class="rounded-lg border border-white/10 w-full" />
-  <img src="/images/projets/win-infra-core/promo/netbios-desactived.png" alt="Script désactivation" class="rounded-lg border border-white/10 w-full" />
-  <img src="/images/projets/win-infra-core/promo/netbios-verif.png" alt="Audit final" class="rounded-lg border border-white/10 w-full" />
+  <img src="/images/projets/architecture-ad/promo/netbios-active.png" alt="État initial" class="rounded-lg border border-white/10 w-full" />
+  <img src="/images/projets/architecture-ad/promo/netbios-desactived.png" alt="Script désactivation" class="rounded-lg border border-white/10 w-full" />
+  <img src="/images/projets/architecture-ad/promo/netbios-verif.png" alt="Audit final" class="rounded-lg border border-white/10 w-full" />
 </div>
 
 ---
@@ -77,7 +77,7 @@ Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont 
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/netstat.png" alt="Paramètres NetBIOS via IPv4 avancé" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/promo/netstat.png" alt="Paramètres NetBIOS via IPv4 avancé" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Accès aux paramètres avancés NetBIOS via les propriétés IPv4</p>
   </div>
 </div>
@@ -120,7 +120,7 @@ Le socle système est désormais sain et durci. Nous passons à l'étape critiqu
   <div class="lg:w-1/2 w-full">
     <div class="overflow-hidden rounded-lg border border-white/10 shadow-2xl">
       <img 
-        src="/images/projets/win-infra-core/promo/promotion-ad.png" 
+        src="/images/projets/architecture-ad/promo/promotion-ad.png" 
         alt="Lancement de la promotion Active Directory" 
         class="w-full h-auto" 
       />
@@ -134,7 +134,7 @@ Le choix **« Ajouter une nouvelle forêt »** permet d’initialiser un environ
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/creation-foret.png" alt="Création de la forêt Active Directory" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/promo/creation-foret.png" alt="Création de la forêt Active Directory" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Création de la forêt racine infra.formation.local</p>
   </div>
 </div>
@@ -146,7 +146,7 @@ Une délégation n’est pertinente que dans un scénario de sous-domaine ou d�
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/no-dns.png" alt="ne pas ajouter de dns" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/promo/no-dns.png" alt="ne pas ajouter de dns" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">ne pas cocher le DNS</p>
   </div>
 </div>
@@ -156,7 +156,7 @@ Une délégation n’est pertinente que dans un scénario de sous-domaine ou d�
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/mdp-dsrm.png" alt="Définition du mot de passe DSRM"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/promo/mdp-dsrm.png" alt="Définition du mot de passe DSRM"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Définition du mot de passe DSRM</p>
   </div>
 </div>
@@ -166,7 +166,7 @@ Dans ce contexte de laboratoire maîtrisé, les chemins par défaut sont conserv
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/sysvol.png" alt="Configuration du dossier SYSVOL"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/promo/sysvol.png" alt="Configuration du dossier SYSVOL"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Emplacement de la base AD, des journaux et du dossier SYSVOL</p>
   </div>
 </div>
@@ -185,7 +185,7 @@ Une fois validée, l’installation initialise :
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/installation-foret.png" alt="Installation de la forêt Active Directory"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/promo/installation-foret.png" alt="Installation de la forêt Active Directory"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Récapitulatif et lancement de l’installation de la forêt</p>
   </div>
 </div>
@@ -196,7 +196,7 @@ La promotion se conclut par la validation des paramètres et le redémarrage aut
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/open-admin-ad.png" alt="ouverture session admin" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/architecture-ad/promo/open-admin-ad.png" alt="ouverture session admin" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Ouverture de la session INFRA\Administrateur</p>
   </div>
 </div>
@@ -212,11 +212,11 @@ Il est indispensable de valider que notre serveur est bien le référent du doma
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/promo/dc-pdcemulator.png" alt="Vérification rôle FSMO" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <img src="/images/projets/architecture-ad/promo/dc-pdcemulator.png" alt="Vérification rôle FSMO" class="rounded-lg border border-white/10 shadow-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Validation du détenteur du rôle PDC Emulator via PowerShell.</p>
   </div>
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-infra-core/promo/time-local-value.png" alt="Vérification source NTP" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <img src="/images/projets/architecture-ad/promo/time-local-value.png" alt="Vérification source NTP" class="rounded-lg border border-white/10 shadow-md w-full" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Confirmation de la source de synchronisation active (Pool NTP).</p>
   </div>
 </div>
@@ -225,7 +225,7 @@ Il est indispensable de valider que notre serveur est bien le référent du doma
 En tant que détenteur du rôle FSMO **PDC Emulator**, `SRV-AD-01` est configuré pour se synchroniser sur un pool NTP externe fiable (fr.pool.ntp.org), assurant ainsi une source de temps autoritaire pour les clients et serveurs membres.
 
 <div class="flex flex-col items-center my-8 space-y-4">
-  <img src="/images/projets/win-infra-core/promo/ntp-config.png" alt="Configuration NTP" class="rounded-lg border border-white/10 shadow-xl max-w-2xl w-full" />
+  <img src="/images/projets/architecture-ad/promo/ntp-config.png" alt="Configuration NTP" class="rounded-lg border border-white/10 shadow-xl max-w-2xl w-full" />
   <p class="text-xs italic opacity-50">Configuration de la source NTP externe</p>
 </div>
 
@@ -241,7 +241,7 @@ Une fois le domaine opérationnel, il est crucial d'ajuster les paramètres par 
 L'activation est réalisée en PowerShell. Le système demande une confirmation explicite car cette action est irréversible, marquant un point de non-retour dans la sécurisation de la disponibilité des objets.
 
 <div class="flex flex-col items-center my-8">
-  <img src="/images/projets/win-infra-core/promo/active-recycle-bin.png" alt="PowerShell Activation Corbeille" class="rounded-lg border border-white/10 shadow-md w-full"/>
+  <img src="/images/projets/architecture-ad/promo/active-recycle-bin.png" alt="PowerShell Activation Corbeille" class="rounded-lg border border-white/10 shadow-md w-full"/>
   <p class="text-[0.65rem] italic opacity-50 mt-2">Activation et vérification de la fonctionnalité 'Recycle Bin Feature'</p>
 </div>
 
@@ -264,7 +264,7 @@ La **Default Domain Policy** a donc été durcie afin d’élever le niveau de s
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/gpo-password-length.png" alt="GPO Longueur mot de passe" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <img src="/images/projets/architecture-ad/promo/gpo-password-length.png" alt="GPO Longueur mot de passe" class="rounded-lg border border-white/10 w-full shadow-md" />
       <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Configuration de la longueur minimale à 14 caractères</p>
   </div>
 </div>
@@ -282,7 +282,7 @@ Une politique de verrouillage a été mise en place afin de bloquer les attaques
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/gpo-lockout.png" alt="GPO Verrouillage compte" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <img src="/images/projets/architecture-ad/promo/gpo-lockout.png" alt="GPO Verrouillage compte" class="rounded-lg border border-white/10 w-full shadow-md" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Seuil de verrouillage fixé à 5 tentatives pour 30 minutes</p>
   </div>
 </div>
@@ -300,7 +300,7 @@ Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait 
 <div class="flex flex-col items-center my-10">
   <div class="max-w-md w-full group">
     <div class="overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-transform group-hover:scale-[1.02]">
-      <img src="/images/projets/win-infra-core/promo/gpo-modif.png" alt="GPO Edit" class="w-full h-auto" />
+      <img src="/images/projets/architecture-ad/promo/gpo-modif.png" alt="GPO Edit" class="w-full h-auto" />
     </div>
     <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Édition de la stratégie de groupe racine</p>
   </div>
@@ -314,7 +314,7 @@ Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait 
       <h4 class="font-bold text-sm">Compte Administrateur</h4>
     </div>
     <div class="aspect-video rounded-lg overflow-hidden border border-white/5">
-      <img src="/images/projets/win-infra-core/promo/gpo-rename-admin.png" alt="Rename Admin" class="w-full h-full object-cover object-top" />
+      <img src="/images/projets/architecture-ad/promo/gpo-rename-admin.png" alt="Rename Admin" class="w-full h-full object-cover object-top" />
     </div>
     <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Action : Renommage du compte racine</p>
   </div>
@@ -325,7 +325,7 @@ Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait 
       <h4 class="font-bold text-sm">Compte Invité</h4>
     </div>
     <div class="aspect-video rounded-lg overflow-hidden border border-white/5">
-      <img src="/images/projets/win-infra-core/promo/gpo-rename-guest.png" alt="Rename Guest" class="w-full h-full object-cover object-top" />
+      <img src="/images/projets/architecture-ad/promo/gpo-rename-guest.png" alt="Rename Guest" class="w-full h-full object-cover object-top" />
     </div>
     <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Action : Renommage du compte invité</p>
   </div>
@@ -335,7 +335,7 @@ Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait 
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/guest-disabled.png" alt="Désactivation du compte Invité" class="rounded-lg border border-white/10 shadow-md w-full"/>
+    <img src="/images/projets/architecture-ad/promo/guest-disabled.png" alt="Désactivation du compte Invité" class="rounded-lg border border-white/10 shadow-md w-full"/>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Désactivation du compte Invité via GPO</p>
   </div>
 </div>
@@ -348,14 +348,14 @@ Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div style="display: flex; justify-content: center; margin: 2rem 0;">
     <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/win-infra-core/promo/gpupdate.png" alt="Application de la GPO via PowerShell" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+      <img src="/images/projets/architecture-ad/promo/gpupdate.png" alt="Application de la GPO via PowerShell" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
       <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Application immédiate via gpupdate /force</p>
     </div>
   </div>
 
   <div style="display: flex; justify-content: center; margin: 2rem 0;">
     <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/win-infra-core/promo/activer-gpo.png" alt="Activation de la GPO au niveau du domaine" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+      <img src="/images/projets/architecture-ad/promo/activer-gpo.png" alt="Activation de la GPO au niveau du domaine" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
       <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Application de la Default Domain Policy à l’échelle du domaine</p>
     </div>
   </div>
@@ -397,13 +397,13 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div style="display: flex; justify-content: center; margin: 2rem 0;">
     <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/win-infra-core/promo/script-adm.png" alt="Script PowerShell création admin" class="rounded-lg border border-white/10 shadow-md w-full" />
+      <img src="/images/projets/architecture-ad/promo/script-adm.png" alt="Script PowerShell création admin" class="rounded-lg border border-white/10 shadow-md w-full" />
       <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Exécution du script de création du compte adm-aurelie</p>
     </div>
   </div>
   <div style="display: flex; justify-content: center; margin: 2rem 0;">
     <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/win-infra-core/promo/psh-create-admin.png" alt="vérification adm-aurelie" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+      <img src="/images/projets/architecture-ad/promo/psh-create-admin.png" alt="vérification adm-aurelie" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
       <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vérification de l'adm-aurelie dans l'annuaire</p>
     </div>
   </div>
@@ -414,7 +414,7 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/win-infra-core/promo/adm-aurelie-session.png" alt="Session adm-aurelie" class="rounded-lg border border-white/10 shadow-md w-full"/>
+    <img src="/images/projets/architecture-ad/promo/adm-aurelie-session.png" alt="Session adm-aurelie" class="rounded-lg border border-white/10 shadow-md w-full"/>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Session avec le nouvel administrateur adm-aurelie</p>
   </div>
 </div>

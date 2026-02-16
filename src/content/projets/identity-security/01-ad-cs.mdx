@@ -29,14 +29,14 @@ Je commence par ajouter le rôle **Services de certificats Active Directory**. L
   
   <div class="space-y-3">
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/win-identity-pro/ad-cs/install-adcs.png" alt="Installation du rôle AD CS" class="rounded-lg w-full h-auto" />
+      <img src="/images/projets/identity-security/ad-cs/install-adcs.png" alt="Installation du rôle AD CS" class="rounded-lg w-full h-auto" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sélection du rôle racine AD CS</p>
   </div>
 
 <div class="space-y-3">
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/win-identity-pro/ad-cs/install-ca.png" alt="Installation minimale" class="rounded-lg w-full h-auto" />
+      <img src="/images/projets/identity-security/ad-cs/install-ca.png" alt="Installation minimale" class="rounded-lg w-full h-auto" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Installation minimale : CA uniquement</p>
   </div>
@@ -79,11 +79,11 @@ Pour garantir une sécurité à long terme, j'ai configuré des paramètres sup�
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/adcs-4.png" alt="Clé privée" class="rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/identity-security/ad-cs/adcs-4.png" alt="Clé privée" class="rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Création d'une nouvelle clé privée sécurisée.</p>
   </div>
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/adcs-fin.png" alt="Résumé final" class="rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/identity-security/ad-cs/adcs-fin.png" alt="Résumé final" class="rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Confirmation de la configuration réussie</p>
   </div>
 </div>
@@ -104,13 +104,13 @@ Le compte est isolé dans une OU dédiée aux comptes d’administration : <code
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
   <div class="flex flex-col gap-3">
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki.png" alt="Création du compte adm-pki" class="rounded-lg w-full h-auto" />
+      <img src="/images/projets/identity-security/ad-cs/adm-pki.png" alt="Création du compte adm-pki" class="rounded-lg w-full h-auto" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Création du compte adm-pki dédié</p>
   </div>
   <div class="flex flex-col gap-3">
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg w-full h-auto" />
+      <img src="/images/projets/identity-security/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg w-full h-auto" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Isolation dans l'OU d'administration</p>
   </div>
@@ -142,13 +142,13 @@ Depuis la console <code class="text-xs font-mono">certsrv.msc</code>, j'ai dél�
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
   <div class="flex flex-col gap-3">
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki3.png" alt="Membres du groupe" class="rounded-lg w-full h-auto" />
+      <img src="/images/projets/identity-security/ad-cs/adm-pki3.png" alt="Membres du groupe" class="rounded-lg w-full h-auto" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Restriction des Certificate Publishers</p>
   </div>
   <div class="flex flex-col gap-3">
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/win-identity-pro/ad-cs/adm-pki-cert.png" alt="Permissions CA" class="rounded-lg w-full h-auto" />
+      <img src="/images/projets/identity-security/ad-cs/adm-pki-cert.png" alt="Permissions CA" class="rounded-lg w-full h-auto" />
     </div>
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Délégation granulaire des droits</p>
   </div>
@@ -208,11 +208,11 @@ Après application, la sous-catégorie **Services de certification** passe bien 
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/audit-cert.png" alt="Membres du groupe Éditeurs de certificats" class="rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/identity-security/ad-cs/audit-cert.png" alt="Membres du groupe Éditeurs de certificats" class="rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Auditer les succès et échecs.</p>
   </div>
   <div class="flex flex-col items-center">
-    <img src="/images/projets/win-identity-pro/ad-cs/audit-pwshell-ok.png" alt="Permissions de la CA" class="rounded-lg border border-white/10 shadow-md" />
+    <img src="/images/projets/identity-security/ad-cs/audit-pwshell-ok.png" alt="Permissions de la CA" class="rounded-lg border border-white/10 shadow-md" />
     <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'audit avec la commande auditpol /get</p>
   </div>
 </div>
@@ -234,7 +234,7 @@ La présence de cet objet confirme que :
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/win-identity-pro/ad-cs/cert-ad-inscrit.png" alt="Publication du certificat de la CA dans ADSI" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/identity-security/ad-cs/cert-ad-inscrit.png" alt="Publication du certificat de la CA dans ADSI" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 8px; font-style: italic;">Le certificat de l’autorité de certification est bien publié dans Active Directory.</p>
   </div>
 </div>
@@ -255,7 +255,7 @@ Tous les indicateurs sont au vert : la chaîne de confiance est fonctionnelle et
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 450px;">
-    <img src="/images/projets/win-identity-pro/ad-cs/pki-ok.png" alt="PKIview" style="width: 130%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <img src="/images/projets/identity-security/ad-cs/pki-ok.png" alt="PKIview" style="width: 130%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
     <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Emplacement AIA et CDP du certificat OK</p>
   </div>
 </div>
@@ -272,19 +272,19 @@ Pour inspecter les certificats de l’ordinateur local, j'utilise la console `mm
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 my-8">
   <div class="space-y-2">
-    <img src="/images/projets/win-identity-pro/ad-cs/mmc1.png" alt="MMC 1" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <img src="/images/projets/identity-security/ad-cs/mmc1.png" alt="MMC 1" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
     <p class="text-[8px] text-center font-bold uppercase text-slate-500">1. Lancer MMC</p>
   </div>
   <div class="space-y-2">
-    <img src="/images/projets/win-identity-pro/ad-cs/mmc2.png" alt="MMC 2" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <img src="/images/projets/identity-security/ad-cs/mmc2.png" alt="MMC 2" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
     <p class="text-[8px] text-center font-bold uppercase text-slate-500">2. Composants</p>
   </div>
   <div class="space-y-2">
-    <img src="/images/projets/win-identity-pro/ad-cs/mmc3.png" alt="MMC 3" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <img src="/images/projets/identity-security/ad-cs/mmc3.png" alt="MMC 3" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
     <p class="text-[8px] text-center font-bold uppercase text-slate-500">3. Compte Ordinateur</p>
   </div>
   <div class="space-y-2">
-    <img src="/images/projets/win-identity-pro/ad-cs/mmc4.png" alt="MMC 4" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
+    <img src="/images/projets/identity-security/ad-cs/mmc4.png" alt="MMC 4" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
     <p class="text-[8px] text-center font-bold uppercase text-slate-500">4. Local</p>
   </div>
 </div>
@@ -302,7 +302,7 @@ Cette présence confirme que :
 
 <div class="my-10 flex flex-col items-center">
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
-    <img src="/images/projets/win-identity-pro/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" class="rounded-xl w-full max-w-3xl h-auto" />
+    <img src="/images/projets/identity-security/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" class="rounded-xl w-full max-w-3xl h-auto" />
   </div>
   <p class="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 italic">
     Le certificat est bien présent et valide dans le magasin de confiance local.
