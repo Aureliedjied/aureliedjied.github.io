@@ -51,14 +51,35 @@ Sur l’autorité de certification, j’ouvre la console **`certtmpl.msc`** et j
 
 ### 🔧 Paramétrage du modèle
 
-- **Nom du modèle :** `Lab-DC-LDAPS`  
-- **Compatibilité :** versions modernes de Windows  
-- **Cryptographie :** fournisseur de stockage de clés (KSP)  
-- **Sécurité :**  
-  - Groupe **Contrôleurs de domaine d'entreprise**  
-  - Droits : **Lecture** et **Inscrire**
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
 
-Ce modèle permettra aux DC d’obtenir automatiquement un certificat adapté à l’usage LDAPS, sans modifier les modèles par défaut.
+  <div style="padding: 1.25rem; background: rgba(0, 120, 212, 0.05); border: 1px solid rgba(0, 120, 212, 0.2); border-radius: 12px;">
+    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0078d4; margin-bottom: 0.5rem;">Identification</p>
+    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
+      <li><strong>Nom :</strong> <code>Lab-DC-LDAPS</code></li>
+      <li><strong>Compatibilité :</strong> Windows 2016+</li>
+    </ul>
+  </div>
+
+  <div style="padding: 1.25rem; background: rgba(0, 120, 212, 0.05); border: 1px solid rgba(0, 120, 212, 0.2); border-radius: 12px;">
+    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0078d4; margin-bottom: 0.5rem;">Cryptographie</p>
+    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
+      <li><strong>Fournisseur :</strong> KSP (Key Storage)</li>
+      <li><strong>Usage :</strong> Authentification Serveur</li>
+    </ul>
+  </div>
+
+  <div style="padding: 1.25rem; background: rgba(16, 124, 16, 0.05); border: 1px solid rgba(16, 124, 16, 0.2); border-radius: 12px;">
+    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #107c10; margin-bottom: 0.5rem;">Permissions (DC d'entreprise)</p>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <span style="background: #107c10; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">Lecture</span>
+      <span style="background: #107c10; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">Inscrire</span>
+    </div>
+  </div>
+
+</div>
+
+> Ce modèle permet aux contrôleurs de domaine (DC) d’obtenir automatiquement un certificat adapté au LDAPS sans impacter les paramètres par défaut de la forêt.
 
 <div style="
   display: flex;
@@ -271,15 +292,12 @@ Cette étape marque la fin de la sécurisation du socle d’identité.
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
           <span><strong>Chiffrement actif :</strong> Port 636 ouvert et sécurisé via certificat Kerberos/Domaine.</span>
         </li>
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
           <span><strong>Intégrité :</strong> Fin de la transmission des identifiants en clair sur le réseau.</span>
         </li>
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span class="text-blue-600 dark:text-blue-400 font-bold">•</span>
           <span><strong>Conformité :</strong> Respect des exigences de sécurité pour les applications tierces (SSO, ERP).</span>
         </li>
       </ul>
