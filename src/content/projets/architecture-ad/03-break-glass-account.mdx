@@ -6,7 +6,7 @@ tags: ["Sécurité", "Active Directory", "Windows Server"]
 pubDate: 2026-01-12
 slug: "break-glass-account"
 serie: "architecture-ad" 
-serieOrder: 3
+serieOrder: 4
 ---
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
@@ -151,25 +151,6 @@ Ces événements permettent de détecter aussi bien l’usage légitime d’urge
 
   ---
 
-## 🚀 Perspectives : Centralisation et Alerting
-
-L'audit local est une base indispensable, mais la sécurité moderne repose sur la **proactivité**.
-
-<div class="flex flex-col md:flex-row items-center gap-6 bg-white/5 p-6 rounded-xl border border-white/10 my-8">
-  <div class="flex-1">
-    <p class="text-sm leading-relaxed">
-      La prochaine évolution majeure consistera à centraliser ces journaux vers un serveur <strong>Graylog</strong>. En configurant un <strong>Stream dédié</strong>, chaque détection de l'ID 4624 pour l'utilisateur <code>secu-adm-urgency</code> déclenchera une alerte instantanée (Email ou Webhook).
-    </p>
-  </div>
-  <div class="flex items-center justify-center gap-4 text-2xl opacity-50">
-    <span>🖥️</span>
-    <span>➡️</span>
-    <span>📊</span>
-    <span>➡️</span>
-    <span>🚨</span>
-  </div>
-</div>
-
 
 <section class="mt-16 border-t border-white/10 pt-12">
   
@@ -206,7 +187,7 @@ L'audit local est une base indispensable, mais la sécurité moderne repose sur 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8 mt-12">
     <div>
       <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-        <span class="text-green-400">✅</span> Bilan de l'étape 03
+        <span class="text-green-400">✅</span> Bilan de l'étape 04
       </h3>
       <ul class="space-y-3 text-sm opacity-80">
         <li class="flex items-start gap-3">

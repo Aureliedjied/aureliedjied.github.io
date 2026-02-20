@@ -1,0 +1,131 @@
+---
+title: "Sauvegarde Windows vers NAS : Stratégie de continuité"
+description: "Mise en œuvre d'une sauvegarde hybride combinant Historique des fichiers (versioning) et Image Système (Bare Metal Recovery) sur un partage SMB."
+tags: ["Windows 10", "NAS", "Backup", "SMB"]
+category: "windows-server"
+serie: "backup-resilience"
+serieOrder: 1
+pubDate: 2026-02-12
+slug: "sauvegarde-windows-nas"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+
+<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
+La perte de données est le risque numéro un pour un parc informatique. Dans ce TP, nous mettons en place une solution de sauvegarde centralisée sur un <strong>NAS QNAP</strong> en utilisant les outils natifs de Windows pour assurer à la fois la restauration de fichiers isolés et la reprise après sinistre (Image Système).
+</p>
+
+---
+
+## 🟩 1. Prérequis & Environnement
+
+Pour garantir la fiabilité des flux de sauvegarde, l'infrastructure doit répondre aux critères suivants :
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+  <div style="padding: 1.25rem; background: rgba(16, 124, 16, 0.05); border: 1px solid rgba(16, 124, 16, 0.2); border-radius: 12px;">
+    <p style="font-weight: 800; color: #107c10; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem;">💠 Côté Stockage (NAS)</p>
+    <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.6;">
+      <li>✅ <strong>Dossier :</strong> <code>Backup</code> (Partage SMB)</li>
+      <li>✅ <strong>Identifiants :</strong> <code>Tech</code> / <code>*****MotDePasse*****</code></li>
+      <li>✅ <strong>Réseau :</strong> IP Statique recommandée</li>
+    </ul>
+  </div>
+  <div style="padding: 1.25rem; background: rgba(0, 120, 212, 0.05); border: 1px solid rgba(0, 120, 212, 0.2); border-radius: 12px;">
+    <p style="font-weight: 800; color: #0078d4; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem;">💠 Côté Client (Windows)</p>
+    <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.6;">
+      <li>✅ <strong>Connectivité :</strong> Même sous-réseau que le NAS</li>
+      <li>✅ <strong>Services :</strong> Client pour les réseaux Microsoft activé</li>
+      <li>✅ <strong>Flux :</strong> TCP 445 (SMB) autorisé</li>
+    </ul>
+  </div>
+</div>
+
+---
+
+## 🟦 2. Accès & Mapping du lecteur réseau
+
+L'accès par chemin UNC (`\\IP_DU_NAS`) est possible, mais le **mapping** (lecteur réseau) est préférable pour assurer la persistance de la connexion et la compatibilité avec certains outils d'administration.
+
+### Procédure de montage :
+1. Dans l'Explorateur, faire un clic droit sur "Ce PC" > **Connecter un lecteur réseau**.
+2. Affecter la lettre **Z:** au chemin `\\192.168.8.202\Backup`.
+3. Cocher **"Se reconnecter lors de la connexion"**.
+
+
+
+---
+
+## 🟥 3. Méthode 1 : L'Historique des fichiers
+
+Cette méthode est axée sur le **versioning**. Elle permet à l'utilisateur de remonter dans le temps pour récupérer une version précédente d'un document modifié ou supprimé par erreur.
+
+1. **Configuration :** Direction *Paramètres > Mise à jour et sécurité > Sauvegarde*.
+2. **Cible :** Sélectionner le lecteur réseau **Z:**.
+3. **Fréquence :** Par défaut toutes les heures (ajustable selon la criticité des données).
+
+
+
+---
+
+## 🟫 4. Méthode 2 : L'Image Système (Bare Metal)
+
+Ici, on ne parle plus de fichiers, mais de **disponibilité du système**. L'image système est une "photo" bit à bit des partitions nécessaires au démarrage de Windows.
+
+* **Outil :** *Panneau de configuration > Sauvegarder et restaurer (Windows 7)*.
+* **Destination :** Spécifier l'emplacement réseau `\\NASB6\Backup`.
+* **Utilisation :** Indispensable en cas de crash du disque dur physique.
+
+
+
+---
+
+## 🟪 5. Vérification du Plan de Sauvegarde
+
+> "Une sauvegarde non testée est une sauvegarde inexistante."
+
+### Côté NAS (Vérification du dépôt) :
+Dans l'interface du NAS (File Station), nous constatons la création automatique de l'arborescence :
+* Un dossier pour l'**Historique des fichiers**.
+* Un dossier `WindowsImageBackup` contenant les fichiers `.vhdx` (disques virtuels de l'image).
+
+### Côté Client (Restauration Test) :
+* **Fichiers :** Utiliser l'outil "Restaurer des fichiers personnels" pour valider la timeline.
+* **Système :** Simuler un boot sur ISO Windows pour vérifier que l'image réseau est bien détectée.
+
+---
+
+<section class="mt-16 space-y-12">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+        <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : Sauvegarde
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span><strong>Externalisation :</strong> Les données sont isolées du poste client sur un stockage RAID.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+          <span><strong>Restauration :</strong> Capacité de reprise granulaire (fichiers) et totale (OS).</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
+        <div>
+          <div class="text-4xl mb-2">💾</div>
+          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Protection Active</p>
+          <p class="text-[9px] text-slate-500 mt-1 italic">Règle du 3-2-1 amorcée</p>
+        </div>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
+    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+      "La mise en place d'un mapping réseau couplé aux outils natifs permet d'offrir une solution de sauvegarde robuste et transparente pour l'utilisateur sans coût logiciel supplémentaire."
+    </p>
+  </div>
+
+</section>
+

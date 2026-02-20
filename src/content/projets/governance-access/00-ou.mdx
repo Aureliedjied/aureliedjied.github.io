@@ -1,11 +1,11 @@
 ---
-title: "Structuration de l'Active Directory : OUs et Hiérarchie"
-description: "Mise en place d'une arborescence d'Unités d'Organisation (OU) conforme aux recommandations ANSSI et Microsoft."
-tags: ["Windows Server", "Active Directory", "OU", "Gouvernance"]
+title: "Structuration de l'Active Directory : Modèle de Tiering et Gouvernance"
+description: "Mise en place d'une arborescence d'Unités d'Organisation (OU) conforme aux recommandations ANSSI pour le cloisonnement des privilèges."
+tags: ["Windows Server", "Active Directory", "OU", "Sécurité"]
 category: "windows-server"
 serie: "governance-access"
 serieOrder: 1
-pubDate: 2026-02-06
+pubDate: 2026-02-05
 slug: "ou"
 ---
 
@@ -13,121 +13,178 @@ import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
 
 <p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
-Avant d'intégrer des ressources dans un domaine, il est impératif de préparer l'annuaire <strong>Active Directory</strong>. Par défaut, les nouveaux objets sont placés dans des conteneurs (CN) génériques qui ne permettent pas l'application de stratégies de groupe (GPO) de manière granulaire. 
+L'organisation d'un annuaire n'est pas qu'une question de rangement : c'est la pierre angulaire de la sécurité. Pour l'<strong>ANSSI</strong>, une structure à plat est un risque majeur d'escalade de privilèges. Nous allons mettre en place un modèle de <strong>Tiering</strong> (cloisonnement) pour isoler les ressources selon leur criticité.
 </p>
 
 <div class="my-8 p-6 bg-blue-50 dark:bg-blue-500/5 border-l-4 border-blue-500 rounded-r-xl">
   <h4 class="text-xs font-black uppercase tracking-widest text-blue-800 dark:text-blue-400 mb-2">
-    💡 Note 
+    🛡️ Le Principe du Tiering (Cloisonnement)
   </h4>
   <p class="text-sm text-slate-700 dark:text-white/80 leading-relaxed">
-    Une Unité d'Organisation (OU) n'est pas qu'un simple dossier de rangement. C'est la plus petite unité à laquelle on peut <strong>lier une GPO</strong> et sur laquelle on peut <strong>déléguer des droits d'administration</strong>.
+    L'objectif est simple : les comptes du <strong>Tier 0</strong> (Administrateurs de domaine) ne doivent jamais laisser d'empreintes (tokens/hashs) sur un système du <strong>Tier 2</strong> (Postes utilisateurs). En isolant ces objets dans des OUs distinctes, nous appliquons des politiques de sécurité étanches.
   </p>
 </div>
 
 ---
 
-## 🏗️ Étape 1 : État initial et conteneurs par défaut
+## 🏗️ Étape 1 : Architecture de la Racine (Modèle de Tiering)
 
-À l'installation, l'AD stocke les objets dans des dossiers "système". Le problème majeur est que ces dossiers (Computers, Users) sont des **conteneurs (CN)** et non des Unités d'Organisation : il est donc techniquement impossible d'y lier des stratégies de groupe spécifiques.
+Pour une gouvernance conforme, nous créons une racine numérotée. Les préfixes `00`, `01`, `02` imposent un ordre visuel et hiérarchique immédiat, indispensable lors des audits de sécurité.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+  <div class="p-5 bg-red-500/5 border border-red-500/20 rounded-2xl flex gap-4">
+    <div class="text-2xl">🛡️</div>
+    <div>
+      <h4 class="font-black text-red-600 dark:text-red-400 text-sm tracking-wide">00_T0_ADMIN</h4>
+      <p class="text-xs opacity-80 leading-relaxed mt-1">
+        <strong>Cœur de l'identité.</strong> Contient les comptes nominatifs et les groupes à hauts privilèges (Tier 0).
+      </p>
+    </div>
+  </div>
+
+  <div class="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex gap-4">
+    <div class="text-2xl">⚙️</div>
+    <div>
+      <h4 class="font-black text-amber-600 dark:text-amber-400 text-sm tracking-wide">01_T1_SERVERS</h4>
+      <p class="text-xs opacity-80 leading-relaxed mt-1">
+        <strong>Couche applicative.</strong> Regroupe les serveurs membres et les ressources critiques métier.
+      </p>
+    </div>
+  </div>
+
+  <div class="p-5 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex gap-4">
+    <div class="text-2xl">👥</div>
+    <div>
+      <h4 class="font-black text-blue-600 dark:text-blue-400 text-sm tracking-wide">02_T2_PRODUCTION</h4>
+      <p class="text-xs opacity-80 leading-relaxed mt-1">
+        <strong>Zone utilisateur.</strong> Segmentation des collaborateurs, de leurs postes (Laptops/Fixes) et des groupes de ressources.
+      </p>
+    </div>
+  </div>
+
+  <div class="p-5 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl flex gap-4">
+    <div class="text-2xl">🤖</div>
+    <div>
+      <h4 class="font-black text-emerald-600 dark:text-emerald-400 text-sm tracking-wide">90_INFRA_SERVICES</h4>
+      <p class="text-xs opacity-80 leading-relaxed mt-1">
+        <strong>Comptes techniques.</strong> Hébergement des comptes de services classiques et des comptes <strong>gMSA</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="p-5 bg-slate-500/5 border border-slate-500/20 rounded-2xl flex gap-4 md:col-span-2">
+    <div class="text-2xl">⚠️</div>
+    <div>
+      <h4 class="font-black text-slate-600 dark:text-slate-400 text-sm tracking-wide">98_QUARANTINE</h4>
+      <p class="text-xs opacity-80 leading-relaxed mt-1">
+        <strong>Zone tampon.</strong> Conteneur par défaut (via <code>redircmp</code>) pour tout nouvel objet avant validation et durcissement.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<div class="flex flex-col items-center my-10">
+  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-lg text-center">
+    <img src="/images/projets/governance-access/ou/ous.png" alt="Console ADUC hiérarchisée en Tiers" class="rounded-xl w-full max-w-2xl" />
+    <p style="font-size: 0.65rem; opacity: 0.5; margin-top: 8px; font-style: italic;">Arborescence technique finale respectant le cloisonnement des privilèges.</p>
+  </div>
+</div>
+
+
+
+---
+
+## 🛠️ Étape 2 : Redirection et Protection
+
+### Redirection des nouveaux objets (redircmp)
+Par défaut, les nouveaux ordinateurs joints au domaine sont placés dans le conteneur `CN=Computers`. Ce conteneur n'étant pas une OU, on ne peut pas y lier de GPO. Pour sécuriser l'arrivée de nouveaux matériels, j'ai redirigé le conteneur par défaut vers l'OU de **Quarantaine**.
+
+<div class="flex flex-col items-center my-10">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 600px;">
+    <img src="/images/projets/governance-access/ou/redirect-ou-quarentine.png" alt="Commande redircmp" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Exécution de redircmp pour automatiser la mise en quarantaine.</p>
+  </div>
+</div>
+
+### Sécurisation contre l'erreur humaine
+Pour chaque OU critique, l'option **"Protéger l'objet contre la suppression accidentelle"** est activée. Cette mesure garantit qu'une mauvaise manipulation d'un administrateur (glisser-déposer ou suppression via PowerShell) ne pourra pas détruire une branche entière de l'annuaire.
 
 <div class="flex flex-col items-center my-10">
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-lg">
-    <img src="/images/projets/governance-access/ou/ou-prod.png" alt="Console ADUC par défaut" class="rounded-xl w-full max-w-2xl" />
+    <img src="/images/projets/governance-access/ou/protected-ous.png" alt="Protection contre suppression accidentelle" class="rounded-xl w-full max-w-2xl" />
   </div>
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vue de la console ADUC avant l'organisation des ressources.</p>
 </div>
 
 ---
 
-## 🛠️ Étape 2 : Création de la hiérarchie de Production
+## 📂 Étape 3 : Spécificités des comptes de service (gMSA)
 
-Pour respecter le modèle de cloisonnement (Tiering), je crée une Unité d'Organisation parente nommée `01_PRODUCTION`. Cette structure permet d'isoler les objets métiers (utilisateurs, postes de travail) des comptes d'administration critiques situés dans `00_ADMINS`.
-
-Lors de la création, j'active systématiquement la **protection contre la suppression accidentelle**. Cette option modifie les descripteurs de sécurité de l'objet pour empêcher sa suppression, même par un administrateur du domaine, sans une action explicite de décochage.
-
-<div class="flex flex-col items-center my-10">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-lg">
-    <img src="/images/projets/governance-access/ou/ou-prod-cocher.png" alt="Création de l'OU de production" class="rounded-xl w-full max-w-2xl" />
-  </div>
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sécurisation de l'arborescence : protection contre les erreurs de manipulation.</p>
-</div>
+Dans l'OU `90_INFRA_SERVICES`, nous isolons les **gMSA**. L'ANSSI recommande fortement leur usage car ils n'ont pas de mot de passe connu par l'humain (rotation automatique par l'AD). Cela permet d'appliquer des politiques ultra-restrictives : interdiction de session interactive et blocage du bureau à distance (RDP).
 
 ---
 
-## 📂 Étape 3 : Organisation par types d'objets (Segmentation)
+## 🛡️ Sécurisation de la chaîne de confiance (Tier 0)
 
-À l'intérieur de l'OU de production, je segmente les ressources en trois catégories. Cette étape est cruciale pour le filtrage des GPO : on ne configure pas un écran de veille utilisateur (GPO Utilisateur) comme on configure un pare-feu machine (GPO Ordinateur).
+Bien que des politiques d'audit soient définies à la racine du domaine, j'ai fait le choix stratégique de **lier explicitement** la GPO de durcissement (`DOM - S - Advanced_Auditing`) directement à l'OU **`00_T0_ADMIN`**.
 
-* **USERS** : Accueil des comptes utilisateurs. Permet de cibler les préférences de session.
-* **COMPUTERS** : Accueil des stations de travail. Permet de cibler la sécurité du système d'exploitation.
-* **GROUPS** : Centralisation des groupes de sécurité. Ce conteneur sera le pivot de notre future gestion d'accès.
+**Pourquoi cette double liaison ?**
+* **Résilience** : En cas de désactivation accidentelle de l'héritage ("Block Inheritance"), le Tier 0 reste sous surveillance stricte.
+* **Priorité** : Les réglages de haute verbosité (audit Kerberos, modifications d'ACLs) priment sur les réglages globaux du domaine.
 
-Pour garantir l'uniformité du parc, cette étape a été **automatisée par script**, assurant que chaque sous-OU possède les mêmes propriétés et niveaux de protection.
-
-<div class="flex flex-col items-center my-10">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-lg">
-    <img src="/images/projets/governance-access/ou/script-sous-ou.png" alt="Segmentation des sous-OUs" class="rounded-xl w-full max-w-2xl" />
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/governance-access/ou/lier-gpo-admin1.png" alt="experience-bureau" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Séléctionner Lier un objet de stratégie de groupe éxistant ...</p>
   </div>
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Exécution du script de déploiement des sous-Unités d'Organisation.</p>
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/governance-access/ou/lier-gpo-admin2.png" alt="Installation" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Selectionner la GPO à lier</p>
+  </div>
 </div>
+
+{/* ##  Propriétaires d'OU */}
+
+
+
+
 
 ---
 
-## ✅ Étape 4 : Validation de la structure finale (Standard ANSSI)
+##  Bilan : Une infrastructure prête pour l'audit
 
-La hiérarchie est maintenant opérationnelle. L'utilisation de préfixes numériques (`00`, `01`, `99`) permet non seulement un tri visuel efficace, mais elle aide aussi à la lecture rapide de l'annuaire lors d'audits de sécurité.
-
-Cette structure est prête à accueillir les objets et, surtout, à supporter la mise en œuvre du modèle **AGDLP** pour la gestion des droits d'accès.
-
-<div class="flex flex-col items-center my-10">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-lg">
-    <img src="/images/projets/governance-access/ou/ous.png" alt="Console ADUC structurée" class="rounded-xl w-full max-w-2xl" />
-  </div>
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Résultat final : Arborescence structurée et prête pour la mise en production.</p>
-</div>
+Cette structure est conforme aux standards industriels et permet :
+1.  **Délégation granulaire** : Droits sur `02_PRODUCTION` sans exposition du `Tier 0`.
+2.  **Mise en conformité automatique** : Grâce à `redircmp`, aucun ordinateur ne rentre sur le réseau sans passer par la quarantaine.
+3.  **Traçabilité** : Simplification des GPO et rapports d'audit.
 
 <section class="mt-16 space-y-12">
-  
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
     <div>
       <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-        <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : Structure AD
+        <span class="text-green-500 text-lg">✅</span> Validation de l'arborescence
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Hiérarchie logique :</strong> Séparation nette entre Administration (00) et Production (01).</span>
+          <span><strong>Isolation des Tiers :</strong> Séparation hermétique entre les comptes d'administration et les postes de travail.</span>
         </li>
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Sécurité :</strong> Protection contre la suppression accidentelle activée sur tous les conteneurs.</span>
+          <span><strong>Automatisation :</strong> Redirection des nouveaux objets vers l'OU 98.</span>
         </li>
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Prêt pour l'AGDLP :</strong> Conteneur GROUPS opérationnel pour la gestion des droits.</span>
+          <span><strong>Gouvernance Technique :</strong> Centralisation des comptes gMSA dans l'OU 90.</span>
         </li>
       </ul>
     </div>
     
     <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
         <div>
-          <div class="text-4xl mb-2">📂</div>
-          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Annuaire structuré</p>
-          <p class="text-[9px] text-slate-500 mt-1 italic">Prêt pour le pilotage centralisé</p>
+          <div class="text-4xl mb-2">🏰</div>
+          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Forteresse AD</p>
+          <p class="text-[9px] text-slate-500 mt-1 italic">Modèle Tiering validé</p>
         </div>
     </div>
   </div>
-
-  <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
-    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
-      "L'organisation en Unités d'Organisation (OU) n'est pas qu'une question d'esthétique : c'est le fondement de notre gouvernance. Sans elle, aucune stratégie de groupe (GPO) ciblée n'est possible."
-    </p>
-    
-    <div class="space-y-4">
-      <p class="text-sm text-slate-500 dark:text-white/50">
-        Objectif suivant : Mise en œuvre du modèle AGDLP.
-      </p>
-    </div>
-  </div>
-
 </section>
 
 <NextStep 

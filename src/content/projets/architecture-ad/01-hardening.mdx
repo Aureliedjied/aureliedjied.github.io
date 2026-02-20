@@ -1,0 +1,123 @@
+---
+title: "Hardening Pré-Promotion"
+description: "Sécurisation du système avant le déploiement d'Active Directory"
+category: "windows-server"
+tags: ["Windows Server", "Sécurité", "ANSSI"]
+pubDate: 2026-01-10
+slug: "hardening-pre-promotion"
+serie: "architecture-ad" 
+serieOrder: 2
+---
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+
+<div class="space-y-4">
+  <p class="text-sm opacity-80 leading-relaxed">
+    Installer l'AD ne suffit pas. Pour l'<strong>ANSSI</strong>, la sécurité se joue avant la promotion. 
+    Intervenir sur un serveur hors-domaine permet de neutraliser les vecteurs d'attaque hérités avant qu'ils ne soient répliqués dans toute la forêt.
+  </p>
+</div>
+
+## 🛡️ Durcissement Pré-Promotion 
+
+L'objectif est de réduire la surface d'attaque en désactivant les protocoles de résolution de noms et de communication réseau hérités, fréquemment exploités lors des phases de compromission initiale.
+
+### 1. Désactivation de LLMNR
+LLMNR est un vecteur majeur d'interception de hashs NTLM. En l'absence de domaine et donc de GPO, l'intervention s'effectue directement dans le registre afin d'imposer la désactivation.
+
+En cas d'échec DNS, LLMNR diffuse la requête en clair sur le réseau local, ce qui permet à un attaquant de capturer et relayer des identifiants via des attaques de type *Man-in-the-Middle*.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/architecture-ad/promo/llmnr-desactived.png" alt="Désactivation LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Création de la clé de registre EnableMulticast</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/architecture-ad/promo/llmnr-verif-0.png" alt="Vérification LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
+    <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification : Valeur positionnée à 0 (Désactivé)</p>
+  </div>
+</div>
+
+### 2. Désactivation de SMBv1
+Protocole historique désormais obsolète, SMBv1 est dépourvu de mécanismes de sécurité modernes. Il a notamment été utilisé comme vecteur de propagation lors d’attaques massives telles que WannaCry.
+
+Dans ce cas précis, la fonctionnalité **SMB 1.0/CIFS** n’est pas installée sur le système : le protocole est donc déjà absent, ce qui confirme une configuration conforme aux standards de sécurité actuels.
+
+<div class="flex flex-col items-center my-8">
+  <img src="/images/projets/architecture-ad/promo/smb1-desactived.png" alt="Désactivation SMBv1" class="max-w-[350px] w-full rounded-lg border border-white/10 shadow-md" />
+  <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'état du rôle : Available (Non installé)</p>
+</div>
+
+### 3. Désactivation de NetBIOS
+<div class="space-y-4">
+    <p class="text-sm opacity-80 leading-relaxed">
+      NetBIOS est un protocole "bavard" : il diffuse inutilement le nom du serveur et ses métadonnées sur le segment réseau. 
+      C'est un cadeau pour un attaquant en phase de reconnaissance.
+    </p>
+    <div class="bg-white/5 border-l-2 border-blue-500 p-4 rounded-r-lg">
+      <p class="text-xs opacity-70 italic">
+        "Sa désactivation est un prérequis indispensable avant l'introduction du serveur dans l'Active Directory."
+      </p>
+    </div>
+  </div>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
+  <img src="/images/projets/architecture-ad/promo/netbios-active.png" alt="État initial" class="rounded-lg border border-white/10 w-full" />
+  <img src="/images/projets/architecture-ad/promo/netbios-desactived.png" alt="Script désactivation" class="rounded-lg border border-white/10 w-full" />
+  <img src="/images/projets/architecture-ad/promo/netbios-verif.png" alt="Audit final" class="rounded-lg border border-white/10 w-full" />
+</div>
+
+---
+
+## Vérifications
+
+Après redémarrage, une vérification rapide via `netstat` permet de confirmer l’état du serveur.  
+Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont en écoute.
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/architecture-ad/promo/netstat.png" alt="Paramètres NetBIOS via IPv4 avancé" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Accès aux paramètres avancés NetBIOS via les propriétés IPv4</p>
+  </div>
+</div>
+
+<section class="mt-16 space-y-12">
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8">
+    <div>
+      <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-400">✅</span> Bilan de l'étape 02
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm opacity-80">
+          <span><strong>Surface d'attaque réduite :</strong> Protocoles hérités (LLMNR, NetBIOS) désactivés.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm opacity-80">
+          <span><strong>Conformité :</strong> Absence de SMBv1 confirmée pour prévenir les ransomwares.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm opacity-80">
+          <span><strong>Serveur "Sain" :</strong> Seuls les flux critiques sont en écoute (Audit netstat).</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="hidden md:flex justify-center border-l border-white/10 pl-8">
+        <div class="text-center">
+          <div class="text-4xl mb-2">🛡️</div>
+          <p class="text-[10px] uppercase tracking-tighter opacity-40 font-bold">Système Durci</p>
+        </div>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto text-center space-y-4">
+    <p class="text-base leading-relaxed opacity-90 italic">
+      "Le durcissement du système d'exploitation est la première ligne de défense. Un contrôleur de domaine ne peut être plus sûr que l'OS qui l'héberge."
+    </p>
+  </div>
+
+</section>
+
+<NextStep 
+  href="/projets/promotion-domaine" 
+  title="Promotion du domaine" 
+/>

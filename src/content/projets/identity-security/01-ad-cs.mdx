@@ -92,14 +92,14 @@ Pour garantir une sécurité à long terme, j'ai configuré des paramètres sup�
 
 ## 🛡️ Étape 3 : Segmenter l’administration de la PKI (Moindre privilège)
 
-Administrer une PKI avec un compte **Domain Admin** créerait un point de compromission critique.  
+Administrer une PKI avec un compte **Admins du Domaine** créerait un point de compromission critique.  
 Je mets donc en place une **identité d’exploitation dédiée** : **`adm-pki`**.
 
 ---
 
 ### 👤 Création du compte d’administration PKI
 
-Le compte est isolé dans une OU dédiée aux comptes d’administration : <code class="px-2 py-0.5 bg-slate-100 dark:bg-white/10 rounded text-blue-700 dark:text-blue-300 font-mono text-xs">00_ADMINS > PKI</code>. Il est utilisé uniquement pour l’exploitation quotidienne.
+Le compte est isolé dans une OU dédiée, sans privilèges : <code class="px-2 py-0.5 bg-slate-100 dark:bg-white/10 rounded text-blue-700 dark:text-blue-300 font-mono text-xs">00_ADMINS > PKI</code>. Il est utilisé uniquement pour l’exploitation de la CA. Il fera parti plus tard d'un groupe
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
   <div class="flex flex-col gap-3">
@@ -112,7 +112,7 @@ Le compte est isolé dans une OU dédiée aux comptes d’administration : <code
     <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
       <img src="/images/projets/identity-security/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg w-full h-auto" />
     </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Isolation dans l'OU d'administration</p>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Pas de privilèges accordés ici</p>
   </div>
 </div>
 
@@ -120,83 +120,64 @@ Le compte est isolé dans une OU dédiée aux comptes d’administration : <code
 
 ### 📜 Gestion du groupe "Editeurs de certificats"
 
-Le groupe **Éditeurs de certificats** permet de publier les certificats dans l’annuaire. Par défaut, le compte machine du serveur possède ces droits. J'ai choisi un modèle plus strict :
+Afin de renforcer la sécurité de l’infrastructure <strong>AD CS</strong>, j’ai mis en place une stratégie combinant traçabilité complète et délégation maîtrisée des privilèges.
 
-<div class="my-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-  <div class="p-4 bg-red-50 dark:bg-red-500/5 border border-red-100 dark:border-red-500/20 rounded-xl text-center">
-    <span class="text-red-500 font-bold text-lg">🔻</span>
-    <p class="text-[10px] font-black uppercase text-red-800 dark:text-red-400 mt-2">Retrait</p>
-    <p class="text-[10px] text-slate-600 dark:text-white/60 italic">Compte machine SRV-AD-01$</p>
-  </div>
-  <div class="p-4 bg-green-50 dark:bg-green-500/5 border border-green-100 dark:border-green-500/20 rounded-xl text-center">
-    <span class="text-green-500 font-bold text-lg">➕</span>
-    <p class="text-[10px] font-black uppercase text-green-800 dark:text-green-400 mt-2">Ajout</p>
-    <p class="text-[10px] text-slate-600 dark:text-white/60 italic">Identité nominative adm-pki</p>
-  </div>
-</div>
 
-👉 Cette approche améliore la **traçabilité** : chaque publication en AD est liée à une identité humaine et non à un service automatique. 
+#### 📝 Activation complète de l’audit
 
-Depuis la console <code class="text-xs font-mono">certsrv.msc</code>, j'ai délégué uniquement les droits nécessaires : **Lire** et **Émettre/Gérer des certificats**.
+Depuis les <strong>propriétés de la CA</strong>, onglet <em>Audit</em>, j’ai activé l’ensemble des catégories disponibles afin d’assurer une journalisation exhaustive des actions sensibles :
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
-  <div class="flex flex-col gap-3">
-    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/identity-security/ad-cs/adm-pki3.png" alt="Membres du groupe" class="rounded-lg w-full h-auto" />
-    </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Restriction des Certificate Publishers</p>
-  </div>
-  <div class="flex flex-col gap-3">
-    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/identity-security/ad-cs/adm-pki-cert.png" alt="Permissions CA" class="rounded-lg w-full h-auto" />
-    </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Délégation granulaire des droits</p>
+
+<div style="display: flex; justify-content: center; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/identity-security/ad-cs/audit-ca.png" alt="Audit complet activé sur la CA" class="rounded-lg w-full h-auto" />
+  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Toutes les catégories d’audit sont activées afin de garantir une traçabilité complète</p>
   </div>
 </div>
+
+<p class="mt-4">
+Cette configuration permet de garantir qu’aucune action administrative sur la CA ne puisse être effectuée sans laisser de trace exploitable dans les journaux de sécurité.
+</p>
 
 ---
 
-### 🔐 Séparation des rôles d’administration
+#### 🔐 Délégation maîtrisée des droits sur la CA
 
-Pour respecter le modèle de **Tiering**, j'ai défini une frontière claire entre exploitation et architecture :
+Dans une logique de <strong>moindre privilège</strong>, j’ai modifié l’onglet <em>Sécurité</em> de la CA afin de déléguer uniquement les droits nécessaires au compte dédié <code class="text-xs font-mono">adm-pki</code>.
 
-<div class="overflow-hidden rounded-2xl border my-8" 
-     style="background-color: var(--card-bg); border-color: var(--card-border); shadow: var(--card-shadow);">
-  <table class="w-full text-[11px] text-left border-collapse">
-    <thead>
-      <tr class="border-b" 
-          style="background-color: rgba(0,0,0,0.02); border-color: var(--card-border);">
-        <th class="p-4 font-black uppercase" style="color: var(--text-title)">Rôle</th>
-        <th class="p-4 font-black uppercase" style="color: var(--text-title)">Périmètre adm-pki</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y" style="border-color: var(--card-border)">
-      <tr class="transition-colors hover:bg-slate-50/50 dark:hover:bg-white/5">
-        <td class="p-4 font-bold" style="color: var(--text-title)">Exploitation</td>
-        <td class="p-4">
-          <span class="px-2 py-1 rounded-md font-bold bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400">
-            ✅ Autorisé (Émission, Révocation, Suivi)
-          </span>
-        </td>
-      </tr>
-      <tr class="transition-colors hover:bg-slate-50/50 dark:hover:bg-white/5">
-        <td class="p-4 font-bold" style="color: var(--text-title)">Architecture</td>
-        <td class="p-4">
-          <span class="px-2 py-1 rounded-md font-bold bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400">
-            ❌ Interdit (Modèles sensibles, Hiérarchie)
-          </span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+Les autorisations accordées sont strictement limitées à :
+
+<ul class="list-disc ml-6 mt-3 space-y-1">
+  <li>Lire : Permet d'ouvrir la console et de voir la configuration</li>
+  <li>Gérer et émettre les certificats : permet d'approuver ou de révoquer un certificat</li>
+</ul>
+
+<div style="display: flex; justify-content: center; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/identity-security/ad-cs/droits-ca.png" alt="Droits du compte adm-pki sur la CA" class="rounded-lg w-full h-auto" />
+  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le compte adm-pki dispose uniquement des droits nécessaires à l'administration de la CA</p>
+  </div>
 </div>
 
-<div class="flex items-start gap-4 p-5 bg-blue-50 dark:bg-blue-500/5 border-r-4 border-blue-500 rounded-l-xl my-8">
-  <span class="text-xl">🎯</span>
-  <p class="text-xs text-slate-800 dark:text-blue-100/80 leading-relaxed font-medium">
-    Cette séparation réduit l’impact d’une compromission et s’aligne avec les bonnes pratiques Tier 0 de sécurisation Active Directory.
-  </p>
+<p class="mt-4">
+Cette approche permet une séparation claire entre la décision humaine et l’exécution technique, tout en évitant l’utilisation de comptes administrateurs génériques.
+</p>
+
+
+Enfin, afin de vérifier la cohérence globale de la configuration et des descripteurs de sécurité, j’ai utilisé la commande suivante :
+
+<div class="my-10">
+  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
+    <img src="/images/projets/identity-security/ad-cs/recap-droits-ca.png" alt="Résultat de la commande certutil -dump" class="rounded-lg w-full h-auto" />
+  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vérification des descripteurs de sécurité et des permissions globales via certutil</p>
+  </div>
 </div>
+
+<p class="mt-4">
+Cette vérification indépendante permet de confirmer l’absence de privilèges inattendus et de valider la conformité de la délégation appliquée.
+</p>
+
+---
 
 ## 🔍 Étape 4 : Activer l’audit 
 
@@ -304,9 +285,7 @@ Cette présence confirme que :
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
     <img src="/images/projets/identity-security/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" class="rounded-xl w-full max-w-3xl h-auto" />
   </div>
-  <p class="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 italic">
-    Le certificat est bien présent et valide dans le magasin de confiance local.
-  </p>
+  <p class="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 italic">Le certificat est bien présent et valide dans le magasin de confiance local.</p>
 </div>
 
 ---
@@ -323,7 +302,7 @@ Cette présence confirme que :
           <span><strong>Confiance établie :</strong> Racine RSA 4096 / SHA512 déployée avec succès.</span>
         </li>
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Sécurité :</strong> Rôles séparés entre exploitation (adm-pki) et architecture (Tier 0).</span>
+          <span><strong>Sécurité :</strong> Rôles séparés entre machine et humain.</span>
         </li>
         <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
           <span><strong>Santé validée :</strong> AIA/CDP opérationnels et certificat visible dans le magasin local.</span>

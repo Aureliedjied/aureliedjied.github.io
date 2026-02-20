@@ -16,7 +16,7 @@ export const SERIES: Record<string, Serie> = {
   },
 "identity-security": {
     title: "Sécurité des Identités & PKI",
-    description: "Mise en place d'autorités de certification (AD CS), chiffrement d'annuaire LDAPS et sécurisation des comptes privilèges.",
+    description: "Mise en place du DNS, d'autorités de certification (AD CS), chiffrement d'annuaire LDAPS et sécurisation des comptes privilèges.",
     icon: "windows",
     color: "#0078d4" 
   },
