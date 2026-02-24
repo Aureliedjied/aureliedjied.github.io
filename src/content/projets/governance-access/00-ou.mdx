@@ -47,7 +47,7 @@ Pour une gouvernance conforme, nous créons une racine numérotée. Les préfixe
     <div>
       <h4 class="font-black text-amber-600 dark:text-amber-400 text-sm tracking-wide">01_T1_SERVERS</h4>
       <p class="text-xs opacity-80 leading-relaxed mt-1">
-        <strong>Couche applicative.</strong> Regroupe les serveurs membres et les ressources critiques métier.
+        <strong>Couche applicative.</strong> Regroupe les serveurs membres et les ressources critiques métier : Bases de données, ERP, Intranet...
       </p>
     </div>
   </div>
@@ -57,7 +57,7 @@ Pour une gouvernance conforme, nous créons une racine numérotée. Les préfixe
     <div>
       <h4 class="font-black text-blue-600 dark:text-blue-400 text-sm tracking-wide">02_T2_PRODUCTION</h4>
       <p class="text-xs opacity-80 leading-relaxed mt-1">
-        <strong>Zone utilisateur.</strong> Segmentation des collaborateurs, de leurs postes (Laptops/Fixes) et des groupes de ressources.
+        <strong>Zone utilisateur.</strong> Segmentation des collaborateurs, de leurs postes (Laptops/Fixes) et des groupes de ressources : imprimantes, scanettes ...
       </p>
     </div>
   </div>
@@ -77,7 +77,7 @@ Pour une gouvernance conforme, nous créons une racine numérotée. Les préfixe
     <div>
       <h4 class="font-black text-slate-600 dark:text-slate-400 text-sm tracking-wide">98_QUARANTINE</h4>
       <p class="text-xs opacity-80 leading-relaxed mt-1">
-        <strong>Zone tampon.</strong> Conteneur par défaut (via <code>redircmp</code>) pour tout nouvel objet avant validation et durcissement.
+        <strong>Zone tampon.</strong> Conteneur par défaut (via <code>redircmp</code>) pour tout nouvel objet avant validation et durcissement. Cela empêche l'application immédiate de privilèges à un équipement potentiellement non conforme ou malveillant.
       </p>
     </div>
   </div>
@@ -94,8 +94,44 @@ Pour une gouvernance conforme, nous créons une racine numérotée. Les préfixe
 
 
 ---
+## 🌐 Étape 2 : Définition de l'Infrastructure Physique (Toulon)
 
-## 🛠️ Étape 2 : Redirection et Protection
+Avant d'organiser les ressources dans l'annuaire, il est crucial de définir la réalité physique du réseau dans **AD Sites and Services**. Cela permet d'optimiser l'authentification et de préparer la future réplication multi-sites.
+
+### Renommage du site et déclaration du Subnet
+Le site par défaut (`Default-First-Site-Name`) a été renommé **TOULON**. J'y ai associé le sous-réseau correspondant à mon segment LAN VmWare : `192.168.174.0/24`.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+  <img src="/images/projets/governance-access/sites-ad/renommer-site.png" alt="Etape 1 site" class="rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/governance-access/sites-ad/associer-toulon.png" alt="Etape 2 site" class="rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/governance-access/sites-ad/créer-sous-reseau.png" alt="Etape 3 site" class="rounded-lg border border-white/10 shadow-md" />
+  <img src="/images/projets/governance-access/sites-ad/dns-TOULON-ok.png" alt="Etape 4 site" class="rounded-lg border border-white/10 shadow-md" />
+</div>
+<p style="font-size: 0.65rem; text-align: center; opacity: 0.5; font-style: italic;">Configuration étape par étape du site TOULON et de son subnet dans AD Sites and Services.</p>
+
+---
+
+## 🏗️ Étape 3 : Segmentation Géographique des Ressources
+
+Pour anticiper une future réplication et permettre l'application de GPO localisées (imprimantes, partages locaux), j'ai choisi de segmenter les **ressources matérielles** par site.
+
+### Création des sous-OUs "TOULON"
+Cette segmentation s'applique aux serveurs (**Tier 1**) et aux ordinateurs de production (**Tier 2**). Les utilisateurs, eux, restent organisés par service pour favoriser la mobilité. J'ai utilisé PowerShell pour désactiver/déplacer/activer de nouveau la protection contre la suppression accidentelle.
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/governance-access/ou/script-toulon.png" alt="OU Toulon Servers" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sous-OU déplacée dans l'OU Toulon pour le Tier 1 (Servers)</p>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
+    <img src="/images/projets/governance-access/ou/ous-toulon.png" alt="OU Toulon Computers" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Arborescence globale de l'annuaire</p>
+  </div>
+</div>
+
+---
+
+## 🛠️ Étape 4 : Redirection et Protection
 
 ### Redirection des nouveaux objets (redircmp)
 Par défaut, les nouveaux ordinateurs joints au domaine sont placés dans le conteneur `CN=Computers`. Ce conteneur n'étant pas une OU, on ne peut pas y lier de GPO. Pour sécuriser l'arrivée de nouveaux matériels, j'ai redirigé le conteneur par défaut vers l'OU de **Quarantaine**.
@@ -118,13 +154,13 @@ Pour chaque OU critique, l'option **"Protéger l'objet contre la suppression acc
 
 ---
 
-## 📂 Étape 3 : Spécificités des comptes de service (gMSA)
+## 📂 Étape 5 : Spécificités des comptes de service (gMSA)
 
-Dans l'OU `90_INFRA_SERVICES`, nous isolons les **gMSA**. L'ANSSI recommande fortement leur usage car ils n'ont pas de mot de passe connu par l'humain (rotation automatique par l'AD). Cela permet d'appliquer des politiques ultra-restrictives : interdiction de session interactive et blocage du bureau à distance (RDP).
+Dans l'OU `90_INFRA_SERVICES`, nous isolons les **gMSA** (group Managed Service Accounts) : Ce sont des comptes utilisés exclusivement par des logiciels ou des services Windows (ex: un service SQL Server, un backup Veeam, ou un agent de supervision). L'ANSSI recommande fortement leur usage car ils n'ont pas de mot de passe connu par l'humain (rotation automatique par l'AD). Cela permet d'appliquer des politiques ultra-restrictives : interdiction de session interactive et blocage du bureau à distance (RDP).
 
 ---
 
-## 🛡️ Sécurisation de la chaîne de confiance (Tier 0)
+## 🛡️ Étape 6 :  Sécurisation de la chaîne de confiance (Tier 0)
 
 Bien que des politiques d'audit soient définies à la racine du domaine, j'ai fait le choix stratégique de **lier explicitement** la GPO de durcissement (`DOM - S - Advanced_Auditing`) directement à l'OU **`00_T0_ADMIN`**.
 
@@ -143,46 +179,96 @@ Bien que des politiques d'audit soient définies à la racine du domaine, j'ai f
   </div>
 </div>
 
-{/* ##  Propriétaires d'OU */}
-
-
-
 
 
 ---
 
-##  Bilan : Une infrastructure prête pour l'audit
+---
+## 🧾 Bilan : Une infrastructure prête pour l'audit
 
+<p class="mt-4">
 Cette structure est conforme aux standards industriels et permet :
-1.  **Délégation granulaire** : Droits sur `02_PRODUCTION` sans exposition du `Tier 0`.
-2.  **Mise en conformité automatique** : Grâce à `redircmp`, aucun ordinateur ne rentre sur le réseau sans passer par la quarantaine.
-3.  **Traçabilité** : Simplification des GPO et rapports d'audit.
+</p>
 
-<section class="mt-16 space-y-12">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
-    <div>
-      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
-        <span class="text-green-500 text-lg">✅</span> Validation de l'arborescence
-      </h3>
-      <ul class="space-y-3">
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Isolation des Tiers :</strong> Séparation hermétique entre les comptes d'administration et les postes de travail.</span>
-        </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Automatisation :</strong> Redirection des nouveaux objets vers l'OU 98.</span>
-        </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Gouvernance Technique :</strong> Centralisation des comptes gMSA dans l'OU 90.</span>
-        </li>
-      </ul>
+<div class="mt-8 grid grid-cols-1 gap-6">
+
+  {/* Carte 1 */}
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-6 rounded-2xl shadow-sm transition-all hover:translate-x-1">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-blue-500">🔑</span>
+      <h3 style="color: var(--text-title);" class="font-bold text-lg tracking-tight">Délégation granulaire</h3>
     </div>
+    <p class="text-sm leading-relaxed opacity-90">
+      Les droits d'administration sont appliqués uniquement sur l'OU <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">02_PRODUCTION</code>, garantissant qu'aucune empreinte du <strong>Tier 0</strong> n'est exposée sur les postes de travail.
+    </p>
+  </div>
+
+  {/* Carte 2 */}
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-6 rounded-2xl shadow-sm transition-all hover:translate-x-1">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-emerald-500">🛡️</span>
+      <h3 style="color: var(--text-title);" class="font-bold text-lg tracking-tight">Mise en conformité automatique</h3>
+    </div>
+    <p class="text-sm leading-relaxed opacity-90">
+      Grâce à la commande <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">redircmp</code>, tout nouvel ordinateur rejoint le domaine dans un état "non-approuvé" en zone de quarantaine.
+    </p>
+  </div>
+
+  {/* Carte 3 */}
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-6 rounded-2xl shadow-sm transition-all hover:translate-x-1">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-purple-500">📊</span>
+      <h3 style="color: var(--text-title);" class="font-bold text-lg tracking-tight">Traçabilité & Audit</h3>
+    </div>
+    <p class="text-sm leading-relaxed opacity-90">
+      La hiérarchie numérotée simplifie la lecture des logs et l'application des GPO, rendant l'infrastructure immédiatement lisible lors d'un audit de sécurité (type PingCastle).
+    </p>
+  </div>
+
+</div>
+
+---
+<section class="mt-16 space-y-8">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="rounded-2xl p-6 md:p-8 shadow-sm">
     
-    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
-        <div>
-          <div class="text-4xl mb-2">🏰</div>
-          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Forteresse AD</p>
-          <p class="text-[9px] text-slate-500 mt-1 italic">Modèle Tiering validé</p>
-        </div>
+    <div class="flex flex-col md:flex-row md:items-center gap-8">
+      
+      {/* Partie Texte */}
+      <div class="flex-1">
+        <h3 style="color: var(--text-title);" class="text-xl font-black mb-6 flex items-center gap-2">
+          <span class="text-green-500 text-lg">✅</span> Validation de l'arborescence
+        </h3>
+        
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3">
+            <p style="color: var(--text-main);" class="text-sm leading-relaxed">
+                <strong>Isolation des Tiers :</strong> Séparation hermétique entre les comptes d'administration et les postes de travail.
+            </p>
+          </li>
+          
+          <li class="flex items-start gap-3">
+            <p style="color: var(--text-main);" class="text-sm leading-relaxed">
+                <strong>Automatisation :</strong> Redirection des nouveaux objets vers l'OU 98 via <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-xs font-mono">redircmp</code>.
+            </p>
+          </li>
+
+          <li class="flex items-start gap-3">
+            <p style="color: var(--text-main);" class="text-sm leading-relaxed">
+                <strong>Gouvernance Technique :</strong> Centralisation des comptes gMSA dans l'OU 90.
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      {/* Partie Forteresse - Correction Mobile */}
+      <div style="border-color: var(--card-border);" class="flex flex-col items-center justify-center p-6 border-t md:border-t-0 md:border-l min-w-[150px]">
+          <div class="text-center">
+            <div class="text-6xl mb-3 filter drop-shadow-xl animate-pulse">🏰</div>
+            <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-[0.2em] font-black opacity-80">Forteresse AD</p>
+            <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Modèle Tiering validé</p>
+          </div>
+      </div>
+
     </div>
   </div>
 </section>
