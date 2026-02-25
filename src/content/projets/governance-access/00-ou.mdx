@@ -179,11 +179,36 @@ Bien que des politiques d'audit soient définies à la racine du domaine, j'ai f
   </div>
 </div>
 
+---
 
+## 🛠️ Prérequis pour continuer : Stabilité et Réversibilité
+
+### Mise à jour du système 
+L'infrastructure a été entièrement mise à jour via Windows Update. En 2026, la sécurité repose sur des builds récents pour bénéficier des dernières fonctionnalités de **Windows LAPS**.
+
+<div class="flex flex-col items-center my-10">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 600px;">
+    <img src="/images/projets/governance-access/ou/maj-avant-snapshot.png" 
+       alt="Capture d'écran Windows Update réussi" 
+      style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+    <p class="text-[0.6rem] opacity-50 mt-2 italic">Validation des MAJ cumulatives.</p>
+  </div>
+</div>
+
+### Snapshot VMware (Point de restauration)
+Certaines modifications sont irréversibles. J'ai effectué un snapshot à froid de la VM `SRV-AD-01` pour garantir un retour arrière immédiat.
+
+<div class="flex flex-col items-center my-10">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 600px;">
+  <img src="/images/projets/governance-access/ou/snapshot1.png" 
+       alt="Capture d'écran Snapshot VmWare" 
+       style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
+  <p class="text-[0.6rem] opacity-50 mt-2 italic">Snapshot : POST_HARDENING_DC_OK.</p>
+  </div>
+</div>
 
 ---
 
----
 ## 🧾 Bilan : Une infrastructure prête pour l'audit
 
 <p class="mt-4">
@@ -228,52 +253,48 @@ Cette structure est conforme aux standards industriels et permet :
 </div>
 
 ---
-<section class="mt-16 space-y-8">
-  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="rounded-2xl p-6 md:p-8 shadow-sm">
+
+<section class="mt-16 space-y-12">
+  
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan de l'étape 01
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Isolation des Tiers :</strong> Séparation hermétique entre l'administration (<code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">T0</code>) et les postes de travail (<code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">T2</code>).</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Automatisation :</strong> Redirection des nouveaux objets vers la zone de <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">Quarantaine</code> via <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">redircmp</code>.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Gouvernance :</strong> Centralisation des comptes <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">gMSA</code> pour une gestion automatisée des services.</span>
+        </li>
+      </ul>
+    </div>
     
-    <div class="flex flex-col md:flex-row md:items-center gap-8">
-      
-      {/* Partie Texte */}
-      <div class="flex-1">
-        <h3 style="color: var(--text-title);" class="text-xl font-black mb-6 flex items-center gap-2">
-          <span class="text-green-500 text-lg">✅</span> Validation de l'arborescence
-        </h3>
-        
-        <ul class="space-y-4">
-          <li class="flex items-start gap-3">
-            <p style="color: var(--text-main);" class="text-sm leading-relaxed">
-                <strong>Isolation des Tiers :</strong> Séparation hermétique entre les comptes d'administration et les postes de travail.
-            </p>
-          </li>
-          
-          <li class="flex items-start gap-3">
-            <p style="color: var(--text-main);" class="text-sm leading-relaxed">
-                <strong>Automatisation :</strong> Redirection des nouveaux objets vers l'OU 98 via <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-xs font-mono">redircmp</code>.
-            </p>
-          </li>
-
-          <li class="flex items-start gap-3">
-            <p style="color: var(--text-main);" class="text-sm leading-relaxed">
-                <strong>Gouvernance Technique :</strong> Centralisation des comptes gMSA dans l'OU 90.
-            </p>
-          </li>
-        </ul>
-      </div>
-
-      {/* Partie Forteresse - Correction Mobile */}
-      <div style="border-color: var(--card-border);" class="flex flex-col items-center justify-center p-6 border-t md:border-t-0 md:border-l min-w-[150px]">
-          <div class="text-center">
-            <div class="text-6xl mb-3 filter drop-shadow-xl animate-pulse">🏰</div>
-            <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-[0.2em] font-black opacity-80">Forteresse AD</p>
-            <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Modèle Tiering validé</p>
-          </div>
-      </div>
-
+    {/* Forteresse - Correction Mobile et Thème */}
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 filter drop-shadow-lg">🏰</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Architecture Validée</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Modèle Tiering ANSSI</p>
+        </div>
     </div>
   </div>
+
+  {/* Citation de transition */}
+  <div class="max-w-2xl mx-auto text-center space-y-4 px-4">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
+      "Une arborescence bien pensée est le socle de toute délégation de contrôle réussie. On ne sécurise pas ce que l'on ne peut pas segmenter."
+    </p>
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+  </div>
+
 </section>
 
 <NextStep 
-  href="/projets/methode-agdlp" 
-  title="Méthode AGDLP : Gestion des groupes et accès" 
+  href="/projets/laps" 
+  title="Windows LAPS : Sécurisation des comptes administrateurs locaux" 
 />

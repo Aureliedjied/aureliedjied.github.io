@@ -343,6 +343,30 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
   </div>
 </div>
 
+## 🔐 Durcissement du protocole Kerberos
+
+<div class="flex flex-col md:flex-row gap-8 items-center my-12">
+  <div class="flex-1">
+    <p class="text-sm opacity-80 leading-relaxed mb-4">
+      Par défaut, Active Directory peut autoriser des types de chiffrement obsolètes (RC4, DES) pour assurer la compatibilité avec d'anciens systèmes. Ces protocoles sont aujourd'hui vulnérables aux attaques de type <strong>Kerberoasting</strong>.
+    </p>
+    <div style="background-color: var(--card-bg); border: 1px solid var(--purple-border);" class="p-5 rounded-xl border-l-4">
+      <h4 style="color: var(--text-purple);" class="text-xs font-black uppercase tracking-widest mb-2">Décision de Sécurité</h4>
+        <p class="text-xs leading-relaxed">
+          En forçant l'<strong>AES-128</strong> et l'<strong>AES-256</strong> via la GPO, c'est comme si on remplaçait une vieille serrure à clé simple par un verrou de haute sécurité : même si un attaquant vole un ticket de connexion, il ne pourra pas le déchiffrer.
+        </p>
+    </div>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; margin: 2rem 0;">
+  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
+    <img src="/images/projets/architecture-ad/promo/chiffrement-aes.png" alt="Chiffrement sécurisé pour tout le domaine" class="rounded-lg border border-white/10 shadow-md w-full"/>
+    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Chiffrement sécurisé pour tout le domaine</p>
+  </div>
+</div>
+
+
 <section class="mt-16 space-y-12">
   
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8">
@@ -380,7 +404,7 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
     </p>
   </div>
 
-  {/* Ajouter ici chiffrement kerberos uniquement autorisé via AES 129 et AES 256 */}
+  
 
 </section>
 

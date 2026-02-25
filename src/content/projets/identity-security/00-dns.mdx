@@ -142,43 +142,47 @@ Je termine par un test de cohérence. La résolution inverse doit maintenant fon
 
 <section class="mt-16 space-y-12">
   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
+  {/* Carte de Bilan - Responsive & Theme-Ready */}
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
-      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+      <h3 style="color: var(--text-title);" class="text-xl font-black mb-4 flex items-center gap-2">
         <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : DNS
       </h3>
       <ul class="space-y-3">
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Cohérence réseau :</strong> Zone de recherche inversée (PTR) fonctionnelle sur le subnet.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Cohérence réseau :</strong> Zone de recherche inversée (PTR) fonctionnelle sur le subnet <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">192.168.174.x</code>.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Automatisation :</strong> Mise à jour dynamique des enregistrements activée.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Automatisation :</strong> Mise à jour dynamique des enregistrements activée via les propriétés de l'enregistrement A.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Ouverture maîtrisée :</strong> Redirecteurs DNS configurés pour la résolution externe.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Ouverture maîtrisée :</strong> Redirecteurs DNS configurés pour assurer la résolution des noms externes.</span>
         </li>
       </ul>
     </div>
     
-    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8">
+    {/* Globe - Visible sur Mobile et PC */}
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
         <div class="text-center">
-          <div class="text-4xl mb-2 transition-transform hover:scale-110 duration-300">🌍</div>
-          <p class="text-[10px] uppercase tracking-widest text-slate-900 dark:text-white/40 font-black">Infrastructure Saine</p>
-          <p class="text-[9px] text-slate-500 mt-1 italic">Prêt pour la PKI</p>
+          <div class="text-5xl mb-2 transition-transform hover:scale-110 duration-300 filter drop-shadow-lg">🌍</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest font-black opacity-60">Infrastructure Saine</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic font-medium">Ready for PKI & LDAPS</p>
         </div>
     </div>
   </div>
 
+  {/* Citation & Prochaine étape */}
   <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
-    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
       "Le DNS est le système nerveux de l'Active Directory. Sans une résolution parfaite, la sécurité et les certificats ne peuvent reposer sur des bases solides."
     </p>
     
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+    
     <div class="space-y-2">
-       <p class="text-sm text-slate-600 dark:text-white/60">
-        <strong>Objectif suivant :</strong> Déployer l'Autorité de Certification (AD CS) pour chiffrer les flux LDAPS et sécuriser les échanges d'identités.
+       <p style="color: var(--text-muted);" class="text-sm">
+        <strong>Objectif suivant :</strong> Déployer l'Autorité de Certification (AD CS) pour chiffrer les flux <strong>LDAPS</strong> et sécuriser les échanges d'identités.
       </p>
-      
     </div>
   </div>
 

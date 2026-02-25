@@ -254,38 +254,41 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
 
 <section class="mt-16 space-y-12">
   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
-      <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-        <span class="text-green-400">✅</span> Bilan de l'étape 01
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan de l'étape 01
       </h3>
       <ul class="space-y-3">
-        <li class="flex items-start gap-3 text-sm opacity-80">
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
           <span><strong>Environnement maîtrisé :</strong> VM dimensionnée et isolée sur VMnet8.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm opacity-80">
-          <span><strong>Identité fixée :</strong> Nommage <code>SRV-AD-01</code> et IP statique configurés.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Identité fixée :</strong> Nommage <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">SRV-AD-01</code> et IP statique configurés.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm opacity-80">
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
           <span><strong>Prêt pour l'AD :</strong> Rôles AD DS et DNS installés (binaires uniquement).</span>
         </li>
       </ul>
     </div>
     
-    <div class="hidden md:flex justify-center border-l border-white/10 pl-8">
-       <div class="text-center">
-          <div class="text-4xl mb-2">🚀</div>
-          <p class="text-[10px] uppercase tracking-tighter opacity-40 font-bold">Prêt pour l'élévation</p>
-       </div>
+    {/* Fusée - Maintenant visible partout avec bordure adaptative */}
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 filter drop-shadow-lg animate-bounce">🚀</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Prêt pour l'élévation</p>
+        </div>
     </div>
   </div>
 
-  <div class="max-w-2xl mx-auto text-center space-y-4">
-    <p class="text-base leading-relaxed opacity-90 italic">
+  {/* Citation de transition */}
+  <div class="max-w-2xl mx-auto text-center space-y-4 px-4">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
       "L'installation n'est que la première couche. Avant de promouvoir ce serveur, nous allons appliquer un durcissement (Hardening) rigoureux."
     </p>
-    <p class="text-sm opacity-60">
-      Objectif suivant : Réduire la surface d'attaque et supprimer les protocoles hérités (LLMNR, NetBIOS) avant que le serveur ne devienne le cœur de l'infrastructure.
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+    <p style="color: var(--text-muted);" class="text-sm">
+      <strong>Objectif suivant :</strong> Réduire la surface d'attaque et supprimer les protocoles hérités (LLMNR, NetBIOS) avant que le serveur ne devienne le cœur de l'infrastructure.
     </p>
   </div>
 

@@ -83,36 +83,40 @@ Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont 
 
 <section class="mt-16 space-y-12">
   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
-      <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-        <span class="text-green-400">✅</span> Bilan de l'étape 02
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan de l'étape 02
       </h3>
       <ul class="space-y-3">
-        <li class="flex items-start gap-3 text-sm opacity-80">
-          <span><strong>Surface d'attaque réduite :</strong> Protocoles hérités (LLMNR, NetBIOS) désactivés.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Surface d'attaque réduite :</strong> Protocoles hérités (<code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">LLMNR</code>, <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">NetBIOS</code>) désactivés.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm opacity-80">
-          <span><strong>Conformité :</strong> Absence de SMBv1 confirmée pour prévenir les ransomwares.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Conformité :</strong> Absence de <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">SMBv1</code> confirmée pour prévenir les ransomwares.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm opacity-80">
-          <span><strong>Serveur "Sain" :</strong> Seuls les flux critiques sont en écoute (Audit netstat).</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Serveur "Sain" :</strong> Seuls les flux critiques sont en écoute (Audit <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">netstat</code>).</span>
         </li>
       </ul>
     </div>
     
-    <div class="hidden md:flex justify-center border-l border-white/10 pl-8">
+    {/* Bouclier - Correction Mobile et Thème */}
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
         <div class="text-center">
-          <div class="text-4xl mb-2">🛡️</div>
-          <p class="text-[10px] uppercase tracking-tighter opacity-40 font-bold">Système Durci</p>
+          <div class="text-5xl mb-2 filter drop-shadow-lg">🛡️</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Système Durci</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Baseline ANSSI</p>
         </div>
     </div>
   </div>
 
-  <div class="max-w-2xl mx-auto text-center space-y-4">
-    <p class="text-base leading-relaxed opacity-90 italic">
+  {/* Citation de transition */}
+  <div class="max-w-2xl mx-auto text-center space-y-4 px-4">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
       "Le durcissement du système d'exploitation est la première ligne de défense. Un contrôleur de domaine ne peut être plus sûr que l'OS qui l'héberge."
     </p>
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
   </div>
 
 </section>

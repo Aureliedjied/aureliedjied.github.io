@@ -51,30 +51,31 @@ Sur l’autorité de certification, j’ouvre la console **`certtmpl.msc`** et j
 
 ### 🔧 Paramétrage du modèle
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-10">
 
-  <div style="padding: 1.25rem; background: rgba(0, 120, 212, 0.05); border: 1px solid rgba(0, 120, 212, 0.2); border-radius: 12px;">
-    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0078d4; margin-bottom: 0.5rem;">Identification</p>
-    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
-      <li><strong>Nom :</strong> <code>Lab-DC-LDAPS</code></li>
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-5 rounded-2xl shadow-sm">
+    <p style="color: var(--text-purple);" class="text-[10px] font-black uppercase tracking-widest mb-3">Identification</p>
+    <ul class="space-y-2 text-sm" style="color: var(--text-main);">
+      <li><strong>Nom :</strong> <code style="color: var(--text-purple);">Lab-DC-LDAPS</code></li>
       <li><strong>Compatibilité :</strong> Windows 2016+</li>
     </ul>
   </div>
 
-  <div style="padding: 1.25rem; background: rgba(0, 120, 212, 0.05); border: 1px solid rgba(0, 120, 212, 0.2); border-radius: 12px;">
-    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0078d4; margin-bottom: 0.5rem;">Cryptographie</p>
-    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-5 rounded-2xl shadow-sm">
+    <p style="color: var(--text-purple);" class="text-[10px] font-black uppercase tracking-widest mb-3">Cryptographie</p>
+    <ul class="space-y-2 text-sm" style="color: var(--text-main);">
       <li><strong>Fournisseur :</strong> KSP (Key Storage)</li>
       <li><strong>Usage :</strong> Authentification Serveur</li>
     </ul>
   </div>
 
-  <div style="padding: 1.25rem; background: rgba(16, 124, 16, 0.05); border: 1px solid rgba(16, 124, 16, 0.2); border-radius: 12px;">
-    <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #107c10; margin-bottom: 0.5rem;">Permissions (DC d'entreprise)</p>
-    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-      <span style="background: #107c10; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">Lecture</span>
-      <span style="background: #107c10; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">Inscrire</span>
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-5 rounded-2xl shadow-sm">
+    <p style="color: #107c10;" class="text-[10px] font-black uppercase tracking-widest mb-3">Permissions</p>
+    <div class="flex gap-2">
+      <span class="bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-1 rounded text-[10px] font-bold">Lecture</span>
+      <span class="bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-1 rounded text-[10px] font-bold">Inscrire</span>
     </div>
+    <p class="text-[9px] mt-3 opacity-60" style="color: var(--text-main);">Cible : Contrôleurs de domaine d'entreprise</p>
   </div>
 
 </div>
@@ -237,32 +238,24 @@ L’affichage du **RootDSE** confirme que la session LDAP est établie via TLS.
 
 ## 🛡️ Étape 6 : Signature LDAP obligatoire (Durcissement)
 
-Cette étape correspond à un durcissement volontaire.
-
-Par défaut, Active Directory tolère encore certaines connexions LDAP non signées pour des raisons de compatibilité applicative.  
-Dans ce lab, nous choisissons volontairement de supprimer ces comportements afin de simuler une politique de sécurité stricte.
-
-LDAPS chiffre les communications sur le port 636.  
-La **signature LDAP**, elle, protège l’intégrité des échanges sur le port 389.
-
-Ces deux mécanismes sont **complémentaires** dans une stratégie de durcissement.
-
-
-### 🔒 Côté contrôleurs de domaine
-
-GPO :  
-**Contrôleur de domaine : exigences de signature de serveur LDAP**  
-→ **Exiger la signature**
-
-➡️ Le DC refuse les connexions LDAP simples non signées.
-
-### 💻 Côté postes et serveurs membres
-
-GPO :  
-**Sécurité réseau : exigences de signature de client LDAP**  
-→ **Exiger la signature**
-
-➡️ Les machines du domaine refusent de dialoguer avec un serveur LDAP ne supportant pas la signature.
+<div style="border-left: 4px solid #ef4444; background-color: var(--card-bg);" class="p-6 my-10 rounded-r-2xl shadow-sm border border-slate-200 dark:border-white/5">
+  <h4 class="text-red-600 dark:text-red-400 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+    🛡️ Recommandation ANSSI : Signature Obligatoire
+  </h4>
+  <p class="text-sm leading-relaxed mb-4" style="color: var(--text-main);">
+    Le simple chiffrement LDAPS ne suffit pas à protéger l'intégralité du trafic. En forçant la <strong>signature LDAP</strong>, on neutralise les attaques de type <em>Relay</em> et <em>Man-in-the-Middle</em> sur le port 389.
+  </p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+      <p class="text-[10px] font-bold opacity-50 uppercase mb-1">Côté DC</p>
+      <p class="text-[11px]" style="color: var(--text-main);">Refus des binds simples non signés.</p>
+    </div>
+    <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+      <p class="text-[10px] font-bold opacity-50 uppercase mb-1">Côté Clients</p>
+      <p class="text-[11px]" style="color: var(--text-main);">Exigence de signature pour toute requête.</p>
+    </div>
+  </div>
+</div>
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
@@ -272,10 +265,6 @@ GPO :
 </div>
 
 
-Dans ce lab, l’annuaire n’accepte désormais plus que des communications LDAP protégées :
-
-- LDAP signé
-- LDAPS chiffré
 
 Ce niveau de restriction correspond à une politique de durcissement volontaire.  
 En production, cette configuration serait précédée d’une phase d’audit afin d’identifier les applications héritées.
@@ -285,41 +274,43 @@ Cette étape marque la fin de la sécurisation du socle d’identité.
 
 <section class="mt-16 space-y-12">
   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
-      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+      <h3 style="color: var(--text-title);" class="text-xl font-black mb-4 flex items-center gap-2">
         <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : LDAPS
       </h3>
       <ul class="space-y-3">
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Chiffrement actif :</strong> Port 636 ouvert et sécurisé via certificat Kerberos/Domaine.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Chiffrement actif :</strong> Port <code style="color: var(--text-purple);">636</code> ouvert et sécurisé via certificat RSA/SHA.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Intégrité :</strong> Fin de la transmission des identifiants en clair sur le réseau.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Intégrité :</strong> Signature LDAP forcée, interdisant la circulation des identifiants en clair.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Conformité :</strong> Respect des exigences de sécurité pour les applications tierces (SSO, ERP).</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Audit :</strong> Flux validés via <code style="color: var(--text-purple);">ldp.exe</code> et vérification d'écoute réseau.</span>
         </li>
       </ul>
     </div>
     
-    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
-        <div>
-          <div class="text-4xl mb-2">🔒</div>
-          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Tunnel SSL établi</p>
-          <p class="text-[9px] text-slate-500 mt-1 italic">Annuaire protégé contre l'interception</p>
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 transition-transform hover:scale-110 duration-300">🔒</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-[0.2em] font-black opacity-60">Tunnel SSL établi</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Flux d'annuaire durcis</p>
         </div>
     </div>
   </div>
 
   <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
-    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
       "En activant le LDAPS, nous sécurisons le cœur de notre identité numérique. Chaque requête entre nos serveurs et nos clients est désormais encapsulée dans un tunnel de confiance."
     </p>
     
-    <div class="space-y-4">
-      <p class="text-sm text-slate-500 dark:text-white/50">
-        Objectif suivant : Administration granulaire et gestion des accès.
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+
+    <div class="space-y-2">
+      <p style="color: var(--text-muted);" class="text-sm">
+        <strong>Objectif suivant :</strong> Administration granulaire, déploiement de la hiérarchie d'<strong>Unités d'Organisation (OU)</strong> et gestion des accès.
       </p>
     </div>
   </div>

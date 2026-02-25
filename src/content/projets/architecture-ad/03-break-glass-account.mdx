@@ -154,65 +154,73 @@ Ces événements permettent de détecter aussi bien l’usage légitime d’urge
 
 <section class="mt-16 border-t border-white/10 pt-12">
   
-  <div class="relative overflow-hidden bg-red-500/5 border border-red-500/20 rounded-2xl p-6 sm:p-8">
+  {/* Bloc Alerte Rouge - Adapté aux variables */}
+  <div style="background-color: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);" class="relative overflow-hidden rounded-2xl p-6 sm:p-8 transition-all hover:shadow-md">
     <div class="absolute top-0 right-0 p-4 opacity-10 text-red-500 text-6xl font-bold select-none">!</div>
     
     <div class="relative z-10">
-      <h4 class="text-red-400 font-bold text-lg mb-4 flex items-center gap-3">
-        <span class="p-2 bg-red-500/20 rounded-lg">⚠️</span>
+      <h4 class="text-red-500 dark:text-red-400 font-black text-lg mb-4 flex items-center gap-3">
+        <span class="p-2 bg-red-500/10 rounded-lg">⚠️</span>
         Règle de Gouvernance
       </h4>
       
-      <p class="text-sm sm:text-base leading-relaxed opacity-90 mb-6">
+      <p style="color: var(--text-main);" class="text-sm sm:text-base leading-relaxed mb-6">
         Ce compte ne doit <strong>jamais</strong> être utilisé pour l'administration courante. Son usage est réservé aux crises majeures avec un protocole strict :
       </p>
 
       <div class="grid grid-cols-1 gap-3">
-        <div class="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+        <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="flex items-center gap-4 p-3 rounded-xl">
           <span class="text-lg">📝</span>
-          <p class="text-[11px] sm:text-xs font-medium opacity-80 uppercase tracking-wide">Justification au registre d'incidents</p>
+          <p style="color: var(--text-title);" class="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-80">Justification au registre d'incidents</p>
         </div>
-        <div class="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+        <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="flex items-center gap-4 p-3 rounded-xl">
           <span class="text-lg">🔄</span>
-          <p class="text-[11px] sm:text-xs font-medium opacity-80 uppercase tracking-wide">Rotation immédiate du mot de passe</p>
+          <p style="color: var(--text-title);" class="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-80">Rotation immédiate du mot de passe</p>
         </div>
-        <div class="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+        <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="flex items-center gap-4 p-3 rounded-xl">
           <span class="text-lg">🔍</span>
-          <p class="text-[11px] sm:text-xs font-medium opacity-80 uppercase tracking-wide">Audit post-mortem des logs</p>
+          <p style="color: var(--text-title);" class="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-80">Audit post-mortem des logs</p>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8 mt-12">
+  {/* Bilan de l'étape 04 */}
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 mt-12 shadow-sm">
     <div>
-      <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-        <span class="text-green-400">✅</span> Bilan de l'étape 04
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan de l'étape 04
       </h3>
-      <ul class="space-y-3 text-sm opacity-80">
-        <li class="flex items-start gap-3">
-          <span><strong>Compte Break-Glass :</strong> <code>secu-adm-urgency</code> opérationnel.</span>
+      <ul class="space-y-3 text-sm">
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Compte Break-Glass :</strong> <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">secu-adm-urgency</code> opérationnel.</span>
         </li>
-        <li class="flex items-start gap-3">
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
           <span><strong>Automatisation :</strong> Création via script PowerShell validée.</span>
+        </li>
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Contrôle :</strong> Audit mis en place.</span>
         </li>
       </ul>
     </div>
     
-    <div class="hidden md:flex justify-center border-l border-white/10 pl-8 text-center">
-       <div>
-          <div class="text-4xl mb-2">🏰</div>
-          <p class="text-[10px] uppercase tracking-tighter opacity-40 font-bold">Prêt pour l'audit</p>
-       </div>
+    {/* Forteresse Mobile-Friendly */}
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 filter drop-shadow-xl">🏰</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest font-black opacity-60">Prêt pour l'audit</p>
+        </div>
     </div>
   </div>
 
-  <div class="max-w-2xl mx-auto text-center space-y-4 mt-12">
-    <p class="text-base leading-relaxed opacity-90 italic">
+  {/* Conclusion & Next Step */}
+  <div class="max-w-2xl mx-auto text-center space-y-4 mt-12 px-4">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed opacity-90 italic">
       "Le socle est prêt. Place maintenant à l'épreuve de vérité."
     </p>
-    <p class="text-sm opacity-60">
-      Objectif suivant : Audit de vulnérabilités avec <strong>PingCastle</strong> pour valider notre score de sécurité.
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+    <p style="color: var(--text-muted);" class="text-sm">
+      <strong>Objectif suivant :</strong> Audit de vulnérabilités avec <strong>PingCastle</strong> pour valider notre score de sécurité.
     </p>
   </div>
 

@@ -427,31 +427,34 @@ Ce nouveau scan montre une **réduction significative du niveau de risque**, not
 
 <section class="mt-16 border-t border-white/10 pt-12">
   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
-      <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
         <span class="text-green-500">🏆</span> Bilan de l'audit initial
       </h3>
       <ul class="space-y-3 text-sm">
-        <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
-          <span><strong>Surface d'attaque :</strong> Protocoles hérités (LLMNR/NBT-NS) désactivés.</span>
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Surface d'attaque :</strong> Protocoles hérités (<code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">LLMNR/NBT-NS</code>) désactivés.</span>
         </li>
-        <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
           <span><strong>Traçabilité :</strong> Audit avancé actif sur les actions sensibles du DC.</span>
         </li>
-        <li class="flex items-start gap-3 text-slate-700 dark:text-white/80">
-          <span><strong>Structure :</strong> Topologie réseau (Subnets) déclarée et flux RPC filtrés.</span>
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Structure :</strong> Topologie réseau (Subnets) déclarée et flux <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">RPC</code> filtrés.</span>
         </li>
       </ul>
     </div>
     
-    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
-       <div>
-          <div class="text-4xl mb-2">📈</div>
-          <p class="text-[10px] uppercase tracking-tighter font-bold text-slate-500 dark:text-white/40">Score en progression</p>
-       </div>
+    {/* Indicateur de score - Mobile Friendly */}
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 filter drop-shadow-lg animate-pulse">📈</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-[0.2em] font-black opacity-60">Score en progression</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Validation PingCastle</p>
+        </div>
     </div>
   </div>
+
 
   <div class="max-w-2xl mx-auto text-center space-y-6 mt-12 px-4">
     <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
@@ -465,7 +468,7 @@ Ce nouveau scan montre une **réduction significative du niveau de risque**, not
     </div>
 
     <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-white/30 pt-4">
-      Objectif suivant : Mise en place du DNS pour la résolution de noms
+      <strong>Objectif suivant :</strong> Mise en place du DNS pour la résolution de noms
     </p>
   </div>
 

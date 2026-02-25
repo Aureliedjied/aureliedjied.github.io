@@ -1,0 +1,130 @@
+---
+title: "Windows LAPS : Sécurisation et chiffrement des mots de passe locaux"
+description: "Mise en œuvre de la solution Windows LAPS pour centraliser, chiffrer et automatiser la rotation des mots de passe administrateurs locaux."
+tags: ["Active Directory", "Windows Server", "Sécurité", "LAPS"]
+serie: "governance-access"
+serieOrder: 2
+category: "windows-server"
+pubDate: 2026-02-06
+slug: "laps"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+
+<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
+Après avoir structuré nos OUs, nous devons verrouiller la "porte dérobée" de chaque machine : le compte administrateur local. Sans <strong>Windows LAPS</strong>, ce compte possède souvent le même mot de passe sur tout le parc, facilitant les mouvements latéraux. Nous allons transformer ce point faible en une forteresse chiffrée.
+</p>
+
+<div class="my-8 p-6 bg-purple-50 dark:bg-purple-500/5 border-l-4 border-purple-500 rounded-r-xl">
+  <h4 class="text-xs font-black uppercase tracking-widest text-purple-800 dark:text-purple-400 mb-2">
+    🔐 Le Concept Windows LAPS
+  </h4>
+  <p class="text-sm text-slate-700 dark:text-white/80 leading-relaxed">
+    Contrairement à l'ancienne version "Legacy", <strong>Windows LAPS</strong> est nativement intégré à l'OS. Il permet de générer des mots de passe complexes, de les stocker de manière <strong>chiffrée</strong> dans l'Active Directory et de forcer leur rotation automatique.
+  </p>
+</div>
+
+---
+
+## 🏗️ Étape 1 : Préparation du système et du Schéma AD
+
+La première étape consiste à charger le module nécessaire. Une fois les outils en place, nous devons étendre le schéma de l'annuaire pour qu'il puisse accueillir les nouveaux attributs de sécurité. Pour cette opération critique, j'ai utilisé un compte administrateur du schéma (adm-aurelie, le temps de la procédure uniquement).
+Étendre le schéma consiste à modifier la structure même de l'annuaire Active Directory. On y ajoute de nouveaux attributs (des champs de données) que l'AD ne connaît pas par défaut. Sans cette étape, les ordinateurs n'auraient aucun emplacement où sauvegarder leur mot de passe.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8 text-center">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/governance-access/laps/import-module.png" alt="Importation du module LAPS" class="rounded-lg border border-white/10 shadow-sm max-w-xs" />
+     <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Initialisation du module PowerShell LAPS.</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/governance-access/laps/laps-active.png" alt="Mise à jour du schéma réussie" class="rounded-lg border border-white/10 shadow-sm max-w-xs" />
+     <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Extension du schéma effectuée sur le DC.</p>
+  </div>
+</div>
+
+---
+
+## 🔑 Étape 2 : Délégation des permissions sur les OUs
+
+Par sécurité, un ordinateur n'a pas l'autorisation d'écrire son mot de passe sur son propre objet dans l'AD. J'ai donc délégué le droit d'écriture "Self" aux machines situées dans nos zones de production (Tier 1 et Tier 2) pour permettre la remontée automatique des secrets.
+
+<div class="flex flex-col items-center my-8">
+  <img src="/images/projets/governance-access/laps/selfpermissions-ous.png" alt="Délégation des permissions" class="rounded-lg border border-white/10 shadow-sm max-w-xs" />
+   <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Attribution des droits d'écriture sur les OUs de production.</p>
+</div>
+
+---
+
+## 📜 Étape 3 : Gouvernance via GPO
+
+La configuration centrale repose sur la stratégie **`DOM - S - Hardening_LAPS`**. Elle définit les règles strictes que chaque client devra appliquer.
+
+### Paramètres de sécurité configurés :
+* **Stockage :** Sauvegarde centralisée dans l'Active Directory.
+* **Chiffrement :** Activation du chiffrement des mots de passe pour une protection maximale au repos.
+* **Complexité :** Définition d'une longueur robuste et rotation automatique.
+* **Ciblage :** Utilisation du SID-500 pour ciber le compte admin intégré, même renommé.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+  <img src="/images/projets/governance-access/laps/gpo-stock-ad.png" alt="GPO Stockage AD" class="rounded border border-white/10 shadow-md w-full" />
+  <img src="/images/projets/governance-access/laps/gpo-chiffrer.png" alt="GPO Chiffrement" class="rounded border border-white/10 shadow-md w-full" />
+  <img src="/images/projets/governance-access/laps/gpo-longueur-mdp.png" alt="GPO Longueur" class="rounded border border-white/10 shadow-md w-full" />
+  <img src="/images/projets/governance-access/laps/gpo-nom-vide.png" alt="GPO Nom Vide" class="rounded border border-white/10 shadow-md w-full" />
+</div>
+
+---
+
+## 🔍 Étape 4 : Activation et Liaison
+
+La stratégie est enfin liée aux unités d'organisation concernées. À partir de cet instant, tout nouveau client intégrant ces OUs recevra automatiquement sa politique de sécurité locale.
+
+<div class="flex flex-col items-center my-8">
+  <img src="/images/projets/governance-access/laps/gpo-active.png" alt="Liaison de la GPO LAPS" class="rounded-lg border border-white/10 shadow-sm max-w-xs" />
+   <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">GPO liée et active sur les OUs Tier 1 et Tier 2.</p>
+</div>
+
+---
+
+<section class="mt-16 space-y-12">
+  
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan de l'étape 02
+      </h3>
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Secrets Chiffrés :</strong> Protection native des mots de passe dans l'AD via le chiffrement Windows LAPS.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Rotation Automatique :</strong> Renouvellement des secrets tous les <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">30 jours</code> sans action manuelle.</span>
+        </li>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Anti-Lateral Movement :</strong> Chaque machine possède un secret unique, bloquant la propagation d'une compromission locale.</span>
+        </li>
+      </ul>
+    </div>
+    
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 filter drop-shadow-lg">🔐</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Secrets Sécurisés</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Gestion des MSP locales</p>
+        </div>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto text-center space-y-4 px-4">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
+      "La sécurité d'un domaine ne se limite pas à ses comptes privilèges ; elle commence par la neutralisation des accès locaux qui servent de tremplin aux attaquants."
+    </p>
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+  </div>
+
+</section>
+
+<NextStep 
+  href="/projets/methode-agdlp" 
+  title="Méthode AGDLP : Gestion des groupes et accès" 
+/>

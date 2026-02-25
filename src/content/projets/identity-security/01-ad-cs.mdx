@@ -59,20 +59,20 @@ Je déploie une **Autorité de certification d’entreprise racine**, intégrée
 Pour garantir une sécurité à long terme, j'ai configuré des paramètres supérieurs aux standards actuels :
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
-  <div class="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
-    <div class="flex items-center gap-2 mb-2">
-      <span class="text-blue-600 font-bold">💎</span>
-      <h4 class="bg-amber-500/20 text-amber-400 p-2 rounded-lg text-xs font-bold">>Clé RSA 4096 bits</h4>
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-5 rounded-2xl shadow-sm transition-transform hover:scale-[1.02]">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="text-xl">💎</span>
+      <h4 style="color: #f59e0b;" class="text-[10px] font-black uppercase tracking-tighter bg-amber-500/10 px-2 py-1 rounded-md">Clé RSA 4096 bits</h4>
     </div>
-    <p class="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed">Doublement de la taille standard pour une résistance accrue au bruteforce.</p>
+    <p style="color: var(--text-main);" class="text-[11px] leading-relaxed">Doublement de la taille standard pour une résistance accrue au bruteforce et une longévité de la racine étendue.</p>
   </div>
   
-  <div class="p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl">
-    <div class="flex items-center gap-2 mb-2">
-      <span class="text-blue-600 font-bold">🔒</span>
-      <h4 class="bg-amber-500/20 text-amber-400 p-2 rounded-lg text-xs font-bold">>Hachage SHA512</h4>
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-5 rounded-2xl shadow-sm transition-transform hover:scale-[1.02]">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="text-xl">🔒</span>
+      <h4 style="color: #f59e0b;" class="text-[10px] font-black uppercase tracking-tighter bg-amber-500/10 px-2 py-1 rounded-md">Hachage SHA512</h4>
     </div>
-    <p class="text-[10px] text-slate-600 dark:text-white/60 leading-relaxed">Utilisation d'un algorithme de hachage de pointe, au-delà du SHA256 standard.</p>
+    <p style="color: var(--text-main);" class="text-[11px] leading-relaxed">Utilisation d'un algorithme de hachage de pointe, garantissant l'intégrité des certificats émis face aux attaques collisionnelles.</p>
   </div>
 </div>
 
@@ -139,18 +139,31 @@ Depuis les <strong>propriétés de la CA</strong>, onglet <em>Audit</em>, j’ai
 Cette configuration permet de garantir qu’aucune action administrative sur la CA ne puisse être effectuée sans laisser de trace exploitable dans les journaux de sécurité.
 </p>
 
----
+
 
 #### 🔐 Délégation maîtrisée des droits sur la CA
 
 Dans une logique de <strong>moindre privilège</strong>, j’ai modifié l’onglet <em>Sécurité</em> de la CA afin de déléguer uniquement les droits nécessaires au compte dédié <code class="text-xs font-mono">adm-pki</code>.
 
-Les autorisations accordées sont strictement limitées à :
 
-<ul class="list-disc ml-6 mt-3 space-y-1">
-  <li>Lire : Permet d'ouvrir la console et de voir la configuration</li>
-  <li>Gérer et émettre les certificats : permet d'approuver ou de révoquer un certificat</li>
-</ul>
+<div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="rounded-2xl p-6 my-10 overflow-hidden relative">
+  <div class="absolute top-0 right-0 p-4 opacity-5 text-4xl"></div>
+  <h4 style="color: var(--text-title);" class="text-sm font-bold mb-4 flex items-center gap-2">Permissions sur la CA : <code style="color: var(--text-purple);">adm-pki</code></h4>
+  <div class="space-y-3">
+    <div class="flex items-center justify-between p-3 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5">
+      <span class="text-xs" style="color: var(--text-main);">Lire / Consulter la configuration</span>
+      <span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded">ACCORDÉ</span>
+    </div>
+    <div class="flex items-center justify-between p-3 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5">
+      <span class="text-xs" style="color: var(--text-main);">Gérer / Émettre les certificats</span>
+      <span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded">ACCORDÉ</span>
+    </div>
+    <div class="flex items-center justify-between p-3 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5 opacity-50">
+      <span class="text-xs" style="color: var(--text-main);">Gérer l'autorité de certification</span>
+      <span class="text-[10px] font-bold text-red-500 bg-red-500/10 px-2 py-1 rounded font-mono italic">REFUSÉ (Moindre privilège)</span>
+    </div>
+  </div>
+</div>
 
 <div style="display: flex; justify-content: center; margin: 3rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
@@ -164,7 +177,9 @@ Cette approche permet une séparation claire entre la décision humaine et l’e
 </p>
 
 
-Enfin, afin de vérifier la cohérence globale de la configuration et des descripteurs de sécurité, j’ai utilisé la commande suivante :
+<p class="mt-4" style="color: var(--text-main);">
+  Enfin, j'ai vérifié la cohérence globale de la configuration et des descripteurs de sécurité avec la commande <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">certutil</code>. Ce rapport détaillé des permissions me permet de garantir l'absence de privilèges excessifs et de valider l'intégrité de la racine de confiance.
+</p>
 
 <div class="my-10">
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
@@ -172,10 +187,6 @@ Enfin, afin de vérifier la cohérence globale de la configuration et des descri
   <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vérification des descripteurs de sécurité et des permissions globales via certutil</p>
   </div>
 </div>
-
-<p class="mt-4">
-Cette vérification indépendante permet de confirmer l’absence de privilèges inattendus et de valider la conformité de la délégation appliquée.
-</p>
 
 ---
 
@@ -285,48 +296,50 @@ Cette présence confirme que :
   <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
     <img src="/images/projets/identity-security/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" class="rounded-xl w-full max-w-3xl h-auto" />
   </div>
-  <p class="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40 italic">Le certificat est bien présent et valide dans le magasin de confiance local.</p>
+  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le certificat est bien présent et valide dans le magasin de confiance local.</p>
 </div>
 
 ---
 
 <section class="mt-16 space-y-12">
   
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-sm">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
-      <h3 class="text-xl font-black mb-4 flex items-center gap-2 text-slate-900 dark:text-white">
+      <h3 style="color: var(--text-title);" class="text-xl font-black mb-4 flex items-center gap-2">
         <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : AD CS
       </h3>
       <ul class="space-y-3">
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Confiance établie :</strong> Racine RSA 4096 / SHA512 déployée avec succès.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Confiance établie :</strong> Racine <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded">RSA 4096 / SHA512</code> déployée avec succès.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
-          <span><strong>Sécurité :</strong> Rôles séparés entre machine et humain.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Sécurité :</strong> Rôles séparés entre machine et humain (Modèle RBAC).</span>
         </li>
-        <li class="flex items-start gap-3 text-sm text-slate-700 dark:text-white/80">
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
           <span><strong>Santé validée :</strong> AIA/CDP opérationnels et certificat visible dans le magasin local.</span>
         </li>
       </ul>
     </div>
     
-    <div class="hidden md:flex justify-center border-l border-slate-200 dark:border-white/10 pl-8 text-center">
-       <div>
-          <div class="text-4xl mb-2">📜</div>
-          <p class="text-[10px] uppercase tracking-widest font-black text-slate-900 dark:text-white/60">Brique de confiance prête</p>
-          <p class="text-[9px] text-slate-500 mt-1 italic">Flux critiques à sécuriser</p>
-       </div>
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 transition-transform hover:scale-110 duration-300">📜</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-[0.2em] font-black opacity-60">Brique de confiance prête</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Flux critiques à sécuriser</p>
+        </div>
     </div>
   </div>
 
   <div class="max-w-2xl mx-auto text-center space-y-6 px-4">
-    <p class="text-base leading-relaxed text-slate-800 dark:text-white/90 italic">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
       "La PKI interne est désormais opérationnelle, segmentée et auditée. Elle constitue la fondation nécessaire pour transformer notre annuaire en un service LDAPS chiffré."
     </p>
     
-    <div class="space-y-4">
-      <p class="text-sm text-slate-500 dark:text-white/50">
-        Objectif suivant : Sécuriser les échanges d'annuaire ( LDAPS ).
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+
+    <div class="space-y-2">
+      <p style="color: var(--text-muted);" class="text-sm">
+        <strong>Objectif suivant :</strong> Activer le <strong>LDAPS</strong> pour sécuriser les requêtes d'annuaire et protéger les identifiants sur le réseau.
       </p>
     </div>
   </div>
@@ -335,5 +348,5 @@ Cette présence confirme que :
 
 <NextStep 
   href="/projets/ldaps" 
-  title="Sécuriser les échanges d'annuaire" 
+  title="Activer le LDAPS et sécuriser les échanges d'annuaire" 
 />
