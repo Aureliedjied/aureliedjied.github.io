@@ -1,0 +1,163 @@
+---
+title: "Wizard OPNsense : Configuration initiale et connectivité"
+description: "Paramétrage du hostname, sécurisation de l'accès root et tests de connectivité (Ping) vers le LAN et Internet."
+category: "opnsense"
+tags: ["OpnSense", "Réseau", "Configuration", "Wizard"]
+serie: "firewalling-edge"
+serieOrder: 2
+pubDate: 2026-02-01
+slug: "opnsense-wizard"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+
+<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70 italic">
+Après l'installation du système, le Wizard OPNsense nous guide pas-à-pas pour les réglages fondamentaux.  
+Ici, nous associons notre pare-feu au domaine <strong>infra.formation.local</strong> et préparons le LAN/WAN pour notre lab.
+</p>
+
+---
+
+## 🧙‍♂️ Étape 1 : Le Wizard de configuration initiale
+
+Le Wizard permet de passer en revue tous les paramètres essentiels sans rien oublier. Voici la progression de ma configuration :
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 my-10">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/wizard/6.png" alt="Étape 6 - Introduction Wizard OPNsense" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">Introduction du Wizard</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/wizard/7.png" alt="Étape 7 - Hostname et NTP" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">Hostname : <code>OPNsense-01.infra.formation.local</code>, fuseau Europe/Paris et serveur NTP</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/wizard/8.png" alt="Étape 8 - Configuration WAN" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">Configuration WAN : IP statique et passerelle</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/wizard/9.png" alt="Étape 9 - Vérification LAN" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">Vérification de l'IP LAN (10.0.1.252) et désactivation du DHCP</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/wizard/10.png" alt="Étape 10 - Paramètres DNS" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">Pas de serveur DNS supplémentaire ; optimisation pour IPsec</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/wizard/11.png" alt="Étape 11 - Mot de passe root" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">Confirmation du mot de passe root pour sécuriser l’accès</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/wizard/12.png" alt="Étape 12 - Fin Wizard" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">Configuration terminée et application des paramètres</p>
+  </div>
+</div>
+
+<h3 class="mt-10 text-lg font-semibold flex items-center gap-2">
+  🔍 Points critiques configurés
+</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+
+  <div class="rounded-xl border border-white/10 p-5 bg-white/5 backdrop-blur-sm">
+    <h4 class="font-semibold text-sm mb-2">🌐 DNS Servers</h4>
+    <p class="text-xs leading-relaxed opacity-80">
+      Résolveur configuré : <code>1.1.1.1</code>.  
+      L’option <em>"Allow DNS server list to be overridden by DHCP/PPP on WAN"</em> est décochée afin de conserver le contrôle sur les serveurs DNS.
+    </p>
+  </div>
+
+  <div class="rounded-xl border border-white/10 p-5 bg-white/5 backdrop-blur-sm">
+    <h4 class="font-semibold text-sm mb-2">🚪 Interface WAN</h4>
+    <p class="text-xs leading-relaxed opacity-80">
+      L’option <em>"Block private networks"</em> est décochée pour autoriser la connectivité lorsque le WAN est situé derrière une box (double NAT).
+    </p>
+  </div>
+
+  <div class="rounded-xl border border-white/10 p-5 bg-white/5 backdrop-blur-sm">
+    <h4 class="font-semibold text-sm mb-2">⏱ Synchronisation horaire</h4>
+    <p class="text-xs leading-relaxed opacity-80">
+      La synchronisation NTP est essentielle pour garantir la validité des logs, des certificats et des futures connexions VPN.
+    </p>
+  </div>
+
+</div>
+
+## ⚡ Étape 2 : Validation de la connectivité
+
+Une fois le Wizard terminé, nous testons le trafic depuis le poste client du LAN (SEG-SRV, IP 10.0.1.50).
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-2xl">
+    <img 
+      src="/images/projets/firewalling-edge/opnsense/wizard/13.png" 
+      alt="Étape 13 - Test Ping LAN/WAN"
+      class="rounded-lg border border-white/10 shadow-md w-full object-contain"
+    />
+    <p class="text-[0.65rem] opacity-50 mt-2 italic text-center">
+      Succès : Ping vers la gateway (10.0.1.252) et vers Internet (8.8.8.8) via le NAT.
+    </p>
+  </div>
+</div>
+
+---
+
+## 📊 Étape 3 : Dashboard final
+
+Le tableau de bord confirme que tout est opérationnel.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-2xl">
+    <img 
+      src="/images/projets/firewalling-edge/opnsense/wizard/14.png" 
+      alt="Étape 14 - Dashboard OPNsense"
+      class="rounded-lg border border-white/10 shadow-md w-full object-contain"
+    />
+    <p class="text-[0.65rem] opacity-50 mt-2 italic text-center">
+      Interfaces actives, CPU/RAM stables. Le firewall est prêt pour la segmentation VLAN.
+    </p>
+  </div>
+</div>
+
+---
+
+<section class="mt-16 space-y-12">
+
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan de la configuration
+      </h3>
+      <ul class="space-y-3 text-sm">
+        <li><strong>Identité réseau :</strong> Hostname et domaine <code>infra.formation.local</code> appliqués</li>
+        <li><strong>Services de base :</strong> DNS externe et synchronisation NTP opérationnels</li>
+        <li><strong>Sécurité d'accès :</strong> Mot de passe administrateur root durci</li>
+        <li><strong>Connectivité :</strong> Sortie LAN vers WAN validée par tests de Ping</li>
+      </ul>
+    </div>
+    
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 filter drop-shadow-lg">⚙️</div>
+          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Configuration validée</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Prêt pour la segmentation par VLANs</p>
+        </div>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto text-center space-y-4 px-4">
+    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
+      "La configuration initiale n'est pas qu'une formalité : c'est le moment où l'on définit l'autorité et l'identité du pare-feu sur le réseau."
+    </p>
+    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
+  </div>
+
+</section>
+
+---
+
+<NextStep 
+  href="/projets/opnsense-vlans" 
+  title="Segmentation Réseau : Création des VLANs et règles de Firewall" 
+/>
