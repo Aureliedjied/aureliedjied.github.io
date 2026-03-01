@@ -23,6 +23,7 @@ const projets = defineCollection({
       'governance-access',
       'client-security',
       'network-security',
+      'firewalling-edge',
       'monitoring',
       'itsm'
     ]).optional(),
@@ -32,6 +33,7 @@ category: z.enum([
       'windows-server',
       'windows-client', 
       'linux',
+      'opnsense',
       'pfsense',
       'zabbix'
     ]).optional(),

@@ -209,7 +209,7 @@ Certaines modifications sont irréversibles. J'ai effectué un snapshot à froid
 
 ---
 
-## 🧾 Bilan : Une infrastructure prête pour l'audit
+## 🧾 Bilan : Une infrastructure prête 
 
 <p class="mt-4">
 Cette structure est conforme aux standards industriels et permet :
@@ -259,35 +259,33 @@ Cette structure est conforme aux standards industriels et permet :
   <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
       <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
-        <span class="text-green-500">✅</span> Bilan de l'étape 01
+        <span class="text-green-500">✅</span> Bilan de l'étape 02 : Structuration AD
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Isolation des Tiers :</strong> Séparation hermétique entre l'administration (<code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">T0</code>) et les postes de travail (<code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">T2</code>).</span>
+          <span><strong>Segmentation Site & Usage :</strong> Séparation nette entre sédentaires (Toulon), itinérants et nomades pour un ciblage GPO précis.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Automatisation :</strong> Redirection des nouveaux objets vers la zone de <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">Quarantaine</code> via <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">redircmp</code>.</span>
+          <span><strong>Hiérarchie Tiering :</strong> OUs protégées et organisées par niveaux de privilèges (T0, T1, T2) selon les recommandations ANSSI.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Gouvernance :</strong> Centralisation des comptes <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">gMSA</code> pour une gestion automatisée des services.</span>
+          <span><strong>Prêt pour l'AGDLP :</strong> Création des conteneurs dédiés aux groupes de rôles et de ressources pour une gestion des droits évolutive.</span>
         </li>
       </ul>
     </div>
     
-    {/* Forteresse - Correction Mobile et Thème */}
     <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
         <div class="text-center">
-          <div class="text-5xl mb-2 filter drop-shadow-lg">🏰</div>
+          <div class="text-5xl mb-2 filter drop-shadow-lg">🏗️</div>
           <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Architecture Validée</p>
-          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Modèle Tiering ANSSI</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Prêt pour le déploiement GPO</p>
         </div>
     </div>
   </div>
 
-  {/* Citation de transition */}
   <div class="max-w-2xl mx-auto text-center space-y-4 px-4">
     <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
-      "Une arborescence bien pensée est le socle de toute délégation de contrôle réussie. On ne sécurise pas ce que l'on ne peut pas segmenter."
+      "Une structure d'Unités d'Organisation bien pensée est le socle indispensable à toute stratégie de groupe (GPO) efficace et sécurisée."
     </p>
     <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
   </div>
