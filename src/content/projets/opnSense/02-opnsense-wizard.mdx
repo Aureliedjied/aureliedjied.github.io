@@ -86,7 +86,7 @@ Le Wizard permet de passer en revue tous les paramètres essentiels sans rien ou
 
 ## ⚡ Étape 2 : Validation de la connectivité
 
-Une fois le Wizard terminé, nous testons le trafic depuis le poste client du LAN (SEG-SRV, IP 10.0.1.50).
+Une fois le Wizard terminé, nous testons le trafic depuis le poste client du LAN (SEG-SRV, IP 10.0.1.50). Si ça répond, le câble virtuel (VMware) et l’ interface em1 sur OPN-01 sont opérationnels. On communique avec la "machine" spécifique.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-2xl">
@@ -96,7 +96,7 @@ Une fois le Wizard terminé, nous testons le trafic depuis le poste client du LA
       class="rounded-lg border border-white/10 shadow-md w-full object-contain"
     />
     <p class="text-[0.65rem] opacity-50 mt-2 italic text-center">
-      Succès : Ping vers la gateway (10.0.1.252) et vers Internet (8.8.8.8) via le NAT.
+      Succès : Ping vers la gateway (10.0.1.252) et vers Internet (8.8.8.8) OK
     </p>
   </div>
 </div>
@@ -115,7 +115,7 @@ Le tableau de bord confirme que tout est opérationnel.
       class="rounded-lg border border-white/10 shadow-md w-full object-contain"
     />
     <p class="text-[0.65rem] opacity-50 mt-2 italic text-center">
-      Interfaces actives, CPU/RAM stables. Le firewall est prêt pour la segmentation VLAN.
+      Interfaces actives, CPU/RAM stables. Le firewall est prêt pour le failover.
     </p>
   </div>
 </div>
@@ -141,23 +141,15 @@ Le tableau de bord confirme que tout est opérationnel.
         <div class="text-center">
           <div class="text-5xl mb-2 filter drop-shadow-lg">⚙️</div>
           <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Configuration validée</p>
-          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Prêt pour la segmentation par VLANs</p>
+          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Prêt pour le failover</p>
         </div>
     </div>
   </div>
 
-  <div class="max-w-2xl mx-auto text-center space-y-4 px-4">
-    <p style="color: var(--text-main);" class="text-base leading-relaxed italic opacity-90">
-      "La configuration initiale n'est pas qu'une formalité : c'est le moment où l'on définit l'autorité et l'identité du pare-feu sur le réseau."
-    </p>
-    <div style="background-color: var(--purple-border);" class="h-px w-24 mx-auto"></div>
-  </div>
-
 </section>
 
----
 
 <NextStep 
-  href="/projets/opnsense-vlans" 
-  title="Segmentation Réseau : Création des VLANs et règles de Firewall" 
+  href="/projets/opnsense-cluster" 
+  title="Haute disponibilité Failover" 
 />

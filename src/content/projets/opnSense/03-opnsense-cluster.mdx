@@ -1,0 +1,329 @@
+---
+title: "Haute Disponibilité : Préparation du Cluster et Clonage"
+description: "Mise en place du lien de synchronisation (SYNC), clonage de la VM et adressage IP du second nœud pour le futur basculement (Failover)."
+category: "opnsense"
+tags: ["OpnSense", "Cluster", "Failover", "Sécurité"]
+serie: "firewalling-edge"
+serieOrder: 3
+pubDate: 2026-02-05
+slug: "opnsense-cluster"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+
+<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70 italic">
+Un pare-feu unique est un point de défaillance critique (SPOF). 
+Dans cet article, nous préparons l'architecture <strong>Haute Disponibilité</strong> en ajoutant un lien de synchronisation dédié et en déployant un second nœud identique.
+</p>
+
+---
+
+## 🛡️ Le concept de Failover (Basculement)
+
+Le **Failover** garantit la continuité de service. Si le nœud maître (`OPNsense-01`) tombe, le nœud esclave (`OPNsense-02`) prend le relais de manière transparente. Pour y parvenir, les deux machines doivent partager leurs tables d'états via un lien physique dédié.
+
+---
+
+## 🔌 Étape 1 : Création du segment SYNC 
+
+Pour qu’un cluster fonctionne, les deux pare-feux doivent pouvoir se parler en permanence.
+
+On va donc leur créer un petit réseau privé dédié, uniquement utilisé pour qu’ils échangent leurs informations internes ( leurs tables d'états ).
+
+1. **VMware :** Ajout d'une carte réseau sur la VM connectée au segment LAN **SEG-SYNC**.
+2. **Assignation :** L'interface `em2` est détectée mais non assignée.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/1.png" alt="Ajout segment VM" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">1. Ajout du segment réseau sur la VM</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/2.png" alt="Interface em2 présente" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">2. em2 détectée dans les assignations</p>
+  </div>
+</div>
+
+3. **Configuration :** Nous l'activons sous le nom **CLUSTERSYNC**.
+4. **Optimisation :** Pour la clarté, les interfaces sont renommées : **AdministrationLAN** et **InternetWAN**.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/3.png" alt="Assignation CLUSTERSYNC" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">3. Assignation et renommage en CLUSTERSYNC</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/4.png" alt="Renommage interfaces" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">4. Activation de em2 et renommage global</p>
+  </div>
+</div>
+
+5. **Adressage :** Configuration de l'IP statique `172.16.0.1` sur le segment SYNC.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/5.png" alt="Configuration IP SYNC" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">5. Attribution de l'IP 172.16.0.1</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/6.png" alt="Vue ensemble propre" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">6. Vue d'ensemble des interfaces finalisée</p>
+  </div>
+</div>
+
+---
+
+## 👯 Étape 2 : Clonage du nœud maître
+
+<div class="rounded-xl border border-amber-500/20 p-5 bg-amber-500/5 my-6 flex items-start gap-4">
+  <div class="text-2xl">💡</div>
+
+  <div>
+    <h4 class="font-semibold text-amber-500 text-sm mb-1">Le Snapshot de sécurité</h4>
+    <p class="text-s leading-relaxed opacity-90">Avant de cloner ou de modifier les interfaces, prendre une <strong>Snapshot</strong> des VMs saines est important. En cas d'erreur de manipulation sur les IP ou d'un conflit ARP persistant, on pourra restaurer l'état initial en quelques secondes.</p>
+  </div>
+</div>
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img
+      src="/images/projets/firewalling-edge/opnsense/cluster/snapshot.png"
+      alt="Snapshot VMware avant clonage"
+      class="rounded-lg border border-white/10 shadow-sm w-full object-contain"
+    />
+
+    <p class="text-xs opacity-50 mt-2 italic text-center">Création d'un point de restauration nommé "POST-WIZARD-OK" sur OPNsense-01.</p>
+  </div>
+</div>
+
+Une fois le premier pare-feu prêt, on va simplement le dupliquer.
+
+Au lieu de réinstaller OPNsense et de tout reconfigurer à la main, on crée une copie complète de la machine existante. On gagne du temps… et on évite les erreurs.
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-10">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/7.png" alt="Menu Cloner" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">7. Accès au menu de clonage</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/8.png" alt="Clone from state" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">8. Choix 'Clone from current state'</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/9.png" alt="Full Clone" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">9. Sélection 'Create a full clone'</p>
+  </div>
+</div>
+
+Nous baptisons cette nouvelle VM **OPNSENSE-02** 
+
+---
+
+
+## ⌨️ Étape 3 : Ré-adressage via la console
+
+CARP permet aux deux pare-feux de partager une seule adresse IP visible par les clients.
+
+C’est cette IP “virtuelle” qui servira de passerelle.  
+Peu importe quel pare-feu est actif : les machines continueront d’utiliser la même adresse.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/11.png" alt="Console avant" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">11. Interfaces avant changement (doublons)</p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/12.png" alt="Console après" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">12. Interfaces après attribution du .253 et .2</p>
+  </div>
+</div>
+
+Le changement d'IP est effectif : nous pouvons désormais piloter OPNsense-02 depuis notre navigateur à l'adresse http://10.0.1.253, indépendamment du premier nœud, et ce, sur le mêm eposte de travail.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-2xl">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/13.png" alt="GUI OPN-02" class="rounded-lg border border-white/10 shadow-md w-full" />
+    <p class="text-[0.65rem] opacity-50 mt-2 italic text-center">13. Succès : Accès à l'interface de OPNSENSE-02 via 10.0.1.253</p>
+  </div>
+</div>
+
+---
+
+
+## 🧠 Étape 4 : Configuration du CARP (IP Virtuelles)
+
+Le protocole **CARP** (Common Address Redundancy Protocol) permet à nos deux pare-feux de partager une adresse IP commune (la VIP). C'est cette adresse "virtuelle" qui servira de passerelle (Gateway) aux clients du réseau.
+
+<div class="rounded-xl border border-blue-500/20 p-5 bg-blue-500/5 my-6 flex items-start gap-4">
+  <div class="text-2xl">💡</div>
+  <div>
+    <h4 class="font-semibold text-blue-500 text-sm mb-1">Le rôle de l'AdvSkew</h4>
+    <p class="text-s leading-relaxed opacity-90">
+      L'<strong>AdvSkew</strong> définit la priorité : sur le Maître, on le laisse à <strong>0 ou 1</strong> pour qu'il s'annonce immédiatement. Sur le second, le backup, on le monte à <strong>100</strong> pour qu'il attende avant de prendre la main.
+    </p>
+  </div>
+</div>
+
+### 4.1. Configuration sur le Maître (OPNsense-01)
+
+Sur le premier nœud, nous créons les adresses virtuelles pour le LAN et le WAN. Elles doivent être dans le même sous-réseau que les IP physiques.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img
+      src="/images/projets/firewalling-edge/opnsense/cluster/14.png"
+      alt="Configuration des VIP CARP sur le maître"
+      class="rounded-lg border border-white/10 shadow-sm w-full object-contain"
+    />
+    <p class="text-xs opacity-50 mt-2 italic text-center">Configuration des VIP : VHID 1 (LAN) et VHID 2 (WAN) avec AdvSkew à 0.</p>
+  </div>
+</div>
+
+### 4.2. État sur le Secondaire (OPNsense-02)
+
+Grâce à la synchronisation XMLRPC (étape suivante), les adresses IP virtuelles apparaissent automatiquement sur le deuxième pare-feu, mais avec un statut différent.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img
+      src="/images/projets/firewalling-edge/opnsense/cluster/15.png"
+      alt="Statut CARP sur le nœud secondaire"
+      class="rounded-lg border border-white/10 shadow-sm w-full object-contain"
+    />
+    <p class="text-xs opacity-50 mt-2 italic text-center">Statut CARP : Le nœud secondaire est bien en mode BACKUP grâce au Skew de 100.</p>
+  </div>
+</div>
+
+<div class="rounded-xl border border-white/10 p-4 bg-white/5 my-6 text-sm">
+  <strong>📝 Résumé :</strong>
+  <ul class="list-disc list-inside mt-2 opacity-80">
+    <li><strong>VHID :</strong> Identifiant unique par interface (LAN=1, WAN=2).</li>
+    <li><strong>Passerelle :</strong> Les clients utiliseront la .254 comme Gateway.</li>
+  </ul>
+</div>
+
+
+## 🔄 Étape 5 : Synchronisation XMLRPC
+
+Pour éviter de configurer chaque règle deux fois, nous activons la réplication automatique. Le nœud Maître va "pousser" sa configuration vers l'Esclave via le lien **SYNC** dédié.
+
+<div class="rounded-xl border border-green-500/20 p-5 bg-green-500/5 my-6 flex items-start gap-4">
+  <div>
+    <h4 class="font-semibold text-green-500 text-sm mb-1">Automatisation</h4>
+    <p class="text-xs leading-relaxed opacity-90">
+      Grâce au protocole <strong>XMLRPC</strong>, toute modification (règles de firewall, alias, NAT) effectuée sur le Maître est instantanément répercutée sur l'Esclave.
+    </p>
+  </div>
+</div>
+
+### 5.1. Paramétrage du flux de synchronisation
+
+Sur **OPNsense-01**, rendez-vous dans `Système > Haute-disponibilité > Paramètres`. Nous devons cibler l'IP physique du second pare-feu sur le segment privé.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img
+      src="/images/projets/firewalling-edge/opnsense/cluster/16.png"
+      alt="Configuration du serveur distant pour la synchro XMLRPC"
+      class="rounded-lg border border-white/10 shadow-sm w-full object-contain"
+    />
+    <p class="text-xs opacity-50 mt-2 italic text-center">Cible : 172.16.0.2 (IP de l'interface SYNC d'OPN-02).</p>
+  </div>
+</div>
+
+### 5.2. Sélection des services à synchroniser
+
+Il est crucial de cocher les éléments que l'on souhaite dupliquer. Pour un cluster standard, on sélectionne au minimum : *Firewall Rules, NAT, Aliases et Virtual IPs*.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img
+      src="/images/projets/firewalling-edge/opnsense/cluster/17.png"
+      alt="Options de synchronisation XMLRPC"
+      class="rounded-lg border border-white/10 shadow-sm w-full object-contain"
+    />
+    <p class="text-xs opacity-50 mt-2 italic text-center">Sélection des options de réplication sur OPN-01.</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <div class="p-4 rounded-lg bg-white/5 border border-white/10">
+    <span class="text-blue-400 font-bold text-xs uppercase">Destination</span>
+    <p class="text-sm mt-1">L'IP <strong>172.16.0.2</strong> (Interface SYNC de l'esclave).</p>
+  </div>
+  <div class="p-4 rounded-lg bg-white/5 border border-white/10">
+    <span class="text-blue-400 font-bold text-xs uppercase">Authentification</span>
+    <p class="text-sm mt-1">Utilisation du compte <strong>root</strong> de l'esclave.</p>
+  </div>
+</div>
+
+---
+
+
+## 🧪 Étape 6 : Validation et Tests de connectivité
+
+C’est le moment de tester si tout fonctionne vraiment.
+
+Depuis notre poste client (10.0.1.50), on va vérifier que chaque étape du réseau répond correctement.
+
+### 6.1. Vérification de la sortie Internet
+
+On commence par vérifier que la sortie Internet fonctionne bien à travers le cluster.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img
+      src="/images/projets/firewalling-edge/opnsense/cluster/18.png"
+      alt="Test de ping vers internet"
+      class="rounded-lg border border-white/10 shadow-sm w-full object-contain"
+    />
+    <p class="text-xs opacity-50 mt-2 italic text-center">Succès : Le client accède au Web via la VIP 10.0.1.254.</p>
+  </div>
+</div>
+
+### 6.2. Le test ultime : Le Failover (Basculement)
+Pour simuler une panne matérielle, nous lançons un ping continu sur l'IP virtuelle (**10.0.1.254**) puis nous éteignons brutalement la VM **OPNsense-01**. Nous avons eu une petite coupure, une perte de paquet de 5% avant que le backup reprenne le relai.
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img
+      src="/images/projets/firewalling-edge/opnsense/cluster/19.png"
+      alt="Test de basculement CARP"
+      class="rounded-lg border border-white/10 shadow-sm w-full object-contain"
+    />
+    <p class="text-xs opacity-50 mt-2 italic text-center">Observation : Une seule perte de paquet (Timeout) avant la reprise par le backup.</p>
+  </div>
+</div>
+
+---
+
+
+<section class="mt-16 space-y-12">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-blue-500">🏗️</span> État de l'infrastructure
+      </h3>
+        <ul class="space-y-3 text-sm">
+            <li><strong>Redondance matérielle :</strong> Deux instances OPNsense indépendantes.</li>
+            <li><strong>IP Virtuelles (VIP) :</strong> Passerelles <code>.254</code> actives sur LAN et WAN.</li>
+            <li><strong>Synchronisation :</strong> Réplication XMLRPC opérationnelle via le lien SYNC.</li>
+            <li><strong>Continuité :</strong> Failover validé par test de coupure réelle.</li>
+        </ul>
+    </div>
+    
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+        <div class="text-center">
+          <div class="text-5xl mb-2 filter drop-shadow-lg">🤝</div>
+            <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Cluster Opérationnel</p>
+            <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">La haute disponibilité est maintenant une réalité</p>
+        </div>
+    </div>
+  </div>
+</section>
+
+<NextStep 
+  href="/projets/opnsense-vlan" 
+  title="Segmentation Réseau : Création et isolation des VLANs" 
+/>

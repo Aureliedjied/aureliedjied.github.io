@@ -57,8 +57,8 @@ export const SERIES: Record<string, Serie> = {
     color: "#e81123" 
   },
   "firewalling-edge": {
-      title: "Sécurité Périmétrique (pfSense / OPNsense)",
-      description: "Mise en place de pare-feu, filtrage, sous-réseaux et tunnels VPN sécurisés pour le télétravail.",
+      title: "Sécurité Périmétrique avec OPNsense",
+      description: "Mise en place de pare-feu, filtrage, failover, sous-réseaux et tunnels VPN sécurisés pour le télétravail.",
       icon: "security",
       color: "#e81123"
     },
