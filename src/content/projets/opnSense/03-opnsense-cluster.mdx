@@ -14,14 +14,14 @@ import NextStep from '../../../components/NextStep.astro';
 
 <p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70 italic">
 Un pare-feu unique est un point de défaillance critique (SPOF). 
-Dans cet article, nous préparons l'architecture <strong>Haute Disponibilité</strong> en ajoutant un lien de synchronisation dédié et en déployant un second nœud identique.
+Dans cet article, l'objectif est de préparer l'architecture <strong>Haute Disponibilité</strong> en ajoutant un lien de synchronisation dédié et en déployant un second nœud identique.
 </p>
 
 ---
 
 ## 🛡️ Le concept de Failover (Basculement)
 
-Le **Failover** garantit la continuité de service. Si le nœud maître (`OPNsense-01`) tombe, le nœud esclave (`OPNsense-02`) prend le relais de manière transparente. Pour y parvenir, les deux machines doivent partager leurs tables d'états via un lien physique dédié.
+Le **Failover** garantit la continuité de service. Si le nœud maître (`OPNsense-01`) tombe, le nœud esclave (`OPNsense-02`) prend le relais de manière transparente. Pour y parvenir, les deux pare-feux doivent partager leurs tables d'états via un lien physique dédié.
 
 ---
 
@@ -29,10 +29,10 @@ Le **Failover** garantit la continuité de service. Si le nœud maître (`OPNsen
 
 Pour qu’un cluster fonctionne, les deux pare-feux doivent pouvoir se parler en permanence.
 
-On va donc leur créer un petit réseau privé dédié, uniquement utilisé pour qu’ils échangent leurs informations internes ( leurs tables d'états ).
+La création d'un réseau privé dédié permet aux deux pare-feux d'échanger leurs informations internes ( leurs tables d'états ).
 
 1. **VMware :** Ajout d'une carte réseau sur la VM connectée au segment LAN **SEG-SYNC**.
-2. **Assignation :** L'interface `em2` est détectée mais non assignée.
+2. **Assignation :** L'interface `em2` est détectée mais pas encore assignée.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -45,8 +45,8 @@ On va donc leur créer un petit réseau privé dédié, uniquement utilisé pour
   </div>
 </div>
 
-3. **Configuration :** Nous l'activons sous le nom **CLUSTERSYNC**.
-4. **Optimisation :** Pour la clarté, les interfaces sont renommées : **AdministrationLAN** et **InternetWAN**.
+3. **Configuration :** Je l'ai activée sous le nom **CLUSTERSYNC**.
+4. **Optimisation :** Pour plus de clarté, les interfaces sont également renommées : **AdministrationLAN** et **InternetWAN**.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -99,7 +99,7 @@ On va donc leur créer un petit réseau privé dédié, uniquement utilisé pour
 
 Une fois le premier pare-feu prêt, on va simplement le dupliquer.
 
-Au lieu de réinstaller OPNsense et de tout reconfigurer à la main, on crée une copie complète de la machine existante. On gagne du temps… et on évite les erreurs.
+Au lieu de réinstaller OPNsense et de tout reconfigurer à la main, le clonage permet de créer une copie... Cela fait gagner du temps et évite les erreurs.
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -116,7 +116,7 @@ Au lieu de réinstaller OPNsense et de tout reconfigurer à la main, on crée un
   </div>
 </div>
 
-Nous baptisons cette nouvelle VM **OPNSENSE-02** 
+Cette nouvelle VM est nommée **OPNSENSE-02** .
 
 ---
 
@@ -139,7 +139,7 @@ Peu importe quel pare-feu est actif : les machines continueront d’utiliser la 
   </div>
 </div>
 
-Le changement d'IP est effectif : nous pouvons désormais piloter OPNsense-02 depuis notre navigateur à l'adresse http://10.0.1.253, indépendamment du premier nœud, et ce, sur le mêm eposte de travail.
+Le changement d'IP est effectif : Je peux désormais configurer OPNsense-02 depuis le navigateur à l'adresse http://10.0.1.253, indépendamment du premier nœud, et ce, sur le même poste de travail W10.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-2xl">
@@ -160,14 +160,14 @@ Le protocole **CARP** (Common Address Redundancy Protocol) permet à nos deux pa
   <div>
     <h4 class="font-semibold text-blue-500 text-sm mb-1">Le rôle de l'AdvSkew</h4>
     <p class="text-s leading-relaxed opacity-90">
-      L'<strong>AdvSkew</strong> définit la priorité : sur le Maître, on le laisse à <strong>0 ou 1</strong> pour qu'il s'annonce immédiatement. Sur le second, le backup, on le monte à <strong>100</strong> pour qu'il attende avant de prendre la main.
+      L'<strong>AdvSkew</strong> définit la priorité : sur le Maître, je le laisse à <strong>0</strong> pour qu'il s'annonce immédiatement. Sur le second, le backup, je le monte à <strong>100</strong> pour qu'il attende avant de prendre la main.
     </p>
   </div>
 </div>
 
 ### 4.1. Configuration sur le Maître (OPNsense-01)
 
-Sur le premier nœud, nous créons les adresses virtuelles pour le LAN et le WAN. Elles doivent être dans le même sous-réseau que les IP physiques.
+Sur le premier nœud, je définis les adresses virtuelles pour le LAN et le WAN. Elles doivent être dans le même sous-réseau que les IP physiques.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-xl">
@@ -206,7 +206,7 @@ Grâce à la synchronisation XMLRPC (étape suivante), les adresses IP virtuelle
 
 ## 🔄 Étape 5 : Synchronisation XMLRPC
 
-Pour éviter de configurer chaque règle deux fois, nous activons la réplication automatique. Le nœud Maître va "pousser" sa configuration vers l'Esclave via le lien **SYNC** dédié.
+Pour éviter de configurer chaque règle deux fois, j'active la réplication automatique. Le nœud Maître va "pousser" sa configuration vers l'Esclave via le lien **SYNC** dédié.
 
 <div class="rounded-xl border border-green-500/20 p-5 bg-green-500/5 my-6 flex items-start gap-4">
   <div>
@@ -219,7 +219,7 @@ Pour éviter de configurer chaque règle deux fois, nous activons la réplicatio
 
 ### 5.1. Paramétrage du flux de synchronisation
 
-Sur **OPNsense-01**, rendez-vous dans `Système > Haute-disponibilité > Paramètres`. Nous devons cibler l'IP physique du second pare-feu sur le segment privé.
+Sur **OPNsense-01**, rendez-vous dans `Système > Haute-disponibilité > Paramètres`. Le segment CLUSTERSYNC est séléctionné pour être synchronisé.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-xl">
@@ -234,7 +234,7 @@ Sur **OPNsense-01**, rendez-vous dans `Système > Haute-disponibilité > Paramè
 
 ### 5.2. Sélection des services à synchroniser
 
-Il est crucial de cocher les éléments que l'on souhaite dupliquer. Pour un cluster standard, on sélectionne au minimum : *Firewall Rules, NAT, Aliases et Virtual IPs*.
+Pour un cluster standard, je sélectionne au minimum : *Firewall Rules, NAT, Aliases et Virtual IPs*.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-xl">
@@ -265,11 +265,11 @@ Il est crucial de cocher les éléments que l'on souhaite dupliquer. Pour un clu
 
 C’est le moment de tester si tout fonctionne vraiment.
 
-Depuis notre poste client (10.0.1.50), on va vérifier que chaque étape du réseau répond correctement.
+Depuis le poste de travail (10.0.1.50), je vérifie que chaque étape du réseau répond correctement.
 
 ### 6.1. Vérification de la sortie Internet
 
-On commence par vérifier que la sortie Internet fonctionne bien à travers le cluster.
+Vérifier que la sortie Internet fonctionne bien à travers le cluster, malgré une micro-coupure :
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-xl">
@@ -283,7 +283,7 @@ On commence par vérifier que la sortie Internet fonctionne bien à travers le c
 </div>
 
 ### 6.2. Le test ultime : Le Failover (Basculement)
-Pour simuler une panne matérielle, nous lançons un ping continu sur l'IP virtuelle (**10.0.1.254**) puis nous éteignons brutalement la VM **OPNsense-01**. Nous avons eu une petite coupure, une perte de paquet de 5% avant que le backup reprenne le relai.
+Pour simuler une panne matérielle, un ping continu est effectué sur l'IP virtuelle (**10.0.1.254**) pendant lequel la VM **OPNsense-01** est éteinte brutalement ( systemctl poweroff ). Seule une perte de paquet de 5% avant que le backup reprenne le relai est visible.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-xl">

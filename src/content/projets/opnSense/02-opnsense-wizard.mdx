@@ -14,7 +14,7 @@ import NextStep from '../../../components/NextStep.astro';
 
 <p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70 italic">
 Après l'installation du système, le Wizard OPNsense nous guide pas-à-pas pour les réglages fondamentaux.  
-Ici, nous associons notre pare-feu au domaine <strong>infra.formation.local</strong> et préparons le LAN/WAN pour notre lab.
+J'ai associé mon pare-feu au domaine <strong>infra.formation.local</strong> avant de commencer la configuration du LAN/WAN.
 </p>
 
 ---
@@ -86,7 +86,7 @@ Le Wizard permet de passer en revue tous les paramètres essentiels sans rien ou
 
 ## ⚡ Étape 2 : Validation de la connectivité
 
-Une fois le Wizard terminé, nous testons le trafic depuis le poste client du LAN (SEG-SRV, IP 10.0.1.50). Si ça répond, le câble virtuel (VMware) et l’ interface em1 sur OPN-01 sont opérationnels. On communique avec la "machine" spécifique.
+Une fois le Wizard terminé, je teste le trafic depuis le poste client du LAN (SEG-SRV, IP 10.0.1.50). Si ça répond, le câble virtuel (VMware) et l’ interface em1 sur OPN-01 sont opérationnels. Cela confirme la bonne communication avec la passerelle.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-2xl">

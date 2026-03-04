@@ -156,8 +156,7 @@ Pour chaque OU critique, l'option **"Protéger l'objet contre la suppression acc
 
 ## 📂 Étape 5 : Spécificités des comptes de service (gMSA)
 
-Dans l'OU `90_INFRA_SERVICES`, nous isolons les **gMSA** (group Managed Service Accounts) : Ce sont des comptes utilisés exclusivement par des logiciels ou des services Windows (ex: un service SQL Server, un backup Veeam, ou un agent de supervision). L'ANSSI recommande fortement leur usage car ils n'ont pas de mot de passe connu par l'humain (rotation automatique par l'AD). Cela permet d'appliquer des politiques ultra-restrictives : interdiction de session interactive et blocage du bureau à distance (RDP).
-
+Dans l'OU 90_INFRA_SERVICES, les gMSA sont isolés : ces comptes utilisés par des services Windows (SQL Server, backup Veeam, supervision…) n’ont pas de mot de passe humain et bénéficient d’une rotation automatique par l’AD, permettant des politiques strictes (pas de session interactive, RDP bloqué).
 ---
 
 ## 🛡️ Étape 6 :  Sécurisation de la chaîne de confiance (Tier 0)
@@ -165,8 +164,7 @@ Dans l'OU `90_INFRA_SERVICES`, nous isolons les **gMSA** (group Managed Service 
 Bien que des politiques d'audit soient définies à la racine du domaine, j'ai fait le choix stratégique de **lier explicitement** la GPO de durcissement (`DOM - S - Advanced_Auditing`) directement à l'OU **`00_T0_ADMIN`**.
 
 **Pourquoi cette double liaison ?**
-* **Résilience** : En cas de désactivation accidentelle de l'héritage ("Block Inheritance"), le Tier 0 reste sous surveillance stricte.
-* **Priorité** : Les réglages de haute verbosité (audit Kerberos, modifications d'ACLs) priment sur les réglages globaux du domaine.
+En cas de désactivation accidentelle de l'héritage, les réglages d’audit Kerberos et de modifications d’ACL priment sur ceux du domaine, garantissant une supervision stricte du Tier 0.
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
@@ -223,9 +221,7 @@ Cette structure est conforme aux standards industriels et permet :
       <span class="text-blue-500">🔑</span>
       <h3 style="color: var(--text-title);" class="font-bold text-lg tracking-tight">Délégation granulaire</h3>
     </div>
-    <p class="text-sm leading-relaxed opacity-90">
-      Les droits d'administration sont appliqués uniquement sur l'OU <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">02_PRODUCTION</code>, garantissant qu'aucune empreinte du <strong>Tier 0</strong> n'est exposée sur les postes de travail.
-    </p>
+    <p class="text-sm leading-relaxed opacity-90">Les droits d'administration sont appliqués uniquement sur l'OU 02_PRODUCTION, isolant totalement le Tier 0 des postes utilisateurs.</p>
   </div>
 
   {/* Carte 2 */}

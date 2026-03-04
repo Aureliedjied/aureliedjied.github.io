@@ -28,7 +28,7 @@ Les risques d’un LDAP non sécurisé incluent :
 - la divulgation d’informations d’annuaire  
 - l’interception ou la modification de requêtes d’authentification  
 
-Dans une infrastructure durcie suivant les recommandations de l’**ANSSI**, ces échanges doivent impérativement être protégés.
+Dans une infrastructure durcie selon les recommandations de l’ANSSI, il est recommandé de protéger ces échanges pour limiter l’exposition des identifiants et des données.
 
 Le passage au **LDAPS (LDAP over TLS – port 636)** permet d’assurer la confidentialité des communications.  
 Cette sécurisation repose directement sur :
@@ -242,9 +242,7 @@ L’affichage du **RootDSE** confirme que la session LDAP est établie via TLS.
   <h4 class="text-red-600 dark:text-red-400 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
     🛡️ Recommandation ANSSI : Signature Obligatoire
   </h4>
-  <p class="text-sm leading-relaxed mb-4" style="color: var(--text-main);">
-    Le simple chiffrement LDAPS ne suffit pas à protéger l'intégralité du trafic. En forçant la <strong>signature LDAP</strong>, on neutralise les attaques de type <em>Relay</em> et <em>Man-in-the-Middle</em> sur le port 389.
-  </p>
+  <p class="text-sm leading-relaxed mb-4" style="color: var(--text-main);">Dans ce lab, je force la signature LDAP afin de protéger contre les attaques de type Relay et Man-in-the-Middle sur le port 389</p>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div class="p-3 bg-white/5 rounded-xl border border-white/5">
       <p class="text-[10px] font-bold opacity-50 uppercase mb-1">Côté DC</p>
@@ -281,7 +279,7 @@ Cette étape marque la fin de la sécurisation du socle d’identité.
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Chiffrement actif :</strong> Port <code style="color: var(--text-purple);">636</code> ouvert et sécurisé via certificat RSA/SHA.</span>
+          <span><strong>Chiffrement actif :</strong> Port <code style="color: var(--text-purple);">636</code>Port 636 actif et chiffré via un certificat RSA/SHA</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
           <span><strong>Intégrité :</strong> Signature LDAP forcée, interdisant la circulation des identifiants en clair.</span>

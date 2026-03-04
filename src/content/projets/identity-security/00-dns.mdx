@@ -13,7 +13,7 @@ import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
 
 <p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
-Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est installé automatiquement. Cependant, seule la <strong>zone de recherche directe</strong> était configurée. Pour une infrastructure professionnelle, la <strong>zone de recherche inversée</strong> (Reverse DNS) est indispensable.
+Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est installé automatiquement. Pour obtenir une infrastructure cohérente et exploitable en environnement professionnel, j’ai ajouté une zone de recherche inversée.
 </p>
 
 <div class="my-8 p-6 bg-blue-50 dark:bg-blue-500/5 border-l-4 border-blue-500 rounded-r-xl">
@@ -105,7 +105,7 @@ Il est préférable d’activer la création automatique du pointeur pour évite
 ---
 ## 🌐 Étape 4 : Configuration des Redirecteurs et Validation
 
-Une fois les zones locales configurées, il est nécessaire de permettre au serveur de résoudre les noms de domaines externes (Internet). 
+Une fois les zones locales mises en place, j’ai ensuite configuré des redirecteurs afin de permettre au serveur de résoudre les noms externes.
 
 ### Pourquoi configurer des redirecteurs ?
 Mon contrôleur de domaine ne connaît que les machines de mon lab. Pour que les clients puissent naviguer sur le web, j'utilise des **redirecteurs DNS**. Le serveur local va ainsi interroger des résolveurs publics (comme ceux de Google ou Cloudflare) pour toutes les requêtes qu'il ne sait pas traiter lui-même.
@@ -133,7 +133,7 @@ Je termine par un test de cohérence. La résolution inverse doit maintenant fon
 
 <div class="mt-12 space-y-6 border-t border-slate-200 dark:border-white/10 pt-8 text-balance">
   <p class="text-sm leading-relaxed text-slate-700 dark:text-white/80 italic">
-    L'infrastructure réseau est désormais saine et capable de résoudre les identités dans les deux sens. Cette cohérence de nommage est le pilier du futur service <strong>LDAPS</strong>.
+    Cette configuration me permet d’obtenir une base propre avant le déploiement de <strong>LDAPS</strong>.
   </p>
   <p class="text-sm leading-relaxed text-slate-700 dark:text-white/80">
     Elle garantit que les clients pourront authentifier le serveur sans erreur de certificat (Hostname mismatch), permettant ainsi le passage d'un protocole LDAP en clair vers un canal chiffré et intègre.

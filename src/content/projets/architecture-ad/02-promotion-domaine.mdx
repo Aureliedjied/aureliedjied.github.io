@@ -162,7 +162,7 @@ Une fois le domaine opérationnel, il est crucial d'ajuster les paramètres par 
 
 ### Activation de la Corbeille Active Directory
 
-L'activation est réalisée en PowerShell. Le système demande une confirmation explicite car cette action est irréversible, marquant un point de non-retour dans la sécurisation de la disponibilité des objets.
+L'activation est réalisée en PowerShell. Le système demande une confirmation explicite car cette action est irréversible. Elle garantit la récupération des objets supprimés à l’échelle de la forêt.
 
 <div class="flex flex-col items-center my-8">
   <img src="/images/projets/architecture-ad/promo/active-recycle-bin.png" alt="PowerShell Activation Corbeille" class="rounded-lg border border-white/10 shadow-md w-full"/>
@@ -353,7 +353,7 @@ Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShe
     <div style="background-color: var(--card-bg); border: 1px solid var(--purple-border);" class="p-5 rounded-xl border-l-4">
       <h4 style="color: var(--text-purple);" class="text-xs font-black uppercase tracking-widest mb-2">Décision de Sécurité</h4>
         <p class="text-xs leading-relaxed">
-          En forçant l'<strong>AES-128</strong> et l'<strong>AES-256</strong> via la GPO, c'est comme si on remplaçait une vieille serrure à clé simple par un verrou de haute sécurité : même si un attaquant vole un ticket de connexion, il ne pourra pas le déchiffrer.
+          En forçant l'<strong>AES-128</strong> et l'<strong>AES-256</strong> via la GPO, c'est comme si on remplaçait une vieille serrure à clé simple par un verrou de haute sécurité : L’objectif est de limiter l’exposition aux attaques de type Kerberoasting en supprimant les algorithmes de chiffrement faibles.
         </p>
     </div>
   </div>

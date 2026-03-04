@@ -13,7 +13,6 @@ import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
 
 <p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
-Une arborescence propre ne suffit pas : sans méthode de gestion des accès, le risque de dérive des privilèges devient inévitable.  
 Le modèle <strong>AGDLP</strong> constitue la norme recommandée par Microsoft pour construire une gestion des droits robuste, évolutive et auditable.
 </p>
 
@@ -56,7 +55,7 @@ Droits NTFS ou applicatifs appliqués exclusivement aux groupes <strong>Domain L
 
 ## 📂 Étape 1.5 : Organisation structurelle des groupes
 
-Avant de créer le moindre groupe, j'ai segmenté mon annuaire pour séparer les rôles métiers des accès techniques.
+La segmentation de l'annuaire a été pensée pour séparer les rôles métiers des accès techniques.
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
   
@@ -130,9 +129,7 @@ Les groupes **Domain Local** ont été créés via PowerShell afin d’assurer u
 
 ## 🔗 Étape 4 : Vérification de l'imbrication des groupes
 
-<p class="mt-4 text-sm leading-relaxed text-slate-700 dark:text-white/70">
-L’imbrication matérialise la chaîne AGDLP : les groupes métier (Global) sont intégrés aux groupes d’accès (Domain Local), créant ainsi le lien contrôlé entre identité et ressource.
-</p>
+<p class="mt-4 text-sm leading-relaxed text-slate-700 dark:text-white/70">J’ai intégré les groupes métier (Global) aux groupes d’accès (Domain Local) pour matérialiser la chaîne AGDLP et contrôler le lien identité → ressource</p>
 
 <div class="flex flex-col items-center my-10">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
@@ -148,7 +145,8 @@ L’imbrication matérialise la chaîne AGDLP : les groupes métier (Global) son
 ## 🔍 Étape 5 : Validation par peuplement de test
 
 <p class="mt-4 text-sm leading-relaxed text-slate-700 dark:text-white/70">
-Une architecture n’a de valeur que si elle est testée : j’ai donc validé le modèle en simulant des affectations réelles afin de vérifier l’héritage et la cohérence des droits. 
+J’ai simulé des affectations réelles pour vérifier que l’utilisateur hérite correctement des permissions via la chaîne AGDLP.
+
 Résultat : Justin PORTANT est membre du groupe <strong>GG_DIRECTION</strong>, ce groupe étant lui-même membre du groupe <strong>DL_SHARE_DIRECTION_RW</strong>. 
 Il hérite donc automatiquement des permissions définies sur la ressource cible, sans qu’aucun droit individuel ne lui soit attribué.
 </p>

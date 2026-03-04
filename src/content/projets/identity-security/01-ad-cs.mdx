@@ -15,7 +15,7 @@ import NextStep from '../../../components/NextStep.astro';
 
 
 L’**Active Directory Certificate Services (AD CS)** constitue la fondation de la confiance numérique d’un environnement Windows.  
-Dans cette étape du lab, l’objectif n’est pas seulement d’installer une autorité de certification, mais de poser une **racine de confiance propre, maîtrisée et durcie**, capable de supporter les futurs besoins : authentification forte, LDAPS, chiffrement des services et authentification machine.
+Dans cette étape du lab, l’objectif n’est pas seulement d’installer une autorité de certification, mais de poser une **racine de confiance propre, maîtrisée et durcie** à mon lab, capable de supporter les futurs besoins : authentification forte, LDAPS, chiffrement des services et authentification machine.
 
 Le déploiement d'une **PKI (Public Key Infrastructure)** est donc abordé ici avec une logique de **sécurité, de traçabilité et de moindre privilège**.
 
@@ -45,9 +45,7 @@ Je commence par ajouter le rôle **Services de certificats Active Directory**. L
 
 <div class="flex items-center gap-4 p-4 bg-amber-50 dark:bg-amber-500/5 border-l-4 border-amber-400 rounded-r-xl my-8">
   <span class="text-2xl">❗</span>
-  <p class="text-xs text-amber-900 dark:text-amber-200 font-medium">
-    <strong>Règle d'or :</strong> Une autorité de certification ne doit jamais changer de nom ou de domaine après son déploiement, sous peine de rendre tous les certificats émis invalides.
-  </p>
+  <p class="text-xs text-amber-900 dark:text-amber-200 font-medium">J’ai veillé à ne jamais changer le nom ou le domaine de cette autorité de certification, car cela rendrait tous les certificats émis invalides.</p>
 </div>
 ---
 
@@ -172,9 +170,7 @@ Dans une logique de <strong>moindre privilège</strong>, j’ai modifié l’ong
   </div>
 </div>
 
-<p class="mt-4">
-Cette approche permet une séparation claire entre la décision humaine et l’exécution technique, tout en évitant l’utilisation de comptes administrateurs génériques.
-</p>
+<p class="mt-4">Cette approche me permet de séparer clairement la décision humaine de l’exécution technique, tout en évitant l’utilisation de comptes administrateurs génériques dans mon lab.</p>
 
 
 <p class="mt-4" style="color: var(--text-main);">
@@ -243,7 +239,7 @@ Pour terminer, j’utilise **PKIView (`pkiview.msc`)** afin de contrôler :
 - la validité des certificats d’autorité  
 - la disponibilité des points **AIA** et **CDP**
 
-Tous les indicateurs sont au vert : la chaîne de confiance est fonctionnelle et les points de distribution sont accessibles.
+Tous les indicateurs de mon environnement sont au vert, indiquant que la chaîne de confiance fonctionne et que les points de distribution sont accessibles.
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
   <div style="display: flex; flex-direction: column; align-items: center; max-width: 450px;">
