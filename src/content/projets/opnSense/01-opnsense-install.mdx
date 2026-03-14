@@ -4,7 +4,7 @@ description: "Configuration de la VM, installation du système sur ZFS et assign
 category: "opnsense"
 tags: ["OpnSense", "Réseau", "Sécurité", "Virtualisation"]
 serie: "firewalling-edge"
-serieOrder: 1
+serieOrder: 2
 pubDate: 2026-01-30
 slug: "opnsense-install"
 ---
@@ -168,7 +168,8 @@ Avant de lancer l'installation, il est important de **se connecter à l'installa
 
 Après le redémarrage, la console textuelle OPNsense s’affiche (interface noire et blanche). C’est via cette console que j'ai attribué correctement les interfaces réseau pour que le LAN puisse accéder au firewall.
 
-1. Taper l’option **2 – Assign Interfaces**  
+1. Taper l’option **1 – Assign Interfaces** 
+2. Choisir ensuite l'option **2 - Set interfaces**
 2. Sélectionner **1 – Configurer l’interface LAN** et assigner son IP fixe (`10.0.1.252/24`)  
 3. Sélectionner **2 – Configurer l’interface WAN** et assigner son IP fixe (`192.168.1.252/24`)  et sa passerelle (`192.168.1.1`)  
 
@@ -205,13 +206,18 @@ Une fois le redémarrage terminé, le firewall est accessible via son interface 
   <li><strong>Identifiants par défaut :</strong> <code>root / opnsense</code></li>
 </ul>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10 items-start">
   <div class="flex flex-col items-center">
-    <img src="/images/projets/firewalling-edge/opnsense/install/15.png" alt="Configuration IP du poste" class="rounded-lg border border-white/10 shadow-sm" />
+    <div class="w-full aspect-video flex items-center justify-center bg-slate-900/20 rounded-lg border border-white/10 overflow-hidden shadow-sm">
+      <img src="/images/projets/firewalling-edge/opnsense/install/15.png" alt="Configuration IP du poste" class="max-w-full max-h-full object-contain" />
+    </div>
     <p class="text-[0.65rem] opacity-50 mt-3 italic text-center">Poste client : IP fixe 10.0.1.50 sur le segment SEG-SRV.</p>
   </div>
+
   <div class="flex flex-col items-center">
-    <img src="/images/projets/firewalling-edge/opnsense/install/16.png" alt="Interface de connexion" class="rounded-lg border border-white/10 shadow-sm" />
+    <div class="w-full aspect-video flex items-center justify-center bg-slate-900/20 rounded-lg border border-white/10 overflow-hidden shadow-sm">
+      <img src="/images/projets/firewalling-edge/opnsense/install/16.png" alt="Interface de connexion" class="max-w-full max-h-full object-contain" />
+    </div>
     <p class="text-[0.65rem] opacity-50 mt-3 italic text-center">Succès : Accès à la GUI d'OPNsense via HTTPS.</p>
   </div>
 </div>

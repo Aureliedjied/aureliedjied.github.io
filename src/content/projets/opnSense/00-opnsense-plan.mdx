@@ -1,0 +1,293 @@
+---
+title: "Firewalling Edge : Architecture réseau et plan d'adressage"
+description: "Plan d'adressage complet, segmentation réseau VMware, rôle de chaque segment et fonctionnement d'ARP dans un environnement multi-segments."
+category: "opnsense"
+tags: ["Réseau", "Architecture", "Adressage", "ARP", "Segmentation", "VMware"]
+serie: "firewalling-edge"
+serieOrder: 1
+pubDate: 2026-01-28
+slug: "opnsense-plan"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+
+<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70 italic">
+Avant d'installer quoi que ce soit, une bonne infrastructure commence par un plan réseau clair.
+Cet article pose les fondations du lab : segmentation, adressage IP, rôle de chaque zone et fonctionnement d'ARP dans un environnement multi-interfaces.
+</p>
+
+---
+
+## 🗂️ Les segments réseau VMware
+
+Tous les réseaux internes de ce lab reposent sur la technologie **LAN Segment** de VMware Workstation — et non sur le mode Host-Only.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+  <div class="rounded-xl border border-purple-500/20 p-5 bg-purple-500/5">
+    <h4 class="font-semibold text-sm mb-2 text-purple-400">🔌 LAN Segment</h4>
+    <p class="text-xs leading-relaxed opacity-80">
+      Crée une <strong>bulle réseau entièrement isolée</strong> entre les VMs connectées. Aucun service DHCP VMware, aucune interface sur l'hôte Windows, aucun trafic parasite. C'est un simple câble virtuel "nu" — c'est OPNsense qui gère tout.
+    </p>
+  </div>
+  <div class="rounded-xl border border-orange-500/20 p-5 bg-orange-500/5">
+    <h4 class="font-semibold text-sm mb-2 text-orange-400">⚠️ Pourquoi pas Host-Only ?</h4>
+    <p class="text-xs leading-relaxed opacity-80">
+      Le mode Host-Only inclut un <strong>service DHCP VMware actif</strong> et crée une interface virtuelle sur l'hôte. Cela peut générer des conflits d'adressage ou de routage dès qu'OPNsense prend le rôle de passerelle. À éviter dans un lab où le pare-feu est souverain.
+    </p>
+  </div>
+</div>
+
+---
+
+## 🏘️ Les zones du lab et leur rôle
+
+Le lab est découpé en **5 segments distincts**, chacun correspondant à une zone logique avec des règles de flux spécifiques appliquées par OPNsense.
+
+<div class="overflow-x-auto my-8">
+  <table class="w-full text-sm border-collapse">
+    <thead>
+      <tr class="border-b border-white/10">
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">Segment</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">Réseau</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">Zone</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">VMs concernées</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">Rôle</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-blue-400">Bridge</td>
+        <td class="py-3 px-4 font-mono text-xs">192.168.1.0/24</td>
+        <td class="py-3 px-4 text-xs">WAN</td>
+        <td class="py-3 px-4 text-xs opacity-80">OPNsense-01/02</td>
+        <td class="py-3 px-4 text-xs opacity-80">Connexion directe à la box / Internet</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-green-400">SEG-SRV</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.1.0/24</td>
+        <td class="py-3 px-4 text-xs">LAN Serveurs</td>
+        <td class="py-3 px-4 text-xs opacity-80">AD-01, serveurs fichiers, infra</td>
+        <td class="py-3 px-4 text-xs opacity-80">Réseau de confiance — services internes critiques</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-sky-400">SEG-CLIENT</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.2.0/24</td>
+        <td class="py-3 px-4 text-xs">LAN Clients</td>
+        <td class="py-3 px-4 text-xs opacity-80">Postes utilisateurs</td>
+        <td class="py-3 px-4 text-xs opacity-80">Accès filtré vers SEG-SRV via OPNsense</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-amber-400">SEG-DMZ</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.3.0/24</td>
+        <td class="py-3 px-4 text-xs">DMZ</td>
+        <td class="py-3 px-4 text-xs opacity-80">Nextcloud, services exposés WAN</td>
+        <td class="py-3 px-4 text-xs opacity-80">Zone exposée — isolée de SEG-SRV</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-rose-400">SEG-MONITOR</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.4.0/24</td>
+        <td class="py-3 px-4 text-xs">Supervision</td>
+        <td class="py-3 px-4 text-xs opacity-80">Graylog ou Zabbix</td>
+        <td class="py-3 px-4 text-xs opacity-80">Collecte logs et métriques de toutes les zones</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-slate-400">SEG-SYNC</td>
+        <td class="py-3 px-4 font-mono text-xs">172.16.0.0/30</td>
+        <td class="py-3 px-4 text-xs">HA Sync</td>
+        <td class="py-3 px-4 text-xs opacity-80">OPNsense-01/02 uniquement</td>
+        <td class="py-3 px-4 text-xs opacity-80">Heartbeat CARP + réplication pfsync/XMLRPC</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+---
+
+## 📊 Table d'adressage complète
+
+OPNsense disposera de **6 interfaces** sur chaque nœud pour couvrir toutes les zones.
+
+<div class="overflow-x-auto my-8">
+  <table class="w-full text-sm border-collapse">
+    <thead>
+      <tr class="border-b border-white/10">
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">Interface OPNsense</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">OPNsense-01</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">OPNsense-02</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">VIP CARP</th>
+        <th class="text-left py-3 px-4 text-xs uppercase tracking-wider opacity-60">Masque</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5">
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-blue-400">InternetWAN</td>
+        <td class="py-3 px-4 font-mono text-xs">192.168.1.252</td>
+        <td class="py-3 px-4 font-mono text-xs">192.168.1.253</td>
+        <td class="py-3 px-4 font-mono text-xs text-amber-400">192.168.1.254</td>
+        <td class="py-3 px-4 font-mono text-xs">/24</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-green-400">AdministrationLAN</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.1.252</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.1.253</td>
+        <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.1.254</td>
+        <td class="py-3 px-4 font-mono text-xs">/24</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-sky-400">ClientsLAN</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.2.252</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.2.253</td>
+        <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.2.254</td>
+        <td class="py-3 px-4 font-mono text-xs">/24</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-amber-400">DMZ</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.3.252</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.3.253</td>
+        <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.3.254</td>
+        <td class="py-3 px-4 font-mono text-xs">/24</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-rose-400">Supervision</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.4.252</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.4.253</td>
+        <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.4.254</td>
+        <td class="py-3 px-4 font-mono text-xs">/24</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-slate-400">CLUSTERSYNC</td>
+        <td class="py-3 px-4 font-mono text-xs">172.16.0.1</td>
+        <td class="py-3 px-4 font-mono text-xs">172.16.0.2</td>
+        <td class="py-3 px-4 text-xs opacity-40 italic">aucune</td>
+        <td class="py-3 px-4 font-mono text-xs">/30</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="rounded-xl border border-white/10 p-4 bg-white/5 my-4 text-xs leading-relaxed opacity-80">
+  <strong>💡 Convention d'adressage :</strong> Les IPs physiques des nœuds OPNsense sont volontairement placées en <strong>.252 et .253</strong>, laissant toute la plage basse libre pour les VMs. Les VIPs CARP occupent le <strong>.254</strong> — c'est l'adresse que les machines du segment utilisent comme passerelle par défaut.
+</div>
+
+---
+
+## 🗺️ Topologie logique du lab
+
+<div class="not-prose my-10 p-6 sm:p-10 rounded-3xl border transition-all duration-300 shadow-2xl shadow-purple-500/5" 
+     style="background-color: var(--card-bg); border-color: var(--card-border);">
+  
+  <div class="flex flex-col items-center">
+    <div class="flex items-center gap-3 px-4 py-2 rounded-xl border" 
+         style="background-color: var(--bg-color); border-color: var(--card-border);">
+      <span class="text-sm">🌐</span>
+      <span class="text-[10px] font-bold font-mono tracking-tight" style="color: var(--text-title);">
+        Passerelle Box : 192.168.1.1
+      </span>
+    </div>
+    <div class="h-6 w-px opacity-20" style="background-color: var(--text-main);"></div>
+    <div class="px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/5 text-[9px] font-mono font-bold text-amber-500 uppercase">
+       VIP WAN : 192.168.1.254
+    </div>
+    <div class="h-6 w-px opacity-20" style="background-color: var(--text-main);"></div>
+  </div>
+
+  <div class="flex flex-col items-center mb-10">
+    <div class="w-full max-w-2xl p-6 rounded-2xl border-2 relative" 
+         style="border-color: var(--purple-border); background: linear-gradient(to bottom right, var(--card-bg), var(--bg-color));">
+      
+      <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white shadow-lg"
+           style="background-color: var(--text-purple);">
+        OPNsense Cluster
+      </div>
+      
+      <div class="flex justify-between items-center pt-2">
+        <div class="text-center space-y-1">
+          <p class="text-[11px] font-bold" style="color: var(--text-title);">OPN-01 (Master)</p>
+          <div class="text-[8px] font-mono opacity-60 leading-tight" style="color: var(--text-main);">
+            WAN: .252<br/>LAN: .252<br/>DMZ: .252
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center flex-1 mx-4">
+          <div class="text-[8px] font-bold uppercase tracking-tighter opacity-50 mb-1" style="color: var(--text-main);">Sync XMLRPC</div>
+          <div class="h-[1px] w-full max-w-[150px]" style="background: linear-gradient(to right, transparent, var(--text-purple), transparent);"></div>
+          <div class="text-[8px] font-mono mt-1 opacity-50" style="color: var(--text-purple);">172.16.0.1 ↔ .2</div>
+        </div>
+
+        <div class="text-center space-y-1">
+          <p class="text-[11px] font-bold opacity-70" style="color: var(--text-title);">OPN-02 (Backup)</p>
+          <div class="text-[8px] font-mono opacity-40 leading-tight" style="color: var(--text-main);">
+            WAN: .253<br/>LAN: .253<br/>DMZ: .253
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="h-8 w-px opacity-20" style="background-color: var(--text-main);"></div>
+  </div>
+
+  <div class="flex justify-center mb-6">
+    <div class="px-6 py-2 rounded-2xl border-dashed border-2 flex items-center gap-4" style="border-color: var(--purple-border); background-color: var(--bg-color);">
+        <span class="text-[10px] font-black uppercase" style="color: var(--text-purple);">Passerelles (VIP CARP)</span>
+        <span class="text-[10px] font-mono font-bold" style="color: var(--text-title);">10.0.x.254</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
+      <div class="text-lg mb-2">📁</div>
+      <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-SRV</h6>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.1.0/24</p>
+    </div>
+
+    <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
+      <div class="text-lg mb-2">💻</div>
+      <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-CLIENT</h6>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.2.0/24</p>
+    </div>
+
+    <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
+      <div class="text-lg mb-2">🛡️</div>
+      <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-DMZ</h6>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.3.0/24</p>
+    </div>
+
+    <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
+      <div class="text-lg mb-2">📊</div>
+      <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-MONITOR</h6>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.4.0/24</p>
+    </div>
+  </div>
+</div>
+
+---
+
+<section class="mt-16 space-y-12">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-indigo-500">🗺️</span> Plan réseau finalisé
+      </h3>
+      <ul class="space-y-3 text-sm">
+        <li><strong>6 segments</strong> distincts couvrant toutes les zones du lab</li>
+        <li><strong>Adressage cohérent</strong> en 10.0.x.0/24 par segment</li>
+        <li><strong>VIPs CARP</strong> en .254 sur chaque interface OPNsense</li>
+        <li><strong>Isolation totale</strong> inter-segments assurée par OPNsense</li>
+      </ul>
+    </div>
+
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+      <div class="text-center">
+        <div class="text-5xl mb-2 filter drop-shadow-lg">🗺️</div>
+        <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Architecture définie</p>
+        <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Prêt pour l'installation d'OPNsense</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<NextStep 
+  href="/projets/opnsense-install" 
+  title="Installation d'OPNsense : configuration de la VM et installation sur ZFS" 
+/>

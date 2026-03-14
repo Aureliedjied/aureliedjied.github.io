@@ -4,7 +4,7 @@ description: "Mise en place du lien de synchronisation (SYNC), clonage de la VM 
 category: "opnsense"
 tags: ["OpnSense", "Cluster", "Failover", "Sécurité"]
 serie: "firewalling-edge"
-serieOrder: 3
+serieOrder: 4
 pubDate: 2026-02-05
 slug: "opnsense-cluster"
 ---
@@ -99,7 +99,7 @@ La création d'un réseau privé dédié permet aux deux pare-feux d'échanger l
 
 Une fois le premier pare-feu prêt, on va simplement le dupliquer.
 
-Au lieu de réinstaller OPNsense et de tout reconfigurer à la main, le clonage permet de créer une copie... Cela fait gagner du temps et évite les erreurs.
+Au lieu de réinstaller OPNsense et de tout reconfigurer à la main, le clonage permet de créer une copie exacte du premier noeud. Cela fait gagner du temps et évite les erreurs.
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -123,10 +123,6 @@ Cette nouvelle VM est nommée **OPNSENSE-02** .
 
 ## ⌨️ Étape 3 : Ré-adressage via la console
 
-CARP permet aux deux pare-feux de partager une seule adresse IP visible par les clients.
-
-C’est cette IP “virtuelle” qui servira de passerelle.  
-Peu importe quel pare-feu est actif : les machines continueront d’utiliser la même adresse.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -283,7 +279,7 @@ Vérifier que la sortie Internet fonctionne bien à travers le cluster, malgré 
 </div>
 
 ### 6.2. Le test ultime : Le Failover (Basculement)
-Pour simuler une panne matérielle, un ping continu est effectué sur l'IP virtuelle (**10.0.1.254**) pendant lequel la VM **OPNsense-01** est éteinte brutalement ( systemctl poweroff ). Seule une perte de paquet de 5% avant que le backup reprenne le relai est visible.
+Pour simuler une panne matérielle, un ping continu est effectué sur l'IP virtuelle (**10.0.1.254**) pendant lequel la VM **OPNsense-01** est éteinte brutalement. Seule une perte de paquet de 5% avant que le backup reprenne le relai est visible.
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-xl">
