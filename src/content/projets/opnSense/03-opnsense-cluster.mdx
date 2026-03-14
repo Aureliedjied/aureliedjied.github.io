@@ -199,8 +199,47 @@ Grâce à la synchronisation XMLRPC (étape suivante), les adresses IP virtuelle
   </ul>
 </div>
 
+---
 
-## 🔄 Étape 5 : Synchronisation XMLRPC
+## 🔄 Étape 5 : Sécurisation du lien SYNC (Règles Firewall)
+
+C'est une étape cruciale souvent oubliée : par défaut, OPNsense bloque tout trafic entrant sur une nouvelle interface. Si on ne crée pas de règles sur le segment **CLUSTERSYNC**, le Maître et l'Esclave seront incapables de se parler, rendant la synchronisation impossible.
+
+### Pourquoi ces règles sont vitales ?
+Pour qu'un cluster soit fonctionnel et transparent, trois types de flux doivent circuler librement sur le lien dédié :
+1. **ICMP (Ping) :** Pour vérifier que le nœud d'en face est vivant.
+2. **XMLRPC (HTTPS) :** Pour que le Maître "pousse" sa configuration (règles, alias, NAT) vers l'Esclave.
+3. **PFSYNC :** Pour synchroniser les tables d'états (sessions en cours).
+
+<div class="flex justify-center my-8">
+  <div class="w-full max-w-xl">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/règles-1.png" alt="Règles Master" class="rounded border border-white/10 shadow-sm" />
+    <p class="text-xs opacity-50 mt-2 italic text-center">Règles sur le Maître (OPN-01)</p>
+  </div>
+</div>
+
+<div class="rounded-xl border border-red-500/20 p-5 bg-red-500/5 my-6 flex items-start gap-4">
+  <div class="text-2xl">⚠️</div>
+  <div>
+    <h4 class="font-semibold text-red-500 text-sm mb-1">Le protocole pfsync</h4>
+    <p class="text-xs leading-relaxed opacity-90">
+      Le <strong>pfsync</strong> est le protocole IP 240. Sans lui, le basculement ne sera pas "Stateful". Si le Master tombe, toutes les connexions TCP actives (sessions SSH, téléchargements) seront coupées car l'Esclave n'aura aucune connaissance des sessions établies par le Master.
+    </p>
+  </div>
+</div>
+
+<div class="rounded-xl border border-white/10 p-4 bg-white/5 my-6 text-sm">
+  <strong>📝 Configuration appliquée :</strong>
+  <ul class="list-disc list-inside mt-2 opacity-80">
+    <li><strong>Pass ICMP :</strong> Source <code>CLUSTERSYNC net</code> vers <code>CLUSTERSYNC net</code>.</li>
+    <li><strong>Pass XMLRPC :</strong> TCP sur le port d'administration (443) entre les deux IP physiques du segment SYNC.</li>
+    <li><strong>Pass PFSYNC :</strong> Protocole <code>pfsync</code> autorisé sur l'interface CLUSTERSYNC.</li>
+  </ul>
+</div>
+
+---
+
+## 🔄 Étape 6 : Synchronisation XMLRPC
 
 Pour éviter de configurer chaque règle deux fois, j'active la réplication automatique. Le nœud Maître va "pousser" sa configuration vers l'Esclave via le lien **SYNC** dédié.
 
@@ -213,7 +252,7 @@ Pour éviter de configurer chaque règle deux fois, j'active la réplication aut
   </div>
 </div>
 
-### 5.1. Paramétrage du flux de synchronisation
+### 6.1. Paramétrage du flux de synchronisation
 
 Sur **OPNsense-01**, rendez-vous dans `Système > Haute-disponibilité > Paramètres`. Le segment CLUSTERSYNC est séléctionné pour être synchronisé.
 
@@ -228,7 +267,7 @@ Sur **OPNsense-01**, rendez-vous dans `Système > Haute-disponibilité > Paramè
   </div>
 </div>
 
-### 5.2. Sélection des services à synchroniser
+### 6.2. Sélection des services à synchroniser
 
 Pour un cluster standard, je sélectionne au minimum : *Firewall Rules, NAT, Aliases et Virtual IPs*.
 
@@ -257,7 +296,7 @@ Pour un cluster standard, je sélectionne au minimum : *Firewall Rules, NAT, Ali
 ---
 
 
-## 🧪 Étape 6 : Validation et Tests de connectivité
+## 🧪 Étape 7 : Validation et Tests de connectivité
 
 C’est le moment de tester si tout fonctionne vraiment.
 
