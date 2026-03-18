@@ -1,10 +1,10 @@
+// src/content/config.ts
+
 import { defineCollection, z } from 'astro:content';
-// On pourrait importer les clés de SERIES ici si on voulait être 100% DRY, 
-// mais garder l'enum explicite est plus sûr pour le typage d'Astro.
 
 const projets = defineCollection({
   type: 'content',
-  schema: ({ image }) => z.object({ // On utilise le helper image
+  schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
@@ -12,33 +12,42 @@ const projets = defineCollection({
 
     tags: z.array(z.string()).default([]),
 
-    // Utiliser le helper image() permet à Astro d'optimiser tes captures d'écran
-    image: image().optional(), 
+    // Utiliser le helper image() permet à Astro d'optimiser les captures d'écran
+    image: image().optional(),
 
     // Clé technique alignée sur src/constants/series.ts
     serie: z.enum([
+      'firewalling-edge',
       'architecture-ad',
       'identity-security',
-      'backup-resilience',
       'governance-access',
+      'file-services',
       'client-security',
+      'nextcloud',
+      'glpi',
+      'monitoring-logging',
+      'backup-resilience',
       'network-security',
-      'firewalling-edge',
-      'monitoring',
-      'itsm'
     ]).optional(),
 
     // Catégories techniques
-category: z.enum([
+    category: z.enum([
       'windows-server',
-      'windows-client', 
+      'windows-client',
       'linux',
       'opnsense',
       'pfsense',
-      'zabbix'
+      'zabbix',
+      'graylog',
+      'nextcloud',
+      'glpi',
+      'veeam',
+      'cisco',
     ]).optional(),
-serieOrder: z.number().optional(),    
-    // Un petit booléen pour mettre en avant tes meilleurs projets TSSR ?
+
+    serieOrder: z.number().optional(),
+
+    // Mettre en avant les meilleurs projets TSSR
     featured: z.boolean().default(false),
   }),
 });

@@ -10,8 +10,19 @@ import Layout from '../layouts/Layout.astro';
         Aurélie Djied<span class="text-purple-500">.</span>
       </h1>
       <p class="text-xl leading-relaxed" style="color: var(--text-main);">
-        Actuellement en formation <span class="text-purple-500 font-bold">TSSR (Niveau 5)</span>, je projette d'intégrer un <span class="text-blue-500 font-bold">Bachelor Systèmes, Réseaux et Cloud Computing</span> pour la rentrée 2026.
+        Actuellement en formation <span class="text-purple-500 font-bold">TSSR (Niveau 5)</span>, je prépare une entrée en
+        <span class="text-blue-500 font-bold">Master Systèmes, Réseaux et Cloud Computing</span> en alternance pour la rentrée 2026.
       </p>
+      <div class="flex flex-wrap gap-3">
+        <span class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border"
+              style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-muted);">
+          <span class="text-green-500">◉</span> Disponible en alternance — Sept. 2026
+        </span>
+        <span class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border"
+              style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-muted);">
+          <span class="text-blue-500">◎</span> Mobile — Toulon · Marseille · DOM-TOM
+        </span>
+      </div>
     </section>
 
     <section class="space-y-8">
@@ -22,28 +33,42 @@ import Layout from '../layouts/Layout.astro';
       
       <div class="space-y-10 border-l-2 ml-4 pl-8" style="border-color: var(--card-border);">
         
+        <!-- Objectif Master -->
         <div class="relative">
           <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-[var(--bg-color)] animate-pulse"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20">Objectif 2026 - 2027</span>
-          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Bachelor Systèmes, Réseaux et Cloud Computing</h3>
-          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Niveau 6 (BAC+3)</p>
-          <p class="mt-2" style="color: var(--text-main);">Spécialisation dans l'administration avancée et les infrastructures Cloud. Préparation du <strong class="text-purple-400">CCNA</strong> en ligne de mire.</p>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20">Objectif 2026 – 2028</span>
+          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Master Systèmes, Réseaux & Cloud Computing</h3>
+          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Niveau 7 (BAC+5) — Alternance 2 ans</p>
+          <p class="mt-2" style="color: var(--text-main);">
+            Spécialisation dans l'administration avancée, la sécurité des infrastructures et les architectures Cloud.
+            Préparation du <strong class="text-purple-400">CCNA</strong> en ligne de mire.
+          </p>
+          <p class="mt-2 text-xs italic opacity-60" style="color: var(--text-muted);">
+            École en cours de sélection — mobile Toulon · Marseille · DOM-TOM
+          </p>
         </div>
 
+        <!-- TSSR en cours -->
         <div class="relative">
           <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-purple-500 border-4 border-[var(--bg-color)]"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20">En cours : 2025 - 2026</span>
-          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Titre RNCP - Technicien Supérieur Systèmes et Réseaux</h3>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20">En cours : 2025 – 2026</span>
+          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Titre RNCP — Technicien Supérieur Systèmes et Réseaux</h3>
           <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Niveau 5 (BAC+2)</p>
-          <p class="mt-2" style="color: var(--text-main);">Administration d'infrastructures virtualisées, déploiement de services réseaux et sécurisation des accès.</p>
+          <p class="mt-2" style="color: var(--text-main);">
+            Administration d'infrastructures virtualisées, déploiement de services réseaux et sécurisation des accès.
+          </p>
         </div>
 
+        <!-- Développeuse web -->
         <div class="relative opacity-80">
           <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-[var(--card-border)] border-4 border-[var(--bg-color)]"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20">2023 - 2024</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20">2023 – 2024</span>
           <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Développeuse Web et Web Mobile</h3>
           <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Spécialisation PHP / Symfony</p>
-          <p class="mt-2" style="color: var(--text-main);">Conception d'applications web et gestion de bases de données. Cette base en développement me permet aujourd'hui d'aborder l'Infrastructure as Code (IaC) et le DevOps avec facilité.</p>
+          <p class="mt-2" style="color: var(--text-main);">
+            Conception d'applications web et gestion de bases de données. Cette base en développement me permet aujourd'hui
+            d'aborder l'Infrastructure as Code et le DevOps avec facilité.
+          </p>
         </div>
 
       </div>
@@ -54,24 +79,26 @@ import Layout from '../layouts/Layout.astro';
         <h3 class="text-xl font-bold mb-4" style="color: var(--text-title);">Veille & Certifications</h3>
         <ul class="space-y-3" style="color: var(--text-main);">
           <li class="flex items-center gap-2">
-            <span class="text-blue-500">🔵</span> Cisco NetAcad (Cours en cours)
+            <span class="text-blue-500">◎</span> Cisco NetAcad (en cours)
           </li>
           <li class="flex items-center gap-2">
-            <span class="text-purple-500">⚙️</span> Labo Personnel (HomeLab & Virtualisation)
+            <span class="text-purple-500">◎</span> Lab personnel VMware (HomeLab)
           </li>
           <li class="flex items-center gap-2 opacity-50 italic">
-            <span class="text-zinc-500">▹</span> CCNA (Projet Bachelor 2026)
+            <span class="text-zinc-500">▹</span> CCNA (projet Master 2026)
           </li>
         </ul>
       </div>
 
       <div class="p-8 rounded-3xl border transition-all" style="background-color: var(--card-bg); border-color: var(--card-border);">
         <h3 class="text-xl font-bold mb-4" style="color: var(--text-title);">Compétences Transverses</h3>
-        <p class="text-sm mb-4" style="color: var(--text-main);">Grâce à mon passé de développeuse, je possède une vision globale du cycle de vie d'un projet informatique.</p>
+        <p class="text-sm mb-4" style="color: var(--text-main);">
+          Mon passé de développeuse m'apporte une vision globale du cycle de vie d'un projet et une aisance naturelle avec les outils DevOps et IaC.
+        </p>
         <div class="flex flex-wrap gap-2">
-            <span class="px-2 py-1 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] text-purple-400 font-bold uppercase">PHP / Symfony</span>
-            <span class="px-2 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-[10px] text-blue-400 font-bold uppercase">Git / GitHub</span>
-            <span class="px-2 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded text-[10px] text-yellow-400 font-bold uppercase">SQL</span>
+          <span class="px-2 py-1 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] text-purple-400 font-bold uppercase">PHP / Symfony</span>
+          <span class="px-2 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-[10px] text-blue-400 font-bold uppercase">Git / GitHub</span>
+          <span class="px-2 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded text-[10px] text-yellow-400 font-bold uppercase">SQL</span>
         </div>
       </div>
     </section>
@@ -80,11 +107,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <style>
-  /* Pour gérer les couleurs dynamiques Tailwind dans le map */
   .text-zinc-500 { color: #71717a; }
   .text-purple-500 { color: #a855f7; }
   .text-blue-500 { color: #3b82f6; }
-  .border-zinc-500\/30 { border-color: rgba(113, 113, 122, 0.3); }
-  .border-purple-500\/30 { border-color: rgba(168, 85, 247, 0.3); }
-  .border-blue-500\/30 { border-color: rgba(59, 130, 246, 0.3); }
 </style>

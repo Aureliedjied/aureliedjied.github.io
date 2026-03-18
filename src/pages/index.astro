@@ -7,148 +7,161 @@ const lastProjects = allProjects
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 
-const skills = [
-  { 
-    category: "Virtualisation & Cloud", 
-    items: ["VMware", "Proxmox VE", "Docker"] 
-  },
-  { 
-    category: "Administration Système", 
-    items: ["Windows Server (AD, GPO)", "Linux (Debian, Ubuntu)", "Scripts PowerShell/Bash"] 
-  },
-  { 
-    category: "Réseau & Sécurité", 
-    items: ["PfSense / Firewalls", "VLANs & Routage", "VPN IPsec/OpenVPN", "Sécurité infra"] 
-  },
-  { 
-    category: "Continuité & Supervision", 
-    items: ["Stratégies de Sauvegarde", "Veeam / Acronis", "Zabbix / Grafana", "Documentation technique"] 
-  }
+const techs = [
+  { name: "OPNsense",       color: "#e81123", icon: "ri-shield-keyhole-fill",    desc: "Pare-feu HA" },
+  { name: "Windows Server", color: "#0078d4", icon: "ri-microsoft-fill",          desc: "AD / GPO / PKI" },
+  { name: "Linux",          color: "#fdb813", icon: "ri-terminal-box-fill",       desc: "Debian / Ubuntu / RHEL" },
+  { name: "VMware",         color: "#607078", icon: "ri-server-fill",             desc: "Virtualisation" },
+  { name: "Zabbix",         color: "#d40000", icon: "ri-line-chart-fill",         desc: "Supervision" },
+  { name: "Veeam",          color: "#00b336", icon: "ri-archive-fill",            desc: "Backup / PRA" },
+  { name: "GLPI",           color: "#42546d", icon: "ri-customer-service-2-fill", desc: "ITSM" },
+  { name: "Nextcloud",      color: "#0082c9", icon: "ri-cloud-fill",              desc: "Cloud privé" },
 ];
 ---
 
 <Layout>
-  <section class="py-12 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-10 items-center overflow-hidden">
-<div class="space-y-6 order-2 md:order-1">
-  <div class="space-y-4">
-    <h1 class="text-4xl md:text-5xl font-black tracking-tight leading-tight" style="color: var(--text-title);">
-      Bonjour, je suis <span class="text-purple-500">Aurélie</span>.
-    </h1>
-    
-    <p class="text-lg leading-relaxed italic" style="color: var(--text-main);">
-      "Technicienne TSSR en formation, administrateur système et réseaux en devenir."
-    </p>
 
-    <div class="space-y-5 max-w-xl">
-      <p class="text-base md:text-lg leading-relaxed" style="color: var(--text-main);">
-        Passionnée par l'architecture système et la sécurité, je prépare actuellement mon entrée en <strong>Bachelor Systèmes, Cloud & Réseaux</strong>.
-      </p>
-      
-      <p class="text-sm md:text-base leading-relaxed border-l-2 border-purple-500/30 pl-4" style="color: var(--text-muted);">
-        Ce portfolio est mon terrain d'expérimentation. J'y mets en pratique les compétences acquises en formation, en <span class="text-purple-500 font-semibold">approfondissant mes recherches</span> et en complexifiant chaque scénario pour me confronter aux réalités du terrain.
-      </p>
-    </div>
-  </div>
+  <!-- ─── HERO ──────────────────────────────────────────────────── -->
+  <section class="py-12 md:py-20 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-14 items-center">
 
-  <div class="flex flex-col sm:flex-row gap-4 pt-4">
-    <a href="/contact" 
-       class="px-8 py-3 rounded-full font-black transition-all text-sm shadow-lg shadow-purple-500/20 text-center hover:scale-105 active:scale-95 text-white" 
-       style="background-color: #9333ea;">
-      Me contacter
-    </a>
-
-    <a href="/projets" 
-       class="px-8 py-3 rounded-full font-black border transition-all text-sm text-center hover:scale-105 active:scale-95 hover:border-purple-500 hover:text-purple-500"
-       style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-main);">
-      Voir mes projets
-    </a>
-  </div>
-</div>
-
-<div class="order-1 md:order-2 flex justify-center items-center relative py-10">
-    <div class="relative group">
-      
-      <div class="absolute -inset-4 bg-gradient-to-tr from-purple-600/20 to-blue-600/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
-      <div class="hidden md:block absolute -top-4 -right-4 w-24 h-24 border-t-2 border-r-2 border-purple-500/30 rounded-tr-3xl"></div>
-      <div class="hidden md:block absolute -bottom-4 -left-4 w-24 h-24 border-b-2 border-l-2 border-blue-500/30 rounded-bl-3xl"></div>
-
-      <div class="relative overflow-hidden rounded-[2.5rem] border-2 transition-all duration-500 group-hover:scale-[1.02] shadow-2xl"
-           style="border-color: var(--card-border); background-color: var(--card-bg);">
-        
-        <img 
-          src="/photo-aurelie.jpg" 
-          alt="Aurélie Djied" 
-          class="w-64 h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100"
-        />
-
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        
-        <div class="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-          <span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-          <span class="text-[10px] font-bold text-white uppercase tracking-widest">Disponible pour alternance</span>
+    <!-- Photo -->
+    <div class="flex justify-center md:justify-start">
+      <div class="relative">
+        <div class="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 shadow-xl"
+             style="border-color: var(--card-border);">
+          <img
+            src="/photo-aurelie.jpg"
+            alt="Aurélie Djied"
+            class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+          />
         </div>
+        <!-- Badge disponible -->
+        <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full border whitespace-nowrap"
+             style="background-color: var(--card-bg); border-color: var(--card-border);">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          <span class="text-[9px] font-black uppercase tracking-widest text-green-500">Disponible</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Texte -->
+    <div class="space-y-6">
+
+      <div class="space-y-1">
+        <p class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted);">
+          Aurélie Djied · Toulon
+        </p>
+        <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight" style="color: var(--text-title);">
+          Je construis des infrastructures<br/>
+          <span class="text-purple-500">pour comprendre</span><br/>
+          comment les sécuriser.
+        </h1>
+      </div>
+
+      <p class="text-sm md:text-base leading-relaxed border-l-2 border-purple-500/40 pl-4 max-w-xl" style="color: var(--text-muted);">
+        TSSR en formation, je déploie et sécurise des infrastructures Windows/Linux en lab VMware —
+        haute disponibilité OPNsense, Active Directory multi-sites, PKI, VPN.
+        Des architectures que je conçois, casse, et reconstruis.
+      </p>
+
+      <p class="text-sm font-mono" style="color: var(--text-muted);">
+        <span class="text-purple-500">→</span> Prochain objectif : Bachelor Systèmes, Cloud &amp; Réseaux
+      </p>
+
+      <div class="flex flex-wrap gap-3">
+        <a href="/projets"
+           class="px-6 py-2.5 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/20"
+           style="background-color: #9333ea;">
+          Voir mes projets
+        </a>
+        <a href="/contact"
+           class="px-6 py-2.5 rounded-full font-black text-sm border transition-all hover:scale-105 active:scale-95 hover:border-purple-500 hover:text-purple-500"
+           style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-main);">
+          Me contacter
+        </a>
       </div>
 
     </div>
-  </div>
-</section>
-
-  <section class="py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    {skills.map(skill => (
-      <div class="group p-6 rounded-3xl border backdrop-blur-sm transition-all duration-300 hover:border-purple-500/50 shadow-sm"
-           style={`background-color: var(--card-bg); border-color: var(--card-border); box-shadow: var(--card-shadow);`}>
-        <div class="mb-4 inline-flex p-2 rounded-xl bg-purple-500/10 text-purple-500">
-          <div class="h-2 w-2 rounded-full bg-current shadow-[0_0_10px_currentColor]"></div>
-        </div>
-        
-        <h3 class="text-xs font-black uppercase tracking-widest mb-4" style="color: var(--text-title);">
-          {skill.category}
-        </h3>
-        
-        <ul class="space-y-3">
-          {skill.items.map(item => (
-            <li class="text-sm flex items-start gap-2" style="color: var(--text-main);">
-              <svg class="h-4 w-4 text-purple-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-              </svg>
-              <span class="break-words">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
   </section>
 
-  <section class="py-12 space-y-8">
+  <!-- ─── TECHNOS ────────────────────────────────────────────────── -->
+  <section class="py-8 space-y-4">
+    <p class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted);">Stack technique</p>
+    <div class="grid grid-cols-4 sm:grid-cols-8 gap-3">
+      {techs.map(tech => (
+        <div
+          class="group flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all duration-200 hover:scale-105 cursor-default"
+          style="background-color: var(--card-bg); border-color: var(--card-border);"
+        >
+          <div
+            class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-110"
+            style={`background-color: ${tech.color}22;`}
+          >
+            <i class={`${tech.icon} text-lg`} style={`color: ${tech.color};`}></i>
+          </div>
+          <div class="text-center">
+            <p class="text-[9px] font-black leading-tight" style="color: var(--text-title);">{tech.name}</p>
+            <p class="text-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 mt-0.5" style="color: var(--text-muted);">{tech.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ─── DERNIERS PROJETS ───────────────────────────────────────── -->
+  <section class="py-8 space-y-6">
     <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-black tracking-tight" style="color: var(--text-title);">Derniers projets</h2>
-        <a href="/projets" class="text-sm font-bold transition-colors hover:text-purple-500 shrink-0" style="color: var(--text-muted);">Voir tout →</a>
+      <div>
+        <h2 class="text-xl font-black tracking-tight" style="color: var(--text-title);">Derniers articles</h2>
+        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Issus de mes labs personnels sous VMware Workstation</p>
+      </div>
+      <a href="/projets"
+         class="text-sm font-bold transition-colors hover:text-purple-500 shrink-0"
+         style="color: var(--text-muted);">
+        Tout voir →
+      </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       {lastProjects.map(project => (
-        <a href={`/projets/${project.slug}`} 
-           class="group relative flex flex-col justify-between p-6 min-h-[220px] rounded-[1.5rem] border transition-all duration-300 shadow-sm hover:shadow-xl overflow-hidden"
-           style="background-color: var(--card-bg); border-color: var(--card-border);">
-            
-            <div class="space-y-3 relative z-10">
-                <div class="flex flex-wrap gap-2">
-                    {project.data.tags.slice(0, 2).map(tag => (
-                        <span class="px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded border shrink-0"
-                              style="background-color: var(--bg-color); color: var(--text-purple); border-color: var(--purple-border);">
-                            {tag}
-                        </span>
-                    ))}
-                </div>
-                <h3 class="text-lg font-black group-hover:text-purple-500 transition-colors break-words" style="color: var(--text-title);">
-                  {project.data.title}
-                </h3>
-                <p class="text-xs line-clamp-3 leading-relaxed" style="color: var(--text-main);">{project.data.description}</p>
+        <a
+          href={`/projets/${project.slug}`}
+          class="group flex flex-col justify-between p-5 min-h-[200px] rounded-2xl border transition-all duration-300 hover:border-purple-500/40 hover:-translate-y-0.5"
+          style="background-color: var(--card-bg); border-color: var(--card-border);"
+        >
+          <div class="space-y-3">
+            <div class="flex flex-wrap gap-1.5">
+              {project.data.tags.slice(0, 2).map(tag => (
+                <span
+                  class="px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-full border"
+                  style="background-color: var(--bg-color); color: var(--text-purple); border-color: var(--purple-border);"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
-            <div class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform self-end" style="color: var(--text-muted);">↗</div>
+            <h3
+              class="text-base font-black leading-snug group-hover:text-purple-500 transition-colors"
+              style="color: var(--text-title);"
+            >
+              {project.data.title}
+            </h3>
+            <p class="text-xs leading-relaxed line-clamp-2" style="color: var(--text-muted);">
+              {project.data.description}
+            </p>
+          </div>
+          <div class="flex items-center justify-between mt-4">
+            <p class="text-[10px]" style="color: var(--text-muted);">
+              {new Date(project.data.pubDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </p>
+            <span class="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" style="color: var(--text-muted);">↗</span>
+          </div>
         </a>
       ))}
     </div>
   </section>
+
 </Layout>

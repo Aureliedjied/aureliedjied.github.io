@@ -1,0 +1,22 @@
+---
+interface Props {
+  src1: string; alt1: string; caption1?: string;
+  src2: string; alt2: string; caption2?: string;
+  src3: string; alt3: string; caption3?: string;
+}
+const { src1, alt1, caption1, src2, alt2, caption2, src3, alt3, caption3 } = Astro.props;
+---
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
+  <figure class="flex flex-col items-center">
+    <img src={src1} alt={alt1} class="w-full rounded-lg shadow-md" style="border: 1px solid var(--card-border);" />
+    {caption1 && <figcaption class="text-[0.65rem] italic mt-2 text-center" style="color: var(--text-muted);">{caption1}</figcaption>}
+  </figure>
+  <figure class="flex flex-col items-center">
+    <img src={src2} alt={alt2} class="w-full rounded-lg shadow-md" style="border: 1px solid var(--card-border);" />
+    {caption2 && <figcaption class="text-[0.65rem] italic mt-2 text-center" style="color: var(--text-muted);">{caption2}</figcaption>}
+  </figure>
+  <figure class="flex flex-col items-center">
+    <img src={src3} alt={alt3} class="w-full rounded-lg shadow-md" style="border: 1px solid var(--card-border);" />
+    {caption3 && <figcaption class="text-[0.65rem] italic mt-2 text-center" style="color: var(--text-muted);">{caption3}</figcaption>}
+  </figure>
+</div>

@@ -1,0 +1,22 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  maxWidth?: string;
+}
+const { src, alt, caption, maxWidth = "500px" } = Astro.props;
+---
+<figure class="flex flex-col items-center my-8">
+  <img
+    src={src}
+    alt={alt}
+    class="w-full rounded-lg shadow-md"
+    style={`max-width: ${maxWidth}; border: 1px solid var(--card-border);`}
+  />
+  {caption && (
+    <figcaption class="text-[0.65rem] italic mt-2 text-center" style="color: var(--text-muted);">
+      {caption}
+    </figcaption>
+  )}
+</figure>

@@ -1,17 +1,19 @@
 ---
 title: "Virtualisation & Installation OS"
 description: "Préparation de l'environnement virtuel sous VMware et installation de Windows Server 2022."
-category: "windows-server" 
-tags: ["VMware", "Virtualisation", "Windows Server", "Installation"]
-pubDate: 2026-01-10
+category: "windows-server"
+tags: ["Windows Server", "VMware", "Virtualisation"]
+pubDate: 2026-01-09
 slug: "installation"
-serie: "architecture-ad" 
+serie: "architecture-ad"
 serieOrder: 1
 ---
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
-
+import ProjectImage from '../../../components/ProjectImage.astro';
+import ProjectImage2 from '../../../components/ProjectImage2.astro';
+import ProjectImage3 from '../../../components/ProjectImage3.astro';
 
 Avant de configurer nos services, nous devons bâtir une machine virtuelle (VM) robuste et optimisée. Ce chapitre traite de la création de l'hôte virtuel et de l'installation du système d'exploitation.
 
@@ -20,194 +22,204 @@ Avant de configurer nos services, nous devons bâtir une machine virtuelle (VM) 
 Pour ce lab, j'utilise **VMware Workstation**. Le dimensionnement a été choisi pour équilibrer performances et économie de ressources sur la machine hôte :
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
-  <div class="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
-    <span class="block text-xs uppercase tracking-widest opacity-50 mb-1">Calcul du processeur</span>
+  <div class="rounded-lg p-4 text-center border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <span class="block text-xs uppercase tracking-widest mb-1" style="color: var(--text-muted);">Calcul du processeur</span>
     <code class="text-blue-400 font-bold">2 vCPUs</code>
   </div>
-  <div class="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
-    <span class="block text-xs uppercase tracking-widest opacity-50 mb-1">Mémoire vive</span>
+  <div class="rounded-lg p-4 text-center border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <span class="block text-xs uppercase tracking-widest mb-1" style="color: var(--text-muted);">Mémoire vive</span>
     <code class="text-blue-400 font-bold">4 Go RAM</code>
   </div>
-  <div class="bg-white/5 border border-white/10 rounded-lg p-4 text-center">
-    <span class="block text-xs uppercase tracking-widest opacity-50 mb-1">Stockage</span>
+  <div class="rounded-lg p-4 text-center border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <span class="block text-xs uppercase tracking-widest mb-1" style="color: var(--text-muted);">Stockage</span>
     <code class="text-blue-400 font-bold">60 Go (Thin)</code>
   </div>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/architecture-ad/vmware-setup/processeur.png" alt="Configuration CPU" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">2 vCPUs</p>
-  </div>
+<ProjectImage3
+  src1="/images/projets/architecture-ad/vmware-setup/processeur.png"
+  alt1="Configuration CPU"
+  caption1="2 vCPUs"
+  src2="/images/projets/architecture-ad/vmware-setup/allouer-ram.png"
+  alt2="Configuration RAM"
+  caption2="4 Go de RAM"
+  src3="/images/projets/architecture-ad/vmware-setup/espace-disk.png"
+  alt3="Configuration Stockage"
+  caption3="60 Go (Thin)"
+/>
 
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/architecture-ad/vmware-setup/allouer-ram.png" alt="Configuration RAM" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">4 Go de RAM</p>
-  </div>
+### 🌐 Configuration réseau — NAT provisoire
 
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/architecture-ad/vmware-setup/espace-disk.png" alt="Configuration Stockage" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">60 Go (Thin)</p>
-  </div>
-</div>
+Lors de la création initiale de la VM, la carte réseau est placée temporairement en **NAT VMware** pour permettre l'accès à Internet pendant l'installation des mises à jour et des outils. Elle sera migrée sur le segment **SEG-SRV** (LAN Segment isolé) une fois le système installé et configuré — c'est sur ce segment qu'OPNsense fera office de passerelle.
 
-### 🌐 Configuration Réseau (VMnet8)
+<ProjectImage2
+  src1="/images/projets/architecture-ad/vmware-setup/vmware-nat-no-dhcp.png"
+  alt1="Désactivation DHCP VMware"
+  caption1="Interface NAT : désactivation du service DHCP VMware"
+  src2="/images/projets/architecture-ad/vmware-setup/reseau-nat.png"
+  alt2="Configuration Réseau NAT"
+  caption2="Plan d'adressage : configuration provisoire sur NAT"
+/>
 
-Le serveur est placé sur le segment **NAT (VMnet8)**. Afin de coller aux exigences de sécurité réelles, le plan d'adressage est strictement défini :
-
-<div class="my-6">
-  <ul>
-    <li><strong>Sous-réseau :</strong> <code>192.168.174.0/24</code></li>
-    <li><strong>Passerelle :</strong> <code>192.168.174.2</code></li>
-    <li><strong>Mode IP :</strong> Statique (Post-install)</li>
-  </ul>
-</div>
-
-<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 350px; flex: 1; min-width: 280px;">
-    <img src="/images/projets/architecture-ad/vmware-setup/vmware-nat-no-dhcp.png" alt="Désactivation DHCP VMware" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Interface NAT : désactivation du service DHCP</p>
-  </div>
-
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 350px; flex: 1; min-width: 280px;">
-    <img src="/images/projets/architecture-ad/vmware-setup/reseau-nat.png" alt="Configuration Réseau NAT" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Plan d'adressage : Configuration du segment VMnet8</p>
+<div class="rounded-xl border border-amber-500/20 p-5 bg-amber-500/5 my-6 flex items-start gap-4">
+  <div class="text-2xl">💡</div>
+  <div>
+    <h4 class="font-semibold text-amber-500 text-sm mb-1">Pourquoi désactiver le DHCP VMware ?</h4>
+    <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+      Dans certains environnements sécurisés, le DHCP est désactivé sur les segments serveurs afin d'imposer un adressage statique maîtrisé. Bonne pratique à adopter dès le début du lab.
+    </p>
   </div>
 </div>
-
-> 🛡️ Dans certains environnements sécurisés, le DHCP est désactivé sur les segments serveurs afin d’imposer un adressage statique maîtrisé
 
 ---
 
 ## 💿 Montage de l'ISO et Boot
 
-L'installation s'appuie sur l'image ISO officielle de **Windows Server 2022**. 
+L'installation s'appuie sur l'image ISO officielle de **Windows Server 2022**.
 
-Une fois l'ISO montée, nous démarrons la VM. Lors de la création, nous nommons la VM dans l’inventaire VMware SRV-AD-01 pour garder une cohérence, mais le nom du système Windows sera modifié après installation
+Une fois l'ISO montée, nous démarrons la VM. La VM est nommée `SRV-AD-01` dans l'inventaire VMware dès maintenant pour garder une cohérence — le nom du système Windows sera aligné sur ce nom après l'installation.
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
-    <img src="/images/projets/architecture-ad/vmware-setup/renommer-serveur.png" alt="nommer le serveur" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Identification de la VM dans l'inventaire</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/vmware-setup/renommer-serveur.png"
+  alt="Nommer le serveur"
+  caption="Identification de la VM dans l'inventaire VMware"
+  maxWidth="400px"
+/>
 
 ---
 
 ## 🖥️ Installation de Windows Server 2022
 
-J'ai sélectionné la version **Standard (Expérience Bureau)**. 
+J'ai sélectionné la version **Standard (Expérience Bureau)**.
 
-> 💡 **Pourquoi ce choix ?** Bien que la version "Core" soit plus sécurisée, la version GUI est ici privilégiée pour faciliter la démonstration visuelle des outils d'administration AD.
-
-<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin: 3rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
-    <img src="/images/projets/architecture-ad/vmware-setup/experience-bureau.png" alt="experience-bureau" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sélection de l'OS : Windows Server 2022 Standard Desktop Experience</p>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px;">
-    <img src="/images/projets/architecture-ad/vmware-setup/installation.png" alt="Installation" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Processus d'installation de l'OS</p>
+<div class="rounded-xl border border-blue-500/20 p-5 bg-blue-500/5 my-6 flex items-start gap-4">
+  <div class="text-2xl">💡</div>
+  <div>
+    <h4 class="font-semibold text-blue-500 text-sm mb-1">Pourquoi la version GUI ?</h4>
+    <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+      Bien que la version "Core" soit plus sécurisée et recommandée en production, la version avec interface graphique est ici privilégiée pour faciliter la démonstration visuelle des outils d'administration AD.
+    </p>
   </div>
 </div>
 
-### Étapes post-installation :
-<div class="space-y-6 my-8">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-white/5 border border-white/10 p-5 rounded-xl">
-      <div class="flex items-center gap-3 mb-2">
-        <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-bold">01</span>
-        <h4 class="font-bold text-white text-sm">Mot de passe Administrateur</h4>
-      </div>
-      <p class="text-xs opacity-70 leading-relaxed">
-        Définition d'un secret complexe. Ce compte local sera remplacé par des accès nominaux après la promotion du domaine.
-      </p>
-    </div>
+<ProjectImage2
+  src1="/images/projets/architecture-ad/vmware-setup/experience-bureau.png"
+  alt1="Windows Server 2022 Standard Desktop Experience"
+  caption1="Sélection : Windows Server 2022 Standard Desktop Experience"
+  src2="/images/projets/architecture-ad/vmware-setup/installation.png"
+  alt2="Installation en cours"
+  caption2="Processus d'installation de l'OS"
+/>
 
-    <div class="bg-white/5 border border-white/10 p-5 rounded-xl">
-      <div class="flex items-center gap-3 mb-2">
-        <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-bold">02</span>
-        <h4 class="font-bold text-white text-sm">VMware Tools</h4>
-      </div>
-      <p class="text-xs opacity-70 leading-relaxed">
-        Installation des pilotes pour l'optimisation des performances graphiques et la gestion du réseau virtuel.
-      </p>
+### Étapes post-installation
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="p-5 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-bold">01</span>
+      <h4 class="font-bold text-sm" style="color: var(--text-title);">Mot de passe Administrateur</h4>
     </div>
+    <p class="text-xs leading-relaxed" style="color: var(--text-muted);">
+      Définition d'un secret complexe. Ce compte local sera désactivé au profit de comptes nominaux après la promotion du domaine.
+    </p>
   </div>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-    <figure class="flex flex-col items-center">
-      <img src="/images/projets/architecture-ad/vmware-setup/mdp-admin-local.png" alt="Mot de passe" class="w-full h-auto rounded-lg border border-white/10 shadow-lg" />
-      <figcaption class="text-[0.65rem] text-center opacity-50 mt-3 italic">Définition du MDP Administrateur</figcaption>
-    </figure>
-
-    <figure class="flex flex-col items-center">
-      <img src="/images/projets/architecture-ad/vmware-setup/vm-tools.png" alt="VMware Tools" class="w-full h-auto rounded-lg border border-white/10 shadow-lg" />
-      <figcaption class="text-[0.65rem] text-center opacity-50 mt-3 italic">Optimisation via VMware Tools</figcaption>
-    </figure>
+  <div class="p-5 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-bold">02</span>
+      <h4 class="font-bold text-sm" style="color: var(--text-title);">VMware Tools</h4>
+    </div>
+    <p class="text-xs leading-relaxed" style="color: var(--text-muted);">
+      Installation des pilotes pour l'optimisation des performances graphiques et la gestion du réseau virtuel.
+    </p>
   </div>
 </div>
+
+<ProjectImage2
+  src1="/images/projets/architecture-ad/vmware-setup/mdp-admin-local.png"
+  alt1="Mot de passe Administrateur"
+  caption1="Définition du MDP Administrateur local"
+  src2="/images/projets/architecture-ad/vmware-setup/vm-tools.png"
+  alt2="VMware Tools"
+  caption2="Optimisation via VMware Tools"
+/>
+
 ---
 
-<section style="margin-top: 3rem;">
-    <h2 style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 10px;">
-        🖥️ Démarrage et Nommage
-    </h2>
-    <p>
-        Au démarrage, entrer le mot de passe du compte Administrateur local.
-    </p>
+## 🖥️ Démarrage et Nommage
 
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 60px; margin: 3rem 0;">
-        <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px; flex: 1; min-width: 280px;">
-            <img src="/images/projets/architecture-ad/roles/open-admin.png" alt="Saisie mot de passe" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
-            <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Ouverture de session Administrateur local</p>
-        </div>
+Au démarrage, saisir le mot de passe du compte Administrateur local.
 
-            <p>
-        Avant toute promotion ou installation de rôle, le serveur doit porter un nom définitif et normalisé. Pour ce contrôleur de domaine, j'ai choisi <code>SRV-AD-01</code>, un nom court respectant les conventions de nommage standards.
-    </p>
-    
-        <div style="display: flex; flex-direction: column; align-items: center; max-width: 400px; flex: 1; min-width: 280px;">
-            <img src="/images/projets/architecture-ad/roles/renommer-ad.png" alt="Renommage serveur" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(128,128,128,0.2);" />
-            <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 12px; font-style: italic;">Changement du nom d'hôte (Redémarrage requis)</p>
-        </div>
-    </div>
-</section>
+Avant toute promotion ou installation de rôle, le serveur doit porter un nom définitif et normalisé. Pour ce contrôleur de domaine, j'ai choisi `SRV-AD-01`, un nom court respectant les conventions de nommage standards.
 
-### Configuration IP Statique
-Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe sur soi-même. Aucun DNS public n’est configuré directement dans la carte réseau. La résolution Internet sera gérée plus tard via des redirecteurs DNS configurés sur le serveur.
+<ProjectImage2
+  src1="/images/projets/architecture-ad/roles/open-admin.png"
+  alt1="Ouverture de session Administrateur"
+  caption1="Ouverture de session Administrateur local"
+  src2="/images/projets/architecture-ad/roles/renommer-ad.png"
+  alt2="Renommage serveur"
+  caption2="Changement du nom d'hôte en SRV-AD-01 (redémarrage requis)"
+/>
+
+---
+
+## 🌐 Migration sur SEG-SRV et configuration IP statique
+
+Une fois le système installé et nommé, la carte réseau est migrée de NAT vers le **LAN Segment SEG-SRV** — le réseau interne isolé géré par OPNsense.
+
+Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe sur soi-même (`127.0.0.1`). Aucun DNS public n'est configuré directement dans la carte réseau — la résolution Internet sera gérée via les redirecteurs DNS configurés sur le serveur, qui forwarderont vers OPNsense (`10.0.1.254`).
+
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 my-8 items-center">
-  <div class="overflow-hidden rounded-xl border border-white/10 bg-white/5">
+  <div class="overflow-hidden rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <table class="w-full text-sm">
-      <thead class="bg-white/10">
+      <thead style="background-color: var(--card-border);">
         <tr>
-          <th class="p-4 text-left">Paramètre</th>
-          <th class="p-4 text-left">Valeur</th>
+          <th class="p-4 text-left" style="color: var(--text-title);">Paramètre</th>
+          <th class="p-4 text-left" style="color: var(--text-title);">Valeur</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-white/10">
-        <tr><td class="p-4 font-bold">Nom d'hôte</td><td class="p-4">SRV-AD-01</td></tr>
-        <tr><td class="p-4 font-bold text-blue-400">Adresse IP</td><td class="p-4">192.168.174.10</td></tr>
-        <tr><td class="p-4 font-bold">Passerelle</td><td class="p-4">192.168.174.2</td></tr>
-        <tr><td class="p-4 font-bold text-green-400">DNS Primaire</td><td class="p-4">192.168.174.10</td></tr>
+      <tbody>
+        <tr class="border-t" style="border-color: var(--card-border);">
+          <td class="p-4 font-bold" style="color: var(--text-main);">Nom d'hôte</td>
+          <td class="p-4" style="color: var(--text-main);">SRV-AD-01</td>
+        </tr>
+        <tr class="border-t" style="border-color: var(--card-border);">
+          <td class="p-4 font-bold text-blue-400">Adresse IP</td>
+          <td class="p-4" style="color: var(--text-main);">10.0.1.10 / 24</td>
+        </tr>
+        <tr class="border-t" style="border-color: var(--card-border);">
+          <td class="p-4 font-bold" style="color: var(--text-main);">Passerelle</td>
+          <td class="p-4" style="color: var(--text-main);">10.0.1.254 (VIP CARP OPNsense)</td>
+        </tr>
+        <tr class="border-t" style="border-color: var(--card-border);">
+          <td class="p-4 font-bold text-green-400">DNS Primaire</td>
+          <td class="p-4" style="color: var(--text-main);">127.0.0.1 (lui-même)</td>
+        </tr>
+        <tr class="border-t" style="border-color: var(--card-border);">
+          <td class="p-4 font-bold" style="color: var(--text-main);">Segment VMware</td>
+          <td class="p-4" style="color: var(--text-main);">SEG-SRV (LAN Segment)</td>
+        </tr>
       </tbody>
     </table>
   </div>
-  <img src="/images/projets/architecture-ad/roles/ipconf.png" alt="Configuration IP" class="rounded-lg border border-white/10" />
+  <ProjectImage
+    src="/images/projets/architecture-ad/roles/ipconf.png"
+    alt="Configuration IP statique"
+    caption="Configuration IP statique sur SEG-SRV"
+  />
 </div>
 
 ---
 
 ## 🛠️ Installation des Rôles (Pré-Promotion)
 
-Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette étape sépare l'installation logicielle de la configuration logique (promotion), une bonne pratique pour isoler d'éventuels problèmes de déploiement.
+Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette étape sépare l'installation logicielle de la configuration logique (promotion) — une bonne pratique pour isoler d'éventuels problèmes de déploiement.
 
-<div class="flex flex-col items-center my-10">
-  <div class="max-w-2xl w-full">
-    <img src="/images/projets/architecture-ad/roles/ajouter-role.png" alt="Menu Gérer" class="rounded-xl border border-white/10 shadow-2xl" />
-    <p class="text-[0.65rem] italic opacity-50 mt-3 text-center text-balance">Lancement de l'assistant "Ajouter des rôles et fonctionnalités" depuis le Dashboard.</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/roles/ajouter-role.png"
+  alt="Lancement de l'assistant Ajouter des rôles"
+  caption="Lancement de l'assistant 'Ajouter des rôles et fonctionnalités' depuis le Dashboard"
+  maxWidth="700px"
+/>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
   <div class="space-y-4">
@@ -215,15 +227,16 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
       <div class="bg-blue-500/20 text-blue-400 p-2 rounded-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h10"/></svg>
       </div>
-      <h3 class="text-lg font-bold">1. AD DS</h3>
+      <h3 class="text-lg font-bold" style="color: var(--text-title);">1. AD DS</h3>
     </div>
-    <p class="text-sm opacity-70 leading-relaxed">
+    <p class="text-sm leading-relaxed" style="color: var(--text-main);">
       Installation des <strong>Active Directory Domain Services</strong>. C'est le socle qui permet la gestion centralisée des identités et des stratégies de sécurité (GPO).
     </p>
-    <figure>
-      <img src="/images/projets/architecture-ad/roles/ad-install.png" alt="Sélection AD DS" class="rounded-lg border border-white/10 w-full shadow-md" />
-      <figcaption class="text-[10px] uppercase tracking-widest opacity-40 mt-2 text-center">Binaires AD DS</figcaption>
-    </figure>
+    <ProjectImage
+      src="/images/projets/architecture-ad/roles/ad-install.png"
+      alt="Sélection AD DS"
+      caption="Binaires AD DS"
+    />
   </div>
 
   <div class="space-y-4">
@@ -231,29 +244,30 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
       <div class="bg-green-500/20 text-green-400 p-2 rounded-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       </div>
-      <h3 class="text-lg font-bold">2. DNS Server</h3>
+      <h3 class="text-lg font-bold" style="color: var(--text-title);">2. DNS Server</h3>
     </div>
-    <p class="text-sm opacity-70 leading-relaxed">
+    <p class="text-sm leading-relaxed" style="color: var(--text-main);">
       Le service <strong>DNS</strong> est indispensable pour localiser les services du domaine (enregistrements SRV). Sans lui, l'authentification Kerberos est impossible.
     </p>
-    <figure>
-      <img src="/images/projets/architecture-ad/roles/serveur-dns.png" alt="Installation DNS" class="rounded-lg border border-white/10 w-full shadow-md" />
-      <figcaption class="text-[10px] uppercase tracking-widest opacity-40 mt-2 text-center">Binaires DNS Server</figcaption>
-    </figure>
+    <ProjectImage
+      src="/images/projets/architecture-ad/roles/serveur-dns.png"
+      alt="Installation DNS"
+      caption="Binaires DNS Server"
+    />
   </div>
 </div>
 
-<div class="bg-blue-500/5 border border-blue-500/20 rounded-xl p-6 my-8">
-  <div class="flex items-start gap-4">
-    <span class="text-xl">💡</span>
-    <p class="text-sm opacity-80 leading-relaxed">
-      <strong>Note technique :</strong> Bien que l'assistant de promotion puisse installer le DNS automatiquement, l'installer manuellement au préalable permet de valider la configuration IP et la connectivité avant de complexifier l'infrastructure.
+<div class="rounded-xl border border-blue-500/20 p-5 bg-blue-500/5 my-6 flex items-start gap-4">
+  <div class="text-2xl">💡</div>
+  <div>
+    <h4 class="font-semibold text-blue-500 text-sm mb-1">Note technique</h4>
+    <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+      Bien que l'assistant de promotion puisse installer le DNS automatiquement, l'installer manuellement au préalable permet de valider la configuration IP et la connectivité avant de complexifier l'infrastructure.
     </p>
   </div>
 </div>
 
 <section class="mt-16 space-y-12">
-  
   <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
       <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
@@ -261,30 +275,27 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Environnement maîtrisé :</strong> VM dimensionnée et isolée sur VMnet8.</span>
+          <span><strong>Environnement maîtrisé :</strong> VM dimensionnée, installée et migrée sur SEG-SRV.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Identité fixée :</strong> Nommage <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">SRV-AD-01</code> et IP statique configurés.</span>
+          <span><strong>Identité fixée :</strong> Nommage <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">SRV-AD-01</code> et IP statique <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">10.0.1.10</code> configurés.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
           <span><strong>Prêt pour l'AD :</strong> Rôles AD DS et DNS installés (binaires uniquement).</span>
         </li>
       </ul>
     </div>
-    
-    {/* Fusée - Maintenant visible partout avec bordure adaptative */}
+
     <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
-        <div class="text-center">
-          <div class="text-5xl mb-2 filter drop-shadow-lg animate-bounce">🚀</div>
-          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Prêt pour l'élévation</p>
-        </div>
+      <div class="text-center">
+        <div class="text-5xl mb-2 filter drop-shadow-lg animate-bounce">🚀</div>
+        <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Prêt pour l'élévation</p>
+      </div>
     </div>
   </div>
-
 </section>
 
-<NextStep 
-  href="/projets/promotion-domaine" 
-  title="Hardening et Promotion du DC" 
+<NextStep
+  href="/projets/hardening-pre-promotion"
+  title="Hardening Pré-Promotion : sécuriser le serveur avant d'élever le domaine"
 />
-

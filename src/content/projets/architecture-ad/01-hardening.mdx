@@ -2,87 +2,103 @@
 title: "Hardening Pré-Promotion"
 description: "Sécurisation du système avant le déploiement d'Active Directory"
 category: "windows-server"
-tags: ["Windows Server", "Sécurité"]
+tags: ["Windows Server", "Active Directory", "Sécurité"]
 pubDate: 2026-01-10
 slug: "hardening-pre-promotion"
-serie: "architecture-ad" 
+serie: "architecture-ad"
 serieOrder: 2
 ---
+
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
+import ProjectImage from '../../../components/ProjectImage.astro';
+import ProjectImage2 from '../../../components/ProjectImage2.astro';
+import ProjectImage3 from '../../../components/ProjectImage3.astro';
 
-<div class="space-y-4">
-  <p class="text-sm opacity-80 leading-relaxed">
-    Installer l'AD ne suffit pas. Pour l'<strong>ANSSI</strong>, la sécurité se joue avant la promotion. 
-    Intervenir sur un serveur hors-domaine permet de neutraliser les vecteurs d'attaque hérités avant qu'ils ne soient répliqués dans toute la forêt.
-  </p>
-</div>
 
-## 🛡️ Durcissement Pré-Promotion 
+<p class="text-sm leading-relaxed" style="color: var(--text-main);">
+  Installer l'AD ne suffit pas. Pour l'<strong>ANSSI</strong>, la sécurité se joue avant la promotion.
+  Intervenir sur un serveur hors-domaine permet de neutraliser les vecteurs d'attaque hérités avant qu'ils ne soient répliqués dans toute la forêt.
+</p>
+
+---
+
+## 🛡️ Durcissement Pré-Promotion
 
 L'objectif est de réduire la surface d'attaque en désactivant les protocoles de résolution de noms et de communication réseau hérités, fréquemment exploités lors des phases de compromission initiale.
 
 ### 1. Désactivation de LLMNR
-LLMNR est un vecteur majeur d'interception de hashs NTLM. En l'absence de domaine et donc de GPO, l'intervention s'effectue directement dans le registre afin d'imposer la désactivation.
+
+LLMNR est un vecteur majeur d'interception de hashs NTLM. En l'absence de domaine — et donc de GPO — l'intervention s'effectue directement dans le registre afin d'imposer la désactivation.
 
 En cas d'échec DNS, LLMNR diffuse la requête en clair sur le réseau local, ce qui permet à un attaquant de capturer et relayer des identifiants via des attaques de type *Man-in-the-Middle*.
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/architecture-ad/promo/llmnr-desactived.png" alt="Désactivation LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Création de la clé de registre EnableMulticast</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/architecture-ad/promo/llmnr-verif-0.png" alt="Vérification LLMNR" class="rounded-lg border border-white/10 w-full shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification : Valeur positionnée à 0 (Désactivé)</p>
-  </div>
-</div>
+<ProjectImage2
+  src1="/images/projets/architecture-ad/promo/llmnr-desactived.png"
+  alt1="Désactivation LLMNR"
+  caption1="Création de la clé de registre EnableMulticast"
+  src2="/images/projets/architecture-ad/promo/llmnr-verif-0.png"
+  alt2="Vérification LLMNR"
+  caption2="Vérification : valeur positionnée à 0 (désactivé)"
+/>
 
 ### 2. Désactivation de SMBv1
-Protocole historique désormais obsolète, SMBv1 est dépourvu de mécanismes de sécurité modernes. Il a notamment été utilisé comme vecteur de propagation lors d’attaques massives telles que WannaCry.
 
-Dans ce cas précis, la fonctionnalité **SMB 1.0/CIFS** n’est pas installée sur le système : le protocole est donc déjà absent, ce qui confirme une configuration conforme aux standards de sécurité actuels.
+Protocole historique désormais obsolète, SMBv1 est dépourvu de mécanismes de sécurité modernes. Il a notamment été utilisé comme vecteur de propagation lors d'attaques massives telles que WannaCry.
 
-<div class="flex flex-col items-center my-8">
-  <img src="/images/projets/architecture-ad/promo/smb1-desactived.png" alt="Désactivation SMBv1" class="max-w-[350px] w-full rounded-lg border border-white/10 shadow-md" />
-  <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'état du rôle : Available (Non installé)</p>
-</div>
+Dans ce cas précis, la fonctionnalité **SMB 1.0/CIFS** n'est pas installée sur le système : le protocole est donc déjà absent, ce qui confirme une configuration conforme aux standards de sécurité actuels.
+
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/smb1-desactived.png"
+  alt="Vérification SMBv1 non installé"
+  caption="Vérification de l'état du rôle : Available (non installé)"
+  maxWidth="520px"
+/>
 
 ### 3. Désactivation de NetBIOS
-<div class="space-y-4">
-    <p class="text-sm opacity-80 leading-relaxed">
-      NetBIOS est un protocole "bavard" : il diffuse inutilement le nom du serveur et ses métadonnées sur le segment réseau. 
-      C'est un cadeau pour un attaquant en phase de reconnaissance.
-    </p>
-    <div class="bg-white/5 border-l-2 border-blue-500 p-4 rounded-r-lg">
-      <p class="text-xs opacity-70 italic">
-        "Sa désactivation est fortement recommandée avant l’introduction du serveur dans l’Active Directory."
-      </p>
-    </div>
-  </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
-  <img src="/images/projets/architecture-ad/promo/netbios-active.png" alt="État initial" class="rounded-lg border border-white/10 w-full" />
-  <img src="/images/projets/architecture-ad/promo/netbios-desactived.png" alt="Script désactivation" class="rounded-lg border border-white/10 w-full" />
-  <img src="/images/projets/architecture-ad/promo/netbios-verif.png" alt="Audit final" class="rounded-lg border border-white/10 w-full" />
+<p class="text-sm leading-relaxed mb-4" style="color: var(--text-main);">
+  NetBIOS est un protocole bavard : il diffuse inutilement le nom du serveur et ses métadonnées sur le segment réseau, facilitant la phase de reconnaissance d'un attaquant.
+</p>
+
+<div class="border-l-2 border-blue-500 p-4 rounded-r-lg my-4" style="background-color: var(--card-bg);">
+  <p class="text-xs italic" style="color: var(--text-muted);">
+    Sa désactivation est fortement recommandée par l'ANSSI avant l'introduction du serveur dans l'Active Directory. —
+    <a href="https://cyber.gouv.fr/publications/recommandations-de-securite-relatives-active-directory" target="_blank" class="text-blue-400 hover:underline">
+      Recommandations AD — cyber.gouv.fr
+    </a>
+  </p>
 </div>
+
+<ProjectImage3
+  src1="/images/projets/architecture-ad/promo/netbios-active.png"
+  alt1="État initial NetBIOS"
+  caption1="État initial — NetBIOS actif"
+  src2="/images/projets/architecture-ad/promo/netbios-desactived.png"
+  alt2="Désactivation NetBIOS"
+  caption2="Désactivation via les propriétés IPv4 avancées"
+  src3="/images/projets/architecture-ad/promo/netbios-verif.png"
+  alt3="Vérification NetBIOS"
+  caption3="Vérification — désactivation confirmée"
+/>
 
 ---
 
-## Vérifications
+## 🔍 Vérification des ports en écoute
 
-Après redémarrage, une vérification rapide via `netstat` permet de confirmer l’état du serveur.  
+Après redémarrage, une vérification rapide via `netstat` permet de confirmer l'état du serveur.
 Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont en écoute.
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/netstat.png" alt="Paramètres NetBIOS via IPv4 avancé" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Accès aux paramètres avancés NetBIOS via les propriétés IPv4</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/netstat.png"
+  alt="Résultat netstat — ports en écoute"
+  caption="Résultat netstat — seuls les flux critiques sont en écoute"
+  maxWidth="500px"
+/>
+
+---
 
 <section class="mt-16 space-y-12">
-  
   <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
       <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
@@ -96,25 +112,22 @@ Seuls les services strictement nécessaires au rôle futur (DNS, SMB, RPC) sont 
           <span><strong>Conformité :</strong> Absence de <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">SMBv1</code> confirmée pour prévenir les ransomwares.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Serveur "Sain" :</strong> Seuls les flux critiques sont en écoute (Audit <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">netstat</code>).</span>
+          <span><strong>Serveur sain :</strong> Seuls les flux critiques sont en écoute (audit <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">netstat</code>).</span>
         </li>
       </ul>
     </div>
-    
-    {/* Bouclier - Correction Mobile et Thème */}
+
     <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
-        <div class="text-center">
-          <div class="text-5xl mb-2 filter drop-shadow-lg">🛡️</div>
-          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Système Durci</p>
-          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Baseline ANSSI</p>
-        </div>
+      <div class="text-center">
+        <div class="text-5xl mb-2 filter drop-shadow-lg">🛡️</div>
+        <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Système durci</p>
+        <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Baseline ANSSI</p>
+      </div>
     </div>
   </div>
-
-
 </section>
 
-<NextStep 
-  href="/projets/promotion-domaine" 
-  title="Promotion du domaine" 
+<NextStep
+  href="/projets/promotion-domaine"
+  title="Promotion du domaine"
 />

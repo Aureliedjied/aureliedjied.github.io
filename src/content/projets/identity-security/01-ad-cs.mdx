@@ -1,7 +1,7 @@
 ---
 title: "PKI : Déploiement du rôle AD CS"
-description: "Mise en place d’une autorité de certification d’entreprise pour établir la confiance numérique au sein du domaine."
-tags: ["Active Directory", "Sécurité", "Windows Server"]
+description: "Mise en place d'une autorité de certification d'entreprise pour établir la confiance numérique au sein du domaine."
+tags: ["Windows Server", "Active Directory", "PKI", "Sécurité"]
 category: "windows-server"
 serie: "identity-security"
 serieOrder: 2
@@ -11,325 +11,279 @@ slug: "ad-cs"
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
+import ProjectImage from '../../../components/ProjectImage.astro';
+import ProjectImage2 from '../../../components/ProjectImage2.astro';
 
+L'**Active Directory Certificate Services (AD CS)** constitue la fondation de la confiance numérique d'un environnement Windows. Dans cette étape du lab, l'objectif n'est pas seulement d'installer une autorité de certification, mais de poser une **racine de confiance propre, maîtrisée et durcie**, capable de supporter les futurs besoins : authentification forte, LDAPS, chiffrement des services et authentification machine.
 
-
-L’**Active Directory Certificate Services (AD CS)** constitue la fondation de la confiance numérique d’un environnement Windows.  
-Dans cette étape du lab, l’objectif n’est pas seulement d’installer une autorité de certification, mais de poser une **racine de confiance propre, maîtrisée et durcie** à mon lab, capable de supporter les futurs besoins : authentification forte, LDAPS, chiffrement des services et authentification machine.
-
-Le déploiement d'une **PKI (Public Key Infrastructure)** est donc abordé ici avec une logique de **sécurité, de traçabilité et de moindre privilège**.
+Le déploiement d'une **PKI (Public Key Infrastructure)** est abordé ici avec une logique de **sécurité, de traçabilité et de moindre privilège**.
 
 ---
 
 ## 🏗️ Étape 1 : Installer le rôle
 
-Je commence par ajouter le rôle **Services de certificats Active Directory**. L’objectif est de rester sur une installation strictement nécessaire à la fonction d'Autorité de Certification (CA).
+Je commence par ajouter le rôle **Services de certificats Active Directory**. L'objectif est de rester sur une installation strictement nécessaire à la fonction d'Autorité de Certification (CA).
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
-  
-  <div class="space-y-3">
-    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/identity-security/ad-cs/install-adcs.png" alt="Installation du rôle AD CS" class="rounded-lg w-full h-auto" />
-    </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Sélection du rôle racine AD CS</p>
-  </div>
+<ProjectImage2
+  src1="/images/projets/identity-security/ad-cs/install-adcs.png"
+  alt1="Installation du rôle AD CS"
+  caption1="Sélection du rôle racine AD CS"
+  src2="/images/projets/identity-security/ad-cs/install-ca.png"
+  alt2="Installation minimale CA uniquement"
+  caption2="Installation minimale : CA uniquement"
+/>
 
-<div class="space-y-3">
-    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/identity-security/ad-cs/install-ca.png" alt="Installation minimale" class="rounded-lg w-full h-auto" />
-    </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Installation minimale : CA uniquement</p>
-  </div>
-
-</div>
-
-<div class="flex items-center gap-4 p-4 bg-amber-50 dark:bg-amber-500/5 border-l-4 border-amber-400 rounded-r-xl my-8">
+<div class="flex items-center gap-4 p-4 border-l-4 border-amber-400 rounded-r-xl my-8 bg-amber-500/5">
   <span class="text-2xl">❗</span>
-  <p class="text-xs text-amber-900 dark:text-amber-200 font-medium">J’ai veillé à ne jamais changer le nom ou le domaine de cette autorité de certification, car cela rendrait tous les certificats émis invalides.</p>
+  <p class="text-xs font-medium" style="color: var(--text-main);">
+    Il ne faut jamais changer le nom ou le domaine de cette autorité de certification — cela rendrait tous les certificats émis invalides.
+  </p>
 </div>
+
 ---
 
 ## 🔐 Étape 2 : Configuration de l'Autorité Racine
 
-Je déploie une **Autorité de certification d’entreprise racine**, intégrée à l’Active Directory. Ce choix stratégique permet d'automatiser la distribution des certificats via l'**auto-enrôlement** (GPO).
+Je déploie une **Autorité de certification d'entreprise racine**, intégrée à l'Active Directory. Ce choix stratégique permet d'automatiser la distribution des certificats via l'**auto-enrôlement** (GPO).
 
 ### Durcissement Cryptographique
+
 Pour garantir une sécurité à long terme, j'ai configuré des paramètres supérieurs aux standards actuels :
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
-  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-5 rounded-2xl shadow-sm transition-transform hover:scale-[1.02]">
+  <div class="p-5 rounded-2xl shadow-sm transition-transform hover:scale-[1.02] border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <div class="flex items-center gap-3 mb-3">
       <span class="text-xl">💎</span>
-      <h4 style="color: #f59e0b;" class="text-[10px] font-black uppercase tracking-tighter bg-amber-500/10 px-2 py-1 rounded-md">Clé RSA 4096 bits</h4>
+      <h4 class="text-[10px] font-black uppercase tracking-tighter bg-amber-500/10 px-2 py-1 rounded-md text-amber-500">Clé RSA 4096 bits</h4>
     </div>
-    <p style="color: var(--text-main);" class="text-[11px] leading-relaxed">Doublement de la taille standard pour une résistance accrue au bruteforce et une longévité de la racine étendue.</p>
+    <p class="text-[11px] leading-relaxed" style="color: var(--text-main);">Doublement de la taille standard pour une résistance accrue au bruteforce et une longévité de la racine étendue.</p>
   </div>
-  
-  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="p-5 rounded-2xl shadow-sm transition-transform hover:scale-[1.02]">
+  <div class="p-5 rounded-2xl shadow-sm transition-transform hover:scale-[1.02] border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <div class="flex items-center gap-3 mb-3">
       <span class="text-xl">🔒</span>
-      <h4 style="color: #f59e0b;" class="text-[10px] font-black uppercase tracking-tighter bg-amber-500/10 px-2 py-1 rounded-md">Hachage SHA512</h4>
+      <h4 class="text-[10px] font-black uppercase tracking-tighter bg-amber-500/10 px-2 py-1 rounded-md text-amber-500">Hachage SHA512</h4>
     </div>
-    <p style="color: var(--text-main);" class="text-[11px] leading-relaxed">Utilisation d'un algorithme de hachage de pointe, garantissant l'intégrité des certificats émis face aux attaques collisionnelles.</p>
+    <p class="text-[11px] leading-relaxed" style="color: var(--text-main);">Utilisation d'un algorithme de hachage de pointe, garantissant l'intégrité des certificats émis face aux attaques collisionnelles.</p>
   </div>
 </div>
 
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/identity-security/ad-cs/adcs-4.png" alt="Clé privée" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Création d'une nouvelle clé privée sécurisée.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/identity-security/ad-cs/adcs-fin.png" alt="Résumé final" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Confirmation de la configuration réussie</p>
-  </div>
-</div>
+<ProjectImage2
+  src1="/images/projets/identity-security/ad-cs/adcs-4.png"
+  alt1="Création clé privée sécurisée RSA 4096"
+  caption1="Création d'une nouvelle clé privée RSA 4096 bits"
+  src2="/images/projets/identity-security/ad-cs/adcs-fin.png"
+  alt2="Confirmation configuration CA"
+  caption2="Confirmation de la configuration réussie"
+/>
 
 ---
 
-## 🛡️ Étape 3 : Segmenter l’administration de la PKI (Moindre privilège)
+## 🛡️ Étape 3 : Segmenter l'administration de la PKI — Moindre Privilège
 
-Administrer une PKI avec un compte **Admins du Domaine** créerait un point de compromission critique.  
-Je mets donc en place une **identité d’exploitation dédiée** : **`adm-pki`**.
+Administrer une PKI avec un compte **Admins du Domaine** créerait un point de compromission critique. Je mets donc en place une **identité d'exploitation dédiée** : `adm-pki`.
 
----
+### Création du compte d'administration PKI
 
-### 👤 Création du compte d’administration PKI
+Le compte est isolé dans une OU dédiée sans privilèges : <code style="color: var(--text-purple); background: var(--purple-border);" class="px-2 py-0.5 rounded font-mono text-xs">00_ADMINS > PKI</code>. Il est utilisé uniquement pour l'exploitation de la CA.
 
-Le compte est isolé dans une OU dédiée, sans privilèges : <code class="px-2 py-0.5 bg-slate-100 dark:bg-white/10 rounded text-blue-700 dark:text-blue-300 font-mono text-xs">00_ADMINS > PKI</code>. Il est utilisé uniquement pour l’exploitation de la CA. Il fera parti plus tard d'un groupe
+<ProjectImage2
+  src1="/images/projets/identity-security/ad-cs/adm-pki.png"
+  alt1="Création du compte adm-pki"
+  caption1="Création du compte adm-pki dédié"
+  src2="/images/projets/identity-security/ad-cs/adm-pki2.png"
+  alt2="OU PKI isolée"
+  caption2="Compte isolé dans l'OU PKI — aucun privilège accordé ici"
+/>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
-  <div class="flex flex-col gap-3">
-    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/identity-security/ad-cs/adm-pki.png" alt="Création du compte adm-pki" class="rounded-lg w-full h-auto" />
-    </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Création du compte adm-pki dédié</p>
-  </div>
-  <div class="flex flex-col gap-3">
-    <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-      <img src="/images/projets/identity-security/ad-cs/adm-pki2.png" alt="OU PKI" class="rounded-lg w-full h-auto" />
-    </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Pas de privilèges accordés ici</p>
-  </div>
-</div>
+### Activation de l'audit sur la CA
 
----
+Depuis les **propriétés de la CA**, onglet *Audit*, j'ai activé l'ensemble des catégories disponibles afin d'assurer une journalisation exhaustive des actions sensibles.
 
-### 📜 Gestion du groupe "Editeurs de certificats"
+<ProjectImage
+  src="/images/projets/identity-security/ad-cs/audit-ca.png"
+  alt="Audit complet activé sur la CA"
+  caption="Toutes les catégories d'audit activées — traçabilité complète"
+  maxWidth="500px"
+/>
 
-Afin de renforcer la sécurité de l’infrastructure <strong>AD CS</strong>, j’ai mis en place une stratégie combinant traçabilité complète et délégation maîtrisée des privilèges.
+Cette configuration garantit qu'aucune action administrative sur la CA ne puisse être effectuée sans laisser de trace exploitable dans les journaux de sécurité.
 
+### Délégation maîtrisée des droits sur la CA
 
-#### 📝 Activation complète de l’audit
+Dans une logique de **moindre privilège**, j'ai modifié l'onglet *Sécurité* de la CA afin de déléguer uniquement les droits nécessaires au compte dédié `adm-pki`.
 
-Depuis les <strong>propriétés de la CA</strong>, onglet <em>Audit</em>, j’ai activé l’ensemble des catégories disponibles afin d’assurer une journalisation exhaustive des actions sensibles :
-
-
-<div style="display: flex; justify-content: center; margin: 3rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/identity-security/ad-cs/audit-ca.png" alt="Audit complet activé sur la CA" class="rounded-lg w-full h-auto" />
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Toutes les catégories d’audit sont activées afin de garantir une traçabilité complète</p>
-  </div>
-</div>
-
-<p class="mt-4">
-Cette configuration permet de garantir qu’aucune action administrative sur la CA ne puisse être effectuée sans laisser de trace exploitable dans les journaux de sécurité.
-</p>
-
-
-
-#### 🔐 Délégation maîtrisée des droits sur la CA
-
-Dans une logique de <strong>moindre privilège</strong>, j’ai modifié l’onglet <em>Sécurité</em> de la CA afin de déléguer uniquement les droits nécessaires au compte dédié <code class="text-xs font-mono">adm-pki</code>.
-
-
-<div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="rounded-2xl p-6 my-10 overflow-hidden relative">
-  <div class="absolute top-0 right-0 p-4 opacity-5 text-4xl"></div>
-  <h4 style="color: var(--text-title);" class="text-sm font-bold mb-4 flex items-center gap-2">Permissions sur la CA : <code style="color: var(--text-purple);">adm-pki</code></h4>
+<div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="rounded-2xl p-6 my-10">
+  <h4 style="color: var(--text-title);" class="text-sm font-bold mb-4 flex items-center gap-2">
+    Permissions sur la CA : <code style="color: var(--text-purple);">adm-pki</code>
+  </h4>
   <div class="space-y-3">
-    <div class="flex items-center justify-between p-3 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5">
+    <div class="flex items-center justify-between p-3 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
       <span class="text-xs" style="color: var(--text-main);">Lire / Consulter la configuration</span>
       <span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded">ACCORDÉ</span>
     </div>
-    <div class="flex items-center justify-between p-3 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5">
+    <div class="flex items-center justify-between p-3 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
       <span class="text-xs" style="color: var(--text-main);">Gérer / Émettre les certificats</span>
       <span class="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded">ACCORDÉ</span>
     </div>
-    <div class="flex items-center justify-between p-3 bg-white/5 dark:bg-black/20 rounded-xl border border-white/5 opacity-50">
+    <div class="flex items-center justify-between p-3 rounded-xl border opacity-60" style="background-color: var(--card-bg); border-color: var(--card-border);">
       <span class="text-xs" style="color: var(--text-main);">Gérer l'autorité de certification</span>
-      <span class="text-[10px] font-bold text-red-500 bg-red-500/10 px-2 py-1 rounded font-mono italic">REFUSÉ (Moindre privilège)</span>
+      <span class="text-[10px] font-bold text-red-500 bg-red-500/10 px-2 py-1 rounded italic">REFUSÉ — Moindre privilège</span>
     </div>
   </div>
 </div>
 
-<div style="display: flex; justify-content: center; margin: 3rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/identity-security/ad-cs/droits-ca.png" alt="Droits du compte adm-pki sur la CA" class="rounded-lg w-full h-auto" />
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le compte adm-pki dispose uniquement des droits nécessaires à l'administration de la CA</p>
-  </div>
-</div>
-
-<p class="mt-4">Cette approche me permet de séparer clairement la décision humaine de l’exécution technique, tout en évitant l’utilisation de comptes administrateurs génériques dans mon lab.</p>
-
+<ProjectImage
+  src="/images/projets/identity-security/ad-cs/droits-ca.png"
+  alt="Droits du compte adm-pki sur la CA"
+  caption="Le compte adm-pki dispose uniquement des droits nécessaires à l'administration de la CA"
+  maxWidth="500px"
+/>
 
 <p class="mt-4" style="color: var(--text-main);">
-  Enfin, j'ai vérifié la cohérence globale de la configuration et des descripteurs de sécurité avec la commande <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">certutil</code>. Ce rapport détaillé des permissions me permet de garantir l'absence de privilèges excessifs et de valider l'intégrité de la racine de confiance.
+  Cette approche permet de séparer clairement la décision humaine de l'exécution technique, tout en évitant l'utilisation de comptes administrateurs génériques.
 </p>
 
-<div class="my-10">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl shadow-sm">
-    <img src="/images/projets/identity-security/ad-cs/recap-droits-ca.png" alt="Résultat de la commande certutil -dump" class="rounded-lg w-full h-auto" />
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vérification des descripteurs de sécurité et des permissions globales via certutil</p>
-  </div>
-</div>
+<p class="mt-4" style="color: var(--text-main);">
+  J'ai ensuite vérifié la cohérence globale de la configuration avec la commande <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">certutil</code>. Ce rapport détaillé des permissions permet de garantir l'absence de privilèges excessifs et de valider l'intégrité de la racine de confiance.
+</p>
+
+<ProjectImage
+  src="/images/projets/identity-security/ad-cs/recap-droits-ca.png"
+  alt="Vérification des descripteurs de sécurité via certutil"
+  caption="Vérification des descripteurs de sécurité et des permissions globales via certutil"
+  maxWidth="700px"
+/>
 
 ---
 
-## 🔍 Étape 4 : Activer l’audit 
+## 🔍 Étape 4 : Activer l'audit des Services de Certification
 
-Une PKI sans journalisation fiable constitue un angle mort de sécurité.  
-J’active donc l’audit des événements de l’autorité de certification en modifiant la GPO **DOM - S - Advanced_Auditing** pour activer l’option " Auditer les services de certifications " :
+Une PKI sans journalisation fiable constitue un angle mort de sécurité. J'active l'audit des événements de l'autorité de certification en modifiant la GPO **DOM-S-Advanced_Auditing** pour activer l'option **"Auditer les services de certifications"**.
 
+Après application, la sous-catégorie **Services de certification** passe en **Succès et Échec**, vérifiable directement via PowerShell.
 
-Après application, la sous-catégorie **Services de certification** passe bien en **Succès et Échec**, que l'on peut vérifier directement via powershell.
+<ProjectImage2
+  src1="/images/projets/identity-security/ad-cs/audit-cert.png"
+  alt1="Audit services de certification — Succès et Échec"
+  caption1="Activation de l'audit — Succès et Échec"
+  src2="/images/projets/identity-security/ad-cs/audit-pwshell-ok.png"
+  alt2="Vérification audit via auditpol"
+  caption2="Vérification de l'audit via la commande auditpol /get"
+/>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/identity-security/ad-cs/audit-cert.png" alt="Membres du groupe Éditeurs de certificats" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Auditer les succès et échecs.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/identity-security/ad-cs/audit-pwshell-ok.png" alt="Permissions de la CA" class="rounded-lg border border-white/10 shadow-md" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Vérification de l'audit avec la commande auditpol /get</p>
-  </div>
-</div>
 ---
 
 ## 🧬 Étape 5 : Vérifier la publication de la PKI dans Active Directory
 
-Même sans créer de modèle personnalisé, une autorité de certification **Enterprise** publie automatiquement des informations dans l’annuaire.
+Même sans créer de modèle personnalisé, une autorité de certification **Enterprise** publie automatiquement des informations dans l'annuaire.
 
-J’utilise **ADSI Edit** pour vérifier que le **certificat de l’autorité de certification** est bien publié dans la partition de configuration d’Active Directory.
+J'utilise **ADSI Edit** pour vérifier que le certificat de l'autorité de certification est bien publié dans la partition de configuration d'Active Directory.
 
 Chemin observé :
 `CN=Configuration → CN=Services → CN=Public Key Services → CN=Certification Authorities`
 
 La présence de cet objet confirme que :
-- la CA est correctement intégrée à Active Directory  
-- les machines du domaine peuvent récupérer le certificat racine automatiquement  
-- la chaîne de confiance peut être construite sans action manuelle
+- La CA est correctement intégrée à Active Directory
+- Les machines du domaine peuvent récupérer le certificat racine automatiquement
+- La chaîne de confiance peut être construite sans action manuelle
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 700px;">
-    <img src="/images/projets/identity-security/ad-cs/cert-ad-inscrit.png" alt="Publication du certificat de la CA dans ADSI" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.7rem; text-align: center; opacity: 0.6; margin-top: 8px; font-style: italic;">Le certificat de l’autorité de certification est bien publié dans Active Directory.</p>
-  </div>
-</div>
-
-Cette vérification confirme que l’infrastructure PKI est correctement ancrée dans l’annuaire avant de passer aux étapes suivantes.
+<ProjectImage
+  src="/images/projets/identity-security/ad-cs/cert-ad-inscrit.png"
+  alt="Publication du certificat de la CA dans ADSI Edit"
+  caption="Le certificat de l'autorité de certification est bien publié dans Active Directory"
+  maxWidth="700px"
+/>
 
 ---
 
 ## ✅ Étape 6 : Vérifier la santé de la PKI
 
-Pour terminer, j’utilise **PKIView (`pkiview.msc`)** afin de contrôler :
+Pour terminer, j'utilise **PKIView (`pkiview.msc`)** afin de contrôler la hiérarchie de certification, la validité des certificats d'autorité et la disponibilité des points **AIA** et **CDP**.
 
-- la hiérarchie de certification  
-- la validité des certificats d’autorité  
-- la disponibilité des points **AIA** et **CDP**
-
-Tous les indicateurs de mon environnement sont au vert, indiquant que la chaîne de confiance fonctionne et que les points de distribution sont accessibles.
-
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 450px;">
-    <img src="/images/projets/identity-security/ad-cs/pki-ok.png" alt="PKIview" style="width: 130%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Emplacement AIA et CDP du certificat OK</p>
-  </div>
-</div>
-
+Tous les indicateurs sont au vert — la chaîne de confiance fonctionne et les points de distribution sont accessibles par défaut.
+La configuration des points CDP/AIA via HTTP sera nécessaire lors du déploiement de Nextcloud (SEG-DMZ) et du VPN, afin que des services hors domaine puissent valider les certificats.
+<ProjectImage
+  src="/images/projets/identity-security/ad-cs/pki-ok.png"
+  alt="PKIView — tous les indicateurs au vert"
+  caption="Emplacement AIA et CDP du certificat OK"
+  maxWidth="500px"
+/>
 
 ---
 
 ## 🧩 Étape 7 : Vérification locale via la console MMC
 
-Une fois la PKI validée, je vérifie que le **certificat racine** est bien ancré dans le magasin de l’ordinateur local. C'est ce qui permet au serveur (et plus tard aux clients) de faire confiance aux certificats émis.
+Une fois la PKI validée, je vérifie que le **certificat racine** est bien ancré dans le magasin de l'ordinateur local. C'est ce qui permet au serveur (et plus tard aux clients) de faire confiance aux certificats émis.
 
-### 🔧 Accès au magasin système
-Pour inspecter les certificats de l’ordinateur local, j'utilise la console `mmc.exe` en ajoutant le composant logiciel enfichable **Certificats**.
+Pour inspecter les certificats de l'ordinateur local, j'utilise la console `mmc.exe` en ajoutant le composant logiciel enfichable **Certificats**.
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 my-8">
   <div class="space-y-2">
-    <img src="/images/projets/identity-security/ad-cs/mmc1.png" alt="MMC 1" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
-    <p class="text-[8px] text-center font-bold uppercase text-slate-500">1. Lancer MMC</p>
+    <img src="/images/projets/identity-security/ad-cs/mmc1.png" alt="Lancer MMC" class="rounded-lg shadow-sm w-full" style="border: 1px solid var(--card-border);" />
+    <p class="text-[8px] text-center font-bold uppercase" style="color: var(--text-muted);">1. Lancer MMC</p>
   </div>
   <div class="space-y-2">
-    <img src="/images/projets/identity-security/ad-cs/mmc2.png" alt="MMC 2" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
-    <p class="text-[8px] text-center font-bold uppercase text-slate-500">2. Composants</p>
+    <img src="/images/projets/identity-security/ad-cs/mmc2.png" alt="Ajouter composants" class="rounded-lg shadow-sm w-full" style="border: 1px solid var(--card-border);" />
+    <p class="text-[8px] text-center font-bold uppercase" style="color: var(--text-muted);">2. Composants</p>
   </div>
   <div class="space-y-2">
-    <img src="/images/projets/identity-security/ad-cs/mmc3.png" alt="MMC 3" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
-    <p class="text-[8px] text-center font-bold uppercase text-slate-500">3. Compte Ordinateur</p>
+    <img src="/images/projets/identity-security/ad-cs/mmc3.png" alt="Compte Ordinateur" class="rounded-lg shadow-sm w-full" style="border: 1px solid var(--card-border);" />
+    <p class="text-[8px] text-center font-bold uppercase" style="color: var(--text-muted);">3. Compte Ordinateur</p>
   </div>
   <div class="space-y-2">
-    <img src="/images/projets/identity-security/ad-cs/mmc4.png" alt="MMC 4" class="rounded-lg border border-slate-200 dark:border-white/10 shadow-sm" />
-    <p class="text-[8px] text-center font-bold uppercase text-slate-500">4. Local</p>
+    <img src="/images/projets/identity-security/ad-cs/mmc4.png" alt="Ordinateur Local" class="rounded-lg shadow-sm w-full" style="border: 1px solid var(--card-border);" />
+    <p class="text-[8px] text-center font-bold uppercase" style="color: var(--text-muted);">4. Local</p>
   </div>
 </div>
 
----
+### Validation du certificat racine
 
-### 🔍 Validation du certificat racine
-
-Dans le magasin <code class="text-xs font-mono">Autorités de certification racines de confiance → Certificats</code>, le certificat de mon autorité d’entreprise apparaît bien. 
+Dans le magasin <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">Autorités de certification racines de confiance → Certificats</code>, le certificat de mon autorité d'entreprise apparaît bien.
 
 Cette présence confirme que :
-- La CA est reconnue par le système d'exploitation.
-- Le certificat racine est approuvé localement.
-- La chaîne de confiance est prête pour les services applicatifs (LDAPS, VPN, etc.).
+- La CA est reconnue par le système d'exploitation
+- Le certificat racine est approuvé localement
+- La chaîne de confiance est prête pour les services applicatifs (LDAPS, VPN, etc.)
 
-<div class="my-10 flex flex-col items-center">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
-    <img src="/images/projets/identity-security/ad-cs/mmc5.png" alt="Certificat racine visible dans MMC" class="rounded-xl w-full max-w-3xl h-auto" />
-  </div>
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Le certificat est bien présent et valide dans le magasin de confiance local.</p>
-</div>
+<ProjectImage
+  src="/images/projets/identity-security/ad-cs/mmc5.png"
+  alt="Certificat racine visible dans MMC"
+  caption="Le certificat est bien présent et valide dans le magasin de confiance local"
+  maxWidth="700px"
+/>
 
 ---
 
 <section class="mt-16 space-y-12">
-  
   <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
       <h3 style="color: var(--text-title);" class="text-xl font-black mb-4 flex items-center gap-2">
-        <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : AD CS
+        <span class="text-green-500 text-lg">✅</span> Bilan — AD CS
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Confiance établie :</strong> Racine <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded">RSA 4096 / SHA512</code> déployée avec succès.</span>
+          <span><strong>Confiance établie :</strong> Racine <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">RSA 4096 / SHA512</code> déployée avec succès.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Sécurité :</strong> Rôles séparés entre machine et humain (Modèle RBAC).</span>
+          <span><strong>Sécurité :</strong> Rôles séparés entre machine et humain via le compte <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">adm-pki</code>.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Santé validée :</strong> AIA/CDP opérationnels et certificat visible dans le magasin local.</span>
+          <span><strong>Santé validée :</strong> AIA/CDP opérationnels, certificat visible dans le magasin local.</span>
         </li>
       </ul>
     </div>
-    
+
     <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
-        <div class="text-center">
-          <div class="text-5xl mb-2 transition-transform hover:scale-110 duration-300">📜</div>
-          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-[0.2em] font-black opacity-60">Brique de confiance prête</p>
-          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Flux critiques à sécuriser</p>
-        </div>
+      <div class="text-center">
+        <div class="text-5xl mb-2 filter drop-shadow-lg">📜</div>
+        <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-[0.2em] font-black opacity-60">Brique de confiance prête</p>
+        <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Flux critiques à sécuriser</p>
+      </div>
     </div>
   </div>
-
-
 </section>
 
-<NextStep 
-  href="/projets/ldaps" 
-  title="Activer le LDAPS et sécuriser les échanges d'annuaire" 
+<NextStep
+  href="/projets/ldaps"
+  title="Activer le LDAPS et sécuriser les échanges d'annuaire"
 />

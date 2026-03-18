@@ -2,403 +2,383 @@
 title: "Promotion du domaine"
 description: "Déploiement d'une nouvelle forêt Active Directory et hygiène initiale"
 category: "windows-server"
-tags: ["Windows Server", "Active Directory", "Déploiement"]
+tags: ["Windows Server", "Active Directory"]
 pubDate: 2026-01-11
 slug: "promotion-domaine"
-serie: "architecture-ad" 
+serie: "architecture-ad"
 serieOrder: 3
 ---
+
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
+import ProjectImage from '../../../components/ProjectImage.astro';
+import ProjectImage2 from '../../../components/ProjectImage2.astro';
+import ProjectImage3 from '../../../components/ProjectImage3.astro';
 
 ## 🚀 Promotion : Création de la Forêt
 
 Le socle système est désormais sain et durci. Nous passons à l'étape critique : l'élévation du serveur `SRV-AD-01` pour initialiser la forêt racine.
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
-  <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center">
-    <span class="text-[10px] uppercase tracking-widest opacity-40 mb-2">Nom de la Forêt</span>
+  <div class="rounded-xl p-4 flex flex-col items-center justify-center text-center border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <span class="text-[10px] uppercase tracking-widest mb-2" style="color: var(--text-muted);">Nom de la Forêt</span>
     <code class="text-blue-400 text-sm font-bold">infra.formation.local</code>
   </div>
-  <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center">
-    <span class="text-[10px] uppercase tracking-widest opacity-40 mb-2">Niveau Fonctionnel</span>
+  <div class="rounded-xl p-4 flex flex-col items-center justify-center text-center border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <span class="text-[10px] uppercase tracking-widest mb-2" style="color: var(--text-muted);">Niveau Fonctionnel</span>
     <code class="text-blue-400 text-sm font-bold">Windows Server 2016</code>
   </div>
-  <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center text-center">
-    <span class="text-[10px] uppercase tracking-widest opacity-40 mb-2">Services Actifs</span>
+  <div class="rounded-xl p-4 flex flex-col items-center justify-center text-center border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <span class="text-[10px] uppercase tracking-widest mb-2" style="color: var(--text-muted);">Services Actifs</span>
     <p class="text-blue-400 text-sm font-bold">DNS & Catalogue Global</p>
   </div>
 </div>
 
-<div class="flex flex-col lg:flex-row gap-8 items-start my-12">
-  <div class="flex-1 space-y-4">
-    <p class="text-sm opacity-80 leading-relaxed">
-      L'assistant Active Directory est lancé depuis le drapeau de notification du <strong>Gestionnaire de serveur</strong>. 
-    </p>
-    <div class="bg-blue-500/10 border-l-2 border-blue-500 p-4 rounded-r-lg">
-      <p class="text-xs leading-relaxed">
-        <strong>Note :</strong> Le choix du niveau fonctionnel 2016 assure la compatibilité avec la <em>Corbeille AD</em> et les dernières protections de sécurité de l'annuaire.
-      </p>
-    </div>
-  </div>
+### 1. Lancement de l'assistant AD DS
 
-  <div class="lg:w-1/2 w-full">
-    <div class="overflow-hidden rounded-lg border border-white/10 shadow-2xl">
-      <img 
-        src="/images/projets/architecture-ad/promo/promotion-ad.png" 
-        alt="Lancement de la promotion Active Directory" 
-        class="w-full h-auto" 
-      />
-    </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Assistant de configuration AD DS</p>
-  </div>
+L'assistant Active Directory est lancé depuis le drapeau de notification du **Gestionnaire de serveur**.
+
+<div class="rounded-xl border border-blue-500/20 p-4 bg-blue-500/5 my-4 flex items-start gap-3">
+  <div class="text-xl">💡</div>
+  <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+    Le choix du niveau fonctionnel 2016 assure la compatibilité avec la <em>Corbeille AD</em> et les dernières protections de sécurité de l'annuaire.
+  </p>
 </div>
+
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/promotion-ad.png"
+  alt="Lancement de la promotion Active Directory"
+  caption="Assistant de configuration AD DS"
+  maxWidth="600px"
+/>
 
 ### 2. Création de la forêt
-Le choix **« Ajouter une nouvelle forêt »** permet d’initialiser un environnement Active Directory isolé, maîtrisé et conforme aux bonnes pratiques.
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/creation-foret.png" alt="Création de la forêt Active Directory" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Création de la forêt racine infra.formation.local</p>
+Le choix **« Ajouter une nouvelle forêt »** permet d'initialiser un environnement Active Directory isolé, maîtrisé et conforme aux bonnes pratiques.
+
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/creation-foret.png"
+  alt="Création de la forêt Active Directory"
+  caption="Création de la forêt racine infra.formation.local"
+  maxWidth="500px"
+/>
+
+**Délégation DNS** — La création d'une délégation DNS **n'est pas cochée**, puisque le serveur héberge lui-même le service DNS intégré à Active Directory. Une délégation n'est pertinente que dans un scénario de sous-domaine ou d'intégration à une infrastructure DNS existante.
+
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/no-dns.png"
+  alt="Ne pas cocher la délégation DNS"
+  caption="Délégation DNS : ne pas cocher"
+  maxWidth="500px"
+/>
+
+<div class="rounded-xl border border-amber-500/20 p-4 bg-amber-500/5 my-6 flex items-start gap-3">
+  <div class="text-xl">🔑</div>
+  <div>
+    <p class="text-xs font-bold mb-1" style="color: var(--text-title);">Sécurité DSRM</p>
+    <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+      Le mot de passe du mode de restauration des services d'annuaire (DSRM) est défini avec une complexité élevée et stocké hors-ligne. Il est distinct de tout autre compte d'administration.
+    </p>
   </div>
 </div>
 
-**Délégation DNS** La création d’une délégation DNS **n’est pas cochée**, puisque le serveur héberge lui-même le service DNS intégré à Active Directory.  
-Une délégation n’est pertinente que dans un scénario de sous-domaine ou d’intégration à une infrastructure DNS existante.
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/mdp-dsrm.png"
+  alt="Définition du mot de passe DSRM"
+  caption="Définition du mot de passe DSRM"
+  maxWidth="500px"
+/>
 
+L'assistant propose par défaut des emplacements standards pour la base de données, les journaux et le dossier **SYSVOL**. Dans ce contexte de laboratoire maîtrisé, les chemins par défaut sont conservés afin de garantir la compatibilité maximale avec les outils et bonnes pratiques Microsoft.
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/no-dns.png" alt="ne pas ajouter de dns" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">ne pas cocher le DNS</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/sysvol.png"
+  alt="Configuration du dossier SYSVOL"
+  caption="Emplacement de la base AD, des journaux et du dossier SYSVOL"
+  maxWidth="500px"
+/>
 
+### 3. Installation de la forêt
 
-> 🔑 **Sécurité DSRM :** Le mot de passe du mode de restauration des services d'annuaire (DSRM) est défini avec une complexité élevée et stocké hors-ligne. Il est distinct de tout autre compte d'administration.
+Cette étape récapitule l'ensemble des paramètres choisis précédemment et permet une dernière vérification avant l'exécution effective de la promotion.
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/mdp-dsrm.png" alt="Définition du mot de passe DSRM"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Définition du mot de passe DSRM</p>
-  </div>
-</div>
+Une fois validée, l'installation initialise le schéma Active Directory, les partitions de la forêt, le service DNS intégré et le partage SYSVOL.
 
-L’assistant propose par défaut des emplacements standards pour la base de données, les journaux et le dossier **SYSVOL**.  
-Dans ce contexte de laboratoire maîtrisé, les chemins par défaut sont conservés afin de garantir la compatibilité maximale avec les outils et bonnes pratiques Microsoft.
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/installation-foret.png"
+  alt="Installation de la forêt Active Directory"
+  caption="Récapitulatif et lancement de l'installation de la forêt"
+  maxWidth="500px"
+/>
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/sysvol.png" alt="Configuration du dossier SYSVOL"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Emplacement de la base AD, des journaux et du dossier SYSVOL</p>
-  </div>
-</div>
+La promotion se conclut par la validation des paramètres et le redémarrage automatique du serveur. À l'issue du redémarrage, l'ouverture de session s'effectue désormais via le compte **INFRA\\Administrateur**, confirmant la création effective du domaine.
 
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/open-admin-ad.png"
+  alt="Ouverture de session INFRA\Administrateur"
+  caption="Ouverture de la session INFRA\Administrateur"
+  maxWidth="500px"
+/>
 
-**Installation de la forêt**:
-Cette étape récapitule l’ensemble des paramètres choisis précédemment.  
-Elle permet une dernière vérification avant l’exécution effective de la promotion.
-
-Une fois validée, l’installation initialise :
-- le schéma Active Directory,
-- les partitions de la forêt,
-- le service DNS intégré,
-- le partage SYSVOL.
-
-
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/installation-foret.png" alt="Installation de la forêt Active Directory"  style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Récapitulatif et lancement de l’installation de la forêt</p>
-  </div>
-</div>
-
-La promotion se conclut par la validation des paramètres et le redémarrage automatique du serveur.  
-À l’issue du redémarrage, l’ouverture de session s’effectue désormais via le compte **INFRA\\Administrateur**, confirmant la création effective du domaine.
-
-
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/open-admin-ad.png" alt="ouverture session admin" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Ouverture de la session INFRA\Administrateur</p>
-  </div>
-</div>
+---
 
 ## 🕒 Post-Configuration : Hiérarchie du temps (NTP)
 
-Dans un environnement Active Directory, la synchronisation temporelle est une composante critique de la sécurité. Le protocole **Kerberos**, pilier de l'authentification Windows, ne tolère par défaut qu'un décalage maximal de **5 minutes**. Au-delà, l'authentification échoue systématiquement.
+Dans un environnement Active Directory, la synchronisation temporelle est une composante critique de la sécurité. Le protocole **Kerberos**, pilier de l'authentification Windows, ne tolère par défaut qu'un décalage maximal de **5 minutes** — au-delà, l'authentification échoue systématiquement.
 
+### Vérification de la hiérarchie et de la source
 
-### 🔍 Vérification de la hiérarchie et de la source
+Il est indispensable de valider que le serveur est bien le référent du domaine et qu'il interroge une horloge atomique externe plutôt que son horloge matérielle locale.
 
-Il est indispensable de valider que notre serveur est bien le référent du domaine et qu'il interroge effectivement une horloge atomique externe plutôt que son horloge matérielle locale, ce qui n'est pas le cas ici :
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/architecture-ad/promo/dc-pdcemulator.png" alt="Vérification rôle FSMO" class="rounded-lg border border-white/10 shadow-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Validation du détenteur du rôle PDC Emulator via PowerShell.</p>
-  </div>
-  <div class="flex flex-col items-center">
-    <img src="/images/projets/architecture-ad/promo/time-local-value.png" alt="Vérification source NTP" class="rounded-lg border border-white/10 shadow-md w-full" />
-    <p class="text-[0.65rem] italic opacity-50 mt-2">Confirmation de la source de synchronisation active (Pool NTP).</p>
-  </div>
-</div>
+<ProjectImage2
+  src1="/images/projets/architecture-ad/promo/dc-pdcemulator.png"
+  alt1="Vérification rôle FSMO PDC Emulator"
+  caption1="Validation du détenteur du rôle PDC Emulator via PowerShell"
+  src2="/images/projets/architecture-ad/promo/time-local-value.png"
+  alt2="Vérification source NTP"
+  caption2="Source de synchronisation active avant configuration"
+/>
 
 ### Configuration du rôle PDC Emulator
-En tant que détenteur du rôle FSMO **PDC Emulator**, `SRV-AD-01` est configuré pour se synchroniser sur un pool NTP externe fiable (fr.pool.ntp.org), assurant ainsi une source de temps autoritaire pour les clients et serveurs membres.
 
-<div class="flex flex-col items-center my-8 space-y-4">
-  <img src="/images/projets/architecture-ad/promo/ntp-config.png" alt="Configuration NTP" class="rounded-lg border border-white/10 shadow-xl max-w-2xl w-full" />
-  <p class="text-xs italic opacity-50">Configuration de la source NTP externe</p>
+En tant que détenteur du rôle FSMO **PDC Emulator**, `SRV-AD-01` est configuré pour se synchroniser sur un pool NTP externe fiable (`fr.pool.ntp.org`), assurant ainsi une source de temps autoritaire pour l'ensemble des clients et serveurs membres.
+
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/ntp-config.png"
+  alt="Configuration NTP externe"
+  caption="Configuration de la source NTP externe — fr.pool.ntp.org"
+  maxWidth="700px"
+/>
+
+<div class="rounded-xl border border-amber-500/20 p-4 bg-amber-500/5 my-4 flex items-start gap-3">
+  <div class="text-xl">🛡️</div>
+  <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+    Une horloge synchronisée est indispensable pour la cohérence des journaux. Sans une base de temps commune, la corrélation d'événements lors d'un audit ou d'un incident devient impossible.
+  </p>
 </div>
 
-> 🛡️ **Note de sécurité** : Une horloge synchronisée est indispensable pour la cohérence des journaux (Logs). Sans une base de temps commune, la corrélation d'événements lors d'un audit ou d'un incident devient impossible.
+---
 
+## 🛠️ Durcissement Post-Promotion
 
-## 🛠️ Durcissement Post-Promotion 
+Une fois le domaine opérationnel, il est crucial d'ajuster les paramètres par défaut souvent trop faibles. Ces actions préparent le terrain pour un audit PingCastle réussi.
 
-Une fois le domaine opérationnel, il est crucial d'ajuster les paramètres par défaut qui sont souvent trop faibles. Ces actions préparent le terrain pour un audit PingCastle réussi.
+### 1. Activation de la Corbeille Active Directory
 
-### Activation de la Corbeille Active Directory
+L'activation est réalisée en PowerShell. Le système demande une confirmation explicite car cette action est **irréversible**. Elle garantit la récupération des objets supprimés à l'échelle de la forêt.
 
-L'activation est réalisée en PowerShell. Le système demande une confirmation explicite car cette action est irréversible. Elle garantit la récupération des objets supprimés à l’échelle de la forêt.
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/active-recycle-bin.png"
+  alt="Activation Corbeille Active Directory"
+  caption="Activation et vérification de la fonctionnalité 'Recycle Bin Feature'"
+  maxWidth="700px"
+/>
 
-<div class="flex flex-col items-center my-8">
-  <img src="/images/projets/architecture-ad/promo/active-recycle-bin.png" alt="PowerShell Activation Corbeille" class="rounded-lg border border-white/10 shadow-md w-full"/>
-  <p class="text-[0.65rem] italic opacity-50 mt-2">Activation et vérification de la fonctionnalité 'Recycle Bin Feature'</p>
-</div>
+La commande `Get-ADOptionalFeature` confirme que le périmètre (`EnabledScopes`) couvre désormais l'ensemble de la forêt `infra.formation.local`.
 
-La commande **`Get-ADOptionalFeature`** confirme que le périmètre **(`EnabledScopes`)** couvre désormais l'ensemble de la forêt `infra.formation.local`.
+### 2. Renforcement des règles de mots de passe
 
+Par défaut, Active Directory autorise des mots de passe trop courts au regard des recommandations ANSSI. La **Default Domain Policy** a donc été durcie pour élever le niveau de sécurité global du domaine :
 
-### 🔐 Durcissement de la politique de mots de passe Active Directory
-
-Modifier la *Default Domain Policy* afin d’imposer des mots de passe robustes, limiter les tentatives de connexion et réduire la surface d’attaque des comptes intégrés. Cette GPO ne sera modifiée que pour le strict minimum, nous n'y toucherons plus par la suite. Des GPOs plus ciblées seront alors créées selon les besoins.
-
-
-### 1. Renforcement des règles de mots de passe
-
-Par défaut, Active Directory autorise des mots de passe trop courts au regard des recommandations actuelles de l’ANSSI.  
-La **Default Domain Policy** a donc été durcie afin d’élever le niveau de sécurité global du domaine.
-
-- Longueur minimale du mot de passe : **14 caractères**
+- Longueur minimale : **14 caractères**
 - Activation de la **complexité**
 - Historique des mots de passe activé pour empêcher la réutilisation
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/gpo-password-length.png" alt="GPO Longueur mot de passe" class="rounded-lg border border-white/10 w-full shadow-md" />
-      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Configuration de la longueur minimale à 14 caractères</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/gpo-password-length.png"
+  alt="GPO Longueur mot de passe"
+  caption="Configuration de la longueur minimale à 14 caractères"
+  maxWidth="500px"
+/>
 
-🔎 Objectif : rendre les attaques par force brute et par dictionnaire nettement plus coûteuses.
-
-
-### 2. Politique de verrouillage des comptes
+### 3. Politique de verrouillage des comptes
 
 Une politique de verrouillage a été mise en place afin de bloquer les attaques par dictionnaire en ligne :
 
-* **Durée de vérouillage :** 30 minutes
-* **Réinitialisation :** 30 minutes
-* **Seuil de verrouillage :** 5 tentatives infructueuses
+- **Seuil de verrouillage :** 5 tentatives infructueuses
+- **Durée de verrouillage :** 30 minutes
+- **Réinitialisation :** 30 minutes
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/gpo-lockout.png" alt="GPO Verrouillage compte" class="rounded-lg border border-white/10 w-full shadow-md" />
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Seuil de verrouillage fixé à 5 tentatives pour 30 minutes</p>
-  </div>
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/gpo-lockout.png"
+  alt="GPO Verrouillage compte"
+  caption="Seuil de verrouillage fixé à 5 tentatives pour 30 minutes"
+  maxWidth="500px"
+/>
+
+<div class="rounded-xl border border-amber-500/20 p-4 bg-amber-500/5 my-4 flex items-start gap-3">
+  <div class="text-xl">🛡️</div>
+  <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+    Le verrouillage de compte est une mesure à double tranchant : mal calibrée, elle peut être exploitée pour provoquer un déni de service. Elle reste néanmoins indispensable pour bloquer efficacement les attaques automatisées.
+  </p>
 </div>
 
-> 🛡️ **Note de sécurité** :
-Le verrouillage de compte est une mesure à double tranchant : mal calibrée, elle peut être exploitée pour provoquer un déni de service.  
-Elle reste néanmoins indispensable pour bloquer efficacement les attaques automatisées.
-
-
-### 3. Hygiène des comptes intégrés
-
+### 4. Hygiène des comptes intégrés
 
 Le compte **Administrateur** possède un **SID immuable (500)**, ce qui en fait une cible triviale pour les attaques par force brute. Pour entraver la reconnaissance, j'applique des mesures de renommage via la *Default Domain Policy*.
 
-<div class="flex flex-col items-center my-10">
-  <div class="max-w-md w-full group">
-    <div class="overflow-hidden rounded-xl border border-white/10 shadow-2xl transition-transform group-hover:scale-[1.02]">
-      <img src="/images/projets/architecture-ad/promo/gpo-modif.png" alt="GPO Edit" class="w-full h-auto" />
-    </div>
-    <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Édition de la stratégie de groupe racine</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/gpo-modif.png"
+  alt="Édition de la stratégie de groupe racine"
+  caption="Édition de la Default Domain Policy"
+  maxWidth="400px"
+/>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-  
-  <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+  <div class="rounded-2xl p-6 space-y-4 border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <div class="flex items-center gap-3">
       <span class="bg-red-500/20 text-red-400 p-2 rounded-lg text-xs font-bold">SID 500</span>
-      <h4 class="font-bold text-sm">Compte Administrateur</h4>
+      <h4 class="font-bold text-sm" style="color: var(--text-title);">Compte Administrateur</h4>
     </div>
-    <div class="aspect-video rounded-lg overflow-hidden border border-white/5">
-      <img src="/images/projets/architecture-ad/promo/gpo-rename-admin.png" alt="Rename Admin" class="w-full h-full object-cover object-top" />
+    <div class="rounded-lg overflow-hidden" style="border: 1px solid var(--card-border);">
+      <img src="/images/projets/architecture-ad/promo/gpo-rename-admin.png" alt="Renommage Admin" class="w-full h-full object-cover object-top" />
     </div>
-    <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Action : Renommage du compte racine</p>
+    <p class="text-[11px] italic text-center" style="color: var(--text-muted);">Action : renommage du compte racine</p>
   </div>
 
-  <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+  <div class="rounded-2xl p-6 space-y-4 border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <div class="flex items-center gap-3">
       <span class="bg-amber-500/20 text-amber-400 p-2 rounded-lg text-xs font-bold">SID 501</span>
-      <h4 class="font-bold text-sm">Compte Invité</h4>
+      <h4 class="font-bold text-sm" style="color: var(--text-title);">Compte Invité</h4>
     </div>
-    <div class="aspect-video rounded-lg overflow-hidden border border-white/5">
-      <img src="/images/projets/architecture-ad/promo/gpo-rename-guest.png" alt="Rename Guest" class="w-full h-full object-cover object-top" />
+    <div class="rounded-lg overflow-hidden" style="border: 1px solid var(--card-border);">
+      <img src="/images/projets/architecture-ad/promo/gpo-rename-guest.png" alt="Renommage Guest" class="w-full h-full object-cover object-top" />
     </div>
-    <p class="text-[11px] opacity-60 leading-relaxed italic text-center">Action : Renommage du compte invité</p>
+    <p class="text-[11px] italic text-center" style="color: var(--text-muted);">Action : renommage du compte invité</p>
   </div>
 </div>
 
-- Désactivation complète du compte Invité
+Désactivation complète du compte Invité :
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/guest-disabled.png" alt="Désactivation du compte Invité" class="rounded-lg border border-white/10 shadow-md w-full"/>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Désactivation du compte Invité via GPO</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/guest-disabled.png"
+  alt="Désactivation du compte Invité"
+  caption="Désactivation du compte Invité via GPO"
+  maxWidth="500px"
+/>
 
-🎯 Objectif : sortir des schémas d’attaque standards utilisés par les outils automatisés.
+### 5. Application de la stratégie
 
+<ProjectImage2
+  src1="/images/projets/architecture-ad/promo/gpupdate.png"
+  alt1="Application de la GPO via PowerShell"
+  caption1="Application immédiate via gpupdate /force"
+  src2="/images/projets/architecture-ad/promo/activer-gpo.png"
+  alt2="Activation de la GPO au niveau du domaine"
+  caption2="Application de la Default Domain Policy à l'échelle du domaine"
+/>
 
-### 4. Application de la stratégie
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div style="display: flex; justify-content: center; margin: 2rem 0;">
-    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/architecture-ad/promo/gpupdate.png" alt="Application de la GPO via PowerShell" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Application immédiate via gpupdate /force</p>
-    </div>
-  </div>
-
-  <div style="display: flex; justify-content: center; margin: 2rem 0;">
-    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/architecture-ad/promo/activer-gpo.png" alt="Activation de la GPO au niveau du domaine" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Application de la Default Domain Policy à l’échelle du domaine</p>
-    </div>
-  </div>
-</div>
+---
 
 ## 👤 Création du compte d'administration nominatif
 
 Pour respecter le principe du moindre privilège et assurer la traçabilité, j'abandonne l'usage du compte générique au profit d'un compte nominatif hautement sécurisé.
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
-  <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+  <div class="p-4 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <div class="text-blue-400 mb-2">📂</div>
-    <h4 class="text-xs font-bold uppercase tracking-tight mb-1">Isolation OU</h4>
-    <p class="text-[10px] opacity-60 leading-tight text-balance">Positionné en zone Tier-0 (Haute Sécurité)</p>
+    <h4 class="text-xs font-bold uppercase tracking-tight mb-1" style="color: var(--text-title);">Isolation OU</h4>
+    <p class="text-[10px] leading-tight" style="color: var(--text-muted);">Positionné en zone Tier-0 (Haute Sécurité)</p>
   </div>
-
-  <div class="bg-white/5 border border-white/10 p-4 rounded-xl border-l-amber-500/50">
+  <div class="p-4 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <div class="text-amber-400 mb-2">🛡️</div>
-    <h4 class="text-xs font-bold uppercase tracking-tight mb-1">Anti-Delegation</h4>
-    <p class="text-[10px] opacity-60 leading-tight text-balance">Protection contre les attaques de relais Kerberos</p>
+    <h4 class="text-xs font-bold uppercase tracking-tight mb-1" style="color: var(--text-title);">Anti-Délégation</h4>
+    <p class="text-[10px] leading-tight" style="color: var(--text-muted);">Protection contre les attaques de relais Kerberos</p>
   </div>
-
-  <div class="bg-white/5 border border-white/10 p-4 rounded-xl">
+  <div class="p-4 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
     <div class="text-green-400 mb-2">🔐</div>
-    <h4 class="text-xs font-bold uppercase tracking-tight mb-1">Crypto Forte</h4>
-    <p class="text-[10px] opacity-60 leading-tight text-balance">Restriction stricte au chiffrement AES 128/256</p>
+    <h4 class="text-xs font-bold uppercase tracking-tight mb-1" style="color: var(--text-title);">Crypto Forte</h4>
+    <p class="text-[10px] leading-tight" style="color: var(--text-muted);">Restriction stricte au chiffrement AES 128/256</p>
   </div>
 </div>
 
-<div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-xl text-sm opacity-80 leading-relaxed italic">
-  "L'activation de l'option <strong>Account is sensitive and cannot be delegated</strong> est une recommandation ANSSI majeure pour prévenir l'usurpation de ticket via des services tiers compromis."
+<div class="border-l-2 border-blue-500 p-4 rounded-r-lg my-6" style="background-color: var(--card-bg);">
+  <p class="text-xs leading-relaxed italic" style="color: var(--text-muted);">
+    L'activation de l'option <strong>Account is sensitive and cannot be delegated</strong> est une recommandation ANSSI majeure pour prévenir l'usurpation de ticket via des services tiers compromis. —
+    <a href="https://cyber.gouv.fr/publications/recommandations-de-securite-relatives-active-directory" target="_blank" class="text-blue-400 hover:underline">
+      Recommandations AD — cyber.gouv.fr
+    </a>
+  </p>
 </div>
 
+Pour garantir une configuration homogène et sans erreur, j'utilise PowerShell pour créer le compte d'administration nominatif. Ce script applique immédiatement les durcissements recommandés : isolation en OU, chiffrement AES uniquement et interdiction de délégation.
 
-Pour garantir une configuration homogène et sans erreur, j'ai utilisé PowerShell pour créer mon compte d'administration nominatif. Ce script applique immédiatement les durcissements recommandés (Isolation en OU, chiffrement AES uniquement et interdiction de délégation). Le compte Administrateur renommé sera lui aussi protégé de la délégation.
+<ProjectImage2
+  src1="/images/projets/architecture-ad/promo/script-adm.png"
+  alt1="Script PowerShell création admin"
+  caption1="Exécution du script de création du compte adm-aurelie"
+  src2="/images/projets/architecture-ad/promo/psh-create-admin.png"
+  alt2="Vérification adm-aurelie"
+  caption2="Vérification de adm-aurelie dans l'annuaire"
+/>
 
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
-  <div style="display: flex; justify-content: center; margin: 2rem 0;">
-    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/architecture-ad/promo/script-adm.png" alt="Script PowerShell création admin" class="rounded-lg border border-white/10 shadow-md w-full" />
-      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Exécution du script de création du compte adm-aurelie</p>
-    </div>
-  </div>
-  <div style="display: flex; justify-content: center; margin: 2rem 0;">
-    <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-      <img src="/images/projets/architecture-ad/promo/psh-create-admin.png" alt="vérification adm-aurelie" style="width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);" />
-      <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Vérification de l'adm-aurelie dans l'annuaire</p>
-    </div>
-  </div>
+<div class="rounded-xl border border-blue-500/20 p-4 bg-blue-500/5 my-4 flex items-start gap-3">
+  <div class="text-xl">💡</div>
+  <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+    Désormais, toutes les actions de configuration suivantes seront effectuées avec le compte <code>adm-aurelie</code>. Le compte administrateur racine est officiellement mis hors service.
+  </p>
 </div>
 
-> 💡 Désormais, toutes les actions de configuration suivantes seront effectuées avec ce compte `adm-aurelie`. Le compte administrateur racine est officiellement mis "off".
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/adm-aurelie-session.png"
+  alt="Session adm-aurelie"
+  caption="Session avec le nouvel administrateur adm-aurelie"
+  maxWidth="500px"
+/>
 
-
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/adm-aurelie-session.png" alt="Session adm-aurelie" class="rounded-lg border border-white/10 shadow-md w-full"/>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Session avec le nouvel administrateur adm-aurelie</p>
-  </div>
-</div>
+---
 
 ## 🔐 Durcissement du protocole Kerberos
 
-<div class="flex flex-col md:flex-row gap-8 items-center my-12">
-  <div class="flex-1">
-    <p class="text-sm opacity-80 leading-relaxed mb-4">
-      Par défaut, Active Directory peut autoriser des types de chiffrement obsolètes (RC4, DES) pour assurer la compatibilité avec d'anciens systèmes. Ces protocoles sont aujourd'hui vulnérables aux attaques de type <strong>Kerberoasting</strong>.
-    </p>
-    <div style="background-color: var(--card-bg); border: 1px solid var(--purple-border);" class="p-5 rounded-xl border-l-4">
-      <h4 style="color: var(--text-purple);" class="text-xs font-black uppercase tracking-widest mb-2">Décision de Sécurité</h4>
-        <p class="text-xs leading-relaxed">
-          En forçant l'<strong>AES-128</strong> et l'<strong>AES-256</strong> via la GPO, c'est comme si on remplaçait une vieille serrure à clé simple par un verrou de haute sécurité : L’objectif est de limiter l’exposition aux attaques de type Kerberoasting en supprimant les algorithmes de chiffrement faibles.
-        </p>
-    </div>
-  </div>
+Par défaut, Active Directory peut autoriser des types de chiffrement obsolètes (RC4, DES) pour assurer la compatibilité avec d'anciens systèmes. Ces protocoles sont aujourd'hui vulnérables aux attaques de type **Kerberoasting**.
+
+<div style="background-color: var(--card-bg); border: 1px solid var(--purple-border);" class="p-5 rounded-xl border-l-4 my-6">
+  <h4 style="color: var(--text-purple);" class="text-xs font-black uppercase tracking-widest mb-2">Décision de sécurité</h4>
+  <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+    En forçant l'<strong>AES-128</strong> et l'<strong>AES-256</strong> via GPO, l'objectif est de limiter l'exposition aux attaques de type Kerberoasting en supprimant les algorithmes de chiffrement faibles — comme remplacer une vieille serrure par un verrou de haute sécurité.
+  </p>
 </div>
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <div style="display: flex; flex-direction: column; align-items: center; max-width: 500px;">
-    <img src="/images/projets/architecture-ad/promo/chiffrement-aes.png" alt="Chiffrement sécurisé pour tout le domaine" class="rounded-lg border border-white/10 shadow-md w-full"/>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Chiffrement sécurisé pour tout le domaine</p>
-  </div>
-</div>
+<ProjectImage
+  src="/images/projets/architecture-ad/promo/chiffrement-aes.png"
+  alt="Chiffrement AES pour tout le domaine"
+  caption="Restriction au chiffrement AES 128/256 pour tout le domaine"
+  maxWidth="500px"
+/>
 
+---
 
 <section class="mt-16 space-y-12">
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/5 border border-white/10 rounded-2xl p-8">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
-      <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-        <span class="text-green-400">✅</span> Bilan de l'étape 03
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan de l'étape 03
       </h3>
       <ul class="space-y-3">
-        <li class="flex items-start gap-3 text-sm opacity-80">
-          <span><strong>Domaine opérationnel :</strong> Forêt <code>infra.formation.local</code> initialisée.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Domaine opérationnel :</strong> Forêt <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">infra.formation.local</code> initialisée.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm opacity-80">
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
           <span><strong>Hygiène respectée :</strong> Comptes Administrateur et Invité renommés par GPO.</span>
         </li>
-        <li class="flex items-start gap-3 text-sm opacity-80">
-          <span><strong>Accès sécurisé :</strong> Mise en place d'un compte nominatif avec protection AES.</span>
+        <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
+          <span><strong>Accès sécurisé :</strong> Compte nominatif <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1 py-0.5 rounded text-[10px] font-mono">adm-aurelie</code> avec protection AES et anti-délégation.</span>
         </li>
       </ul>
     </div>
-    
-    <div class="hidden md:flex justify-center border-l border-white/10 pl-8">
-        <div class="text-center">
-          <div class="text-4xl mb-2">🌳</div>
-          <p class="text-[10px] uppercase tracking-tighter opacity-40 font-bold">Forêt racine créée</p>
-        </div>
+
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+      <div class="text-center">
+        <div class="text-5xl mb-2 filter drop-shadow-lg">🌳</div>
+        <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Forêt racine créée</p>
+        <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Domaine opérationnel et durci</p>
+      </div>
     </div>
   </div>
-
 </section>
 
-<NextStep 
-  href="/projets/break-glass-account" 
-  title="Mettre en place un compte de secours" 
+<NextStep
+  href="/projets/break-glass-account"
+  title="Mettre en place un compte de secours"
 />
 

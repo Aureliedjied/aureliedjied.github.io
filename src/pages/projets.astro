@@ -11,7 +11,7 @@ const seriesStats = Object.entries(SERIES).map(([key, data]) => {
   
   return {
     key,
-    ...data, // On récupère ici title, description, icon, color
+    ...data,
     count: projectsInSerie.length,
     tags: tagsInSerie
   };
@@ -20,15 +20,29 @@ const seriesStats = Object.entries(SERIES).map(([key, data]) => {
 const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].sort();
 ---
 
-<Layout title="Expertises Techniques">
+<Layout title="Projets personnels">
   <div class="max-w-6xl mx-auto py-12 px-4">
+
     <header class="mb-12">
       <h1 class="text-4xl font-bold tracking-tighter" style="color: var(--text-title);">Projets personnels</h1>
       <p class="mt-4 text-lg opacity-70 max-w-3xl leading-relaxed" style="color: var(--text-main);">
-        Bienvenue dans mon laboratoire technique. Ces projets sont issus de mes <strong>travaux pratiques et labs personnels</strong> ; ils documentent mon apprentissage et sont amenés à évoluer au fil de mes découvertes et de mes montées en compétence.
+        Bienvenue dans mon laboratoire technique. Ces projets sont issus de mes <strong>travaux pratiques et labs personnels</strong> ; ils documentent mon apprentissage en suivant les recommandations officielles ANSSI et Microsoft, et sont amenés à évoluer au fil de mes découvertes et de mes montées en compétence.
       </p>
     </header>
+    <div class="flex flex-wrap gap-3 mb-8">
+      <a href="https://cyber.gouv.fr" target="_blank"
+        class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-all hover:border-purple-500/40"
+        style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-muted);">
+        <i class="ri-shield-check-line text-red-500"></i> Recommandations ANSSI
+      </a>
+      <a href="https://docs.microsoft.com" target="_blank"
+        class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border transition-all hover:border-purple-500/40"
+        style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-muted);">
+        <i class="ri-microsoft-fill text-blue-500"></i> Best Practices Microsoft
+      </a>
+    </div>
 
+    <!-- Filtres par tag -->
     <div class="flex flex-wrap gap-3 mb-16">
       <button class="filter-btn active" data-filter="all">Tous les domaines</button>
       {allUniqueTags.map(tag => (
@@ -36,40 +50,57 @@ const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].
       ))}
     </div>
 
+    <!-- Grille des séries -->
     <div id="series-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {seriesStats.map((serie) => (
-        <a 
-          href={`/series/${serie.key}`} 
-          class="group relative p-8 rounded-[2rem] border transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between min-h-[320px]" 
+        <a
+          href={`/series/${serie.key}`}
+          class="group relative p-8 rounded-[2rem] border transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between min-h-[320px]"
           style={`background-color: var(--card-bg); border-color: var(--card-border); --serie-color: ${serie.color || '#a855f7'};`}
         >
-          <div class="absolute top-6 right-8 px-3 py-1 rounded-full text-[10px] font-bold border"
-               style={`background-color: ${serie.color}11; color: ${serie.color}; border-color: ${serie.color}33;`}>
-            {serie.count} Articles
+          <!-- Badge nombre d'articles -->
+          <div
+            class="absolute top-6 right-8 px-3 py-1 rounded-full text-[10px] font-bold border"
+            style={`background-color: ${serie.color}11; color: ${serie.color}; border-color: ${serie.color}33;`}
+          >
+            {serie.count} {serie.count > 1 ? 'Articles' : 'Article'}
           </div>
 
           <div class="space-y-6">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border transition-all group-hover:scale-110 group-hover:shadow-lg"
-                 style={`background-color: ${serie.color}11; border-color: ${serie.color}22; color: ${serie.color}; shadow-color: ${serie.color}44;`}>
-                    {serie.icon === 'windows' && <i class="ri-microsoft-fill"></i>}
-                    {serie.icon === 'linux' && <i class="ri-ubuntu-fill"></i>}
-                    {serie.icon === 'network' && <i class="ri-router-line"></i>}
-                    {serie.icon === 'security' && <i class="ri-shield-keyhole-line"></i>}
-                    {serie.icon === 'backup' && <i class="ri-database-2-line"></i>}
-                    {serie.icon === 'monitoring' && <i class="ri-dashboard-3-line"></i>}
-                    {serie.icon === 'itsm' && <i class="ri-customer-service-2-line"></i>}
-                  </div>
 
+            <!-- Icône -->
+            <div
+              class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border transition-all group-hover:scale-110"
+              style={`background-color: ${serie.color}11; border-color: ${serie.color}22; color: ${serie.color};`}
+            >
+              {serie.icon === 'windows'    && <i class="ri-microsoft-fill"></i>}
+              {serie.icon === 'linux'      && <i class="ri-terminal-box-fill"></i>}
+              {serie.icon === 'network'    && <i class="ri-router-line"></i>}
+              {serie.icon === 'security'   && <i class="ri-shield-keyhole-line"></i>}
+              {serie.icon === 'backup'     && <i class="ri-database-2-line"></i>}
+              {serie.icon === 'monitoring' && <i class="ri-dashboard-3-line"></i>}
+              {serie.icon === 'itsm'       && <i class="ri-customer-service-2-line"></i>}
+              {serie.icon === 'storage'    && <i class="ri-hard-drive-2-line"></i>}
+              {serie.icon === 'nextcloud'  && <i class="ri-cloud-fill"></i>}
+              {serie.icon === 'glpi'       && <i class="ri-ticket-2-line"></i>}
+            </div>
+
+            <!-- Titre + description -->
             <div>
-              <h2 class="text-2xl font-bold group-hover:text-[var(--serie-color)] transition-colors" style="color: var(--text-title);">
+              <h2
+                class="text-2xl font-bold group-hover:text-[var(--serie-color)] transition-colors"
+                style="color: var(--text-title);"
+              >
                 {serie.title}
               </h2>
               <p class="text-sm opacity-70 mt-2" style="color: var(--text-main);">
                 {serie.description}
               </p>
             </div>
+
           </div>
 
+          <!-- Tags -->
           <div class="flex flex-wrap gap-2 mt-4">
             {serie.tags.slice(0, 3).map(tag => (
               <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-white/5 bg-white/5 opacity-40">
@@ -78,53 +109,59 @@ const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].
             ))}
           </div>
 
+          <!-- CTA -->
           <div class="mt-8 text-xs font-bold uppercase tracking-widest" style={`color: ${serie.color};`}>
             Explorer le dossier <span class="inline-block transition-transform group-hover:translate-x-2">→</span>
           </div>
+
         </a>
       ))}
     </div>
 
-<div id="projects-results" class="hidden flex flex-col gap-4">
-      {allProjects.map((project) => (
-        <a 
-          href={`/projets/${project.slug}`} 
-          class="project-card p-6 rounded-2xl border transition-all hover:border-purple-500/50" 
-          data-tags={project.data.tags?.join(',').toLowerCase()}
-          style="background-color: var(--card-bg); border-color: var(--card-border);"
-        >
-          <div class="flex flex-col gap-4">
-            {/* Titre et Flèche */}
-            <div class="flex justify-between items-start">
-              <h3 class="text-xl font-bold leading-tight pr-4" style="color: var(--text-title);">
-                {project.data.title}
-              </h3>
-              <span class="text-purple-500 text-xl shrink-0">→</span>
-            </div>
+    <!-- Liste des projets filtrés par tag -->
+    <div id="projects-results" class="hidden">
+      <div class="flex flex-col gap-4">
+        {allProjects.map((project) => (
+          <a
+            href={`/projets/${project.slug}`}
+            class="project-card p-6 rounded-2xl border transition-all hover:border-purple-500/50"
+            data-tags={project.data.tags?.join(',').toLowerCase()}
+            style="background-color: var(--card-bg); border-color: var(--card-border);"
+          >
+            <div class="flex flex-col gap-4">
 
-            {/* Tags : Passage en flex-wrap pour éviter le débordement */}
-            <div class="flex flex-wrap gap-2">
-              {project.data.tags?.map(tag => (
-                <span class="text-[9px] px-2 py-1 rounded-md bg-white/5 border border-white/10 opacity-50 whitespace-nowrap">
-                  #{tag}
-                </span>
-              ))}
-            </div>
+              <!-- Titre et flèche -->
+              <div class="flex justify-between items-start">
+                <h3 class="text-xl font-bold leading-tight pr-4" style="color: var(--text-title);">
+                  {project.data.title}
+                </h3>
+                <span class="text-purple-500 text-xl shrink-0">→</span>
+              </div>
 
-            {/* Description */}
-            <p class="text-sm opacity-60 leading-relaxed" style="color: var(--text-main);">
-              {project.data.description}
-            </p>
-          </div>
-        </a>
-      ))}
+              <!-- Tags -->
+              <div class="flex flex-wrap gap-2">
+                {project.data.tags?.map(tag => (
+                  <span class="text-[9px] px-2 py-1 rounded-md bg-white/5 border border-white/10 opacity-50 whitespace-nowrap">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <!-- Description -->
+              <p class="text-sm opacity-60 leading-relaxed" style="color: var(--text-main);">
+                {project.data.description}
+              </p>
+
+            </div>
+          </a>
+        ))}
+      </div>
     </div>
+
   </div>
 </Layout>
 
 <style>
- 
-
   .filter-btn {
     padding: 0.5rem 1rem;
     border-radius: 0.75rem;
@@ -146,21 +183,18 @@ const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].
     background-color: rgba(168, 85, 247, 0.1);
     color: rgb(168, 85, 247);
   }
-
-  .hidden { 
-    display: none; 
-  }
 </style>
 
 <script>
-  /* ... Le script reste identique, il gère déjà parfaitement le basculement ... */
   const buttons = document.querySelectorAll('.filter-btn');
   const seriesGrid = document.getElementById('series-grid');
   const projectsResults = document.getElementById('projects-results');
   const projectCards = document.querySelectorAll('.project-card');
 
   function applyFilter(filterValue: string) {
-    buttons.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-filter') === filterValue));
+    buttons.forEach(btn =>
+      btn.classList.toggle('active', btn.getAttribute('data-filter') === filterValue)
+    );
 
     if (filterValue === 'all') {
       seriesGrid?.classList.remove('hidden');
@@ -168,10 +202,11 @@ const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].
     } else {
       seriesGrid?.classList.add('hidden');
       projectsResults?.classList.remove('hidden');
-      
+
       projectCards.forEach(card => {
         const tags = card.getAttribute('data-tags') || '';
-        (card as HTMLElement).style.display = tags.includes(filterValue.toLowerCase()) ? 'block' : 'none';
+        (card as HTMLElement).style.display =
+          tags.includes(filterValue.toLowerCase()) ? 'block' : 'none';
       });
     }
   }
@@ -181,7 +216,9 @@ const allUniqueTags = [...new Set(allProjects.flatMap(p => p.data.tags || []))].
       const filter = button.getAttribute('data-filter') || 'all';
       applyFilter(filter);
       const url = new URL(window.location.href);
-      filter === 'all' ? url.searchParams.delete('filter') : url.searchParams.set('filter', filter);
+      filter === 'all'
+        ? url.searchParams.delete('filter')
+        : url.searchParams.set('filter', filter);
       window.history.pushState({}, '', url);
     });
   });

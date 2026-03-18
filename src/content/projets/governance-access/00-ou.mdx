@@ -1,7 +1,7 @@
 ---
 title: "Structuration de l'Active Directory : Modèle de Tiering et Gouvernance"
 description: "Mise en place d'une arborescence d'Unités d'Organisation (OU) conforme aux recommandations ANSSI pour le cloisonnement des privilèges."
-tags: ["Windows Server", "Active Directory", "OU", "Sécurité"]
+tags: ["Windows Server", "Active Directory", "Sécurité"]
 category: "windows-server"
 serie: "governance-access"
 serieOrder: 1
@@ -99,7 +99,7 @@ Pour une gouvernance conforme, nous créons une racine numérotée. Les préfixe
 Avant d'organiser les ressources dans l'annuaire, il est crucial de définir la réalité physique du réseau dans **AD Sites and Services**. Cela permet d'optimiser l'authentification et de préparer la future réplication multi-sites.
 
 ### Renommage du site et déclaration du Subnet
-Le site par défaut (`Default-First-Site-Name`) a été renommé **TOULON**. J'y ai associé le sous-réseau correspondant à mon segment LAN VmWare : `192.168.174.0/24`.
+Le site par défaut (`Default-First-Site-Name`) a été renommé **TOULON**. J'y ai associé le sous-réseau correspondant à mon segment SEG-SRV : `10.0.1.10/24`.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
   <img src="/images/projets/governance-access/sites-ad/renommer-site.png" alt="Etape 1 site" class="rounded-lg border border-white/10 shadow-md" />
@@ -157,6 +157,7 @@ Pour chaque OU critique, l'option **"Protéger l'objet contre la suppression acc
 ## 📂 Étape 5 : Spécificités des comptes de service (gMSA)
 
 Dans l'OU 90_INFRA_SERVICES, les gMSA sont isolés : ces comptes utilisés par des services Windows (SQL Server, backup Veeam, supervision…) n’ont pas de mot de passe humain et bénéficient d’une rotation automatique par l’AD, permettant des politiques strictes (pas de session interactive, RDP bloqué).
+
 ---
 
 ## 🛡️ Étape 6 :  Sécurisation de la chaîne de confiance (Tier 0)

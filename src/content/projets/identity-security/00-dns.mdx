@@ -1,7 +1,7 @@
 ---
 title: "DNS : Configuration de la Recherche Inversée"
-description: "Mise en place de la zone de recherche inversée pour une infrastructure AD cohérente." 
-tags: ["Active Directory", "Sécurité", "DNS"]
+description: "Mise en place de la zone de recherche inversée pour une infrastructure AD cohérente."
+tags: ["Windows Server", "Active Directory", "DNS"]
 pubDate: 2026-01-20
 category: "windows-server"
 serie: "identity-security"
@@ -11,26 +11,28 @@ slug: "dns"
 
 import SeriesStepper from '../../../components/SeriesStepper.astro';
 import NextStep from '../../../components/NextStep.astro';
+import ProjectImage from '../../../components/ProjectImage.astro';
+import ProjectImage2 from '../../../components/ProjectImage2.astro';
 
-<p class="mt-6 text-sm leading-relaxed text-slate-700 dark:text-white/70">
-Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est installé automatiquement. Pour obtenir une infrastructure cohérente et exploitable en environnement professionnel, j’ai ajouté une zone de recherche inversée.
+<p class="mt-6 text-sm leading-relaxed" style="color: var(--text-main);">
+  Lors de la promotion de mon contrôleur de domaine, le rôle DNS s'est installé automatiquement. Pour obtenir une infrastructure cohérente et exploitable en environnement professionnel, j'ai ajouté une zone de recherche inversée.
 </p>
 
-<div class="my-8 p-6 bg-blue-50 dark:bg-blue-500/5 border-l-4 border-blue-500 rounded-r-xl">
-  <h4 class="text-xs font-black uppercase tracking-widest text-blue-800 dark:text-blue-400 mb-4">
+<div class="my-8 p-6 border-l-4 border-blue-500 rounded-r-xl" style="background-color: var(--card-bg);">
+  <h4 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4">
     💡 Pourquoi la résolution inverse ?
   </h4>
   <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+    <li class="flex items-center gap-2 text-[11px] font-medium" style="color: var(--text-main);">
       <span class="text-blue-500">✔</span> Lisibilité des logs de sécurité
     </li>
-    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+    <li class="flex items-center gap-2 text-[11px] font-medium" style="color: var(--text-main);">
       <span class="text-blue-500">✔</span> Services AD (Kerberos, réplication)
     </li>
-    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+    <li class="flex items-center gap-2 text-[11px] font-medium" style="color: var(--text-main);">
       <span class="text-blue-500">✔</span> Intégration Linux & Network
     </li>
-    <li class="flex items-center gap-2 text-[11px] font-medium text-slate-700 dark:text-white/80">
+    <li class="flex items-center gap-2 text-[11px] font-medium" style="color: var(--text-main);">
       <span class="text-blue-500">✔</span> Outils d'audit (PingCastle)
     </li>
   </ul>
@@ -38,142 +40,145 @@ Lors de la promotion de mon contrôleur de domaine, le rôle DNS s’est install
 
 ---
 
-## 🔍 Étape 1 : Identifier le problème de résolution
+## 🏗️ Étape 1 : Création de la Zone Inversée (AD-Integrated)
 
-Avant toute modification, je vérifie le comportement actuel. En interrogeant l’adresse IP du DC via `nslookup`, le serveur apparaît comme **Unknown**.
-
-<div class="flex flex-col items-center my-10 group">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl transition-all group-hover:border-blue-500/30">
-    <img src="/images/projets/identity-security/dns/dns0.png" alt="Erreur nslookup Unknown" class="rounded-xl w-full max-w-2xl" />
-  </div>
-  <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Échec de résolution : absence d'enregistrement PTR</p>
-</div>
-
----
-
-## 🏗️ Étape 2 : Création de la Zone Inversée (AD-Integrated)
-
-Je crée une nouvelle zone permettant d’établir la correspondance entre les adresses IP et les noms FQDN.
+Je crée une nouvelle zone permettant d'établir la correspondance entre les adresses IP et les noms FQDN.
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-10">
-  
+
   <div class="space-y-3">
-    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/identity-security/dns/dns2.png" alt="Zone principale" class="w-full h-full object-contain" />
+    <div class="overflow-hidden rounded-xl p-2 border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+      <img src="/images/projets/identity-security/dns/dns2.png" alt="Zone principale intégrée AD" class="w-full h-full object-contain" />
     </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Type :</strong> Zone principale intégrée à l’Active Directory.</p>
+    <p class="text-[0.65rem] italic text-center" style="color: var(--text-muted);"><strong>Type :</strong> Zone principale intégrée à l'Active Directory.</p>
   </div>
 
   <div class="space-y-3">
-    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/identity-security/dns/dns3.png" alt="Réplication" class="w-full h-full object-contain" />
+    <div class="overflow-hidden rounded-xl p-2 border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+      <img src="/images/projets/identity-security/dns/dns3.png" alt="Réplication DNS" class="w-full h-full object-contain" />
     </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Réplication :</strong> Propagation à tous les serveurs DNS du domaine.</p>
+    <p class="text-[0.65rem] italic text-center" style="color: var(--text-muted);"><strong>Réplication :</strong> Propagation à tous les serveurs DNS du domaine.</p>
   </div>
 
   <div class="space-y-3">
-    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/identity-security/dns/dns4.png" alt="IPv4" class="w-full h-full object-contain" />
+    <div class="overflow-hidden rounded-xl p-2 border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+      <img src="/images/projets/identity-security/dns/dns4.png" alt="Zone IPv4" class="w-full h-full object-contain" />
     </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Protocole :</strong> Création de la zone pour l'adressage IPv4.</p>
+    <p class="text-[0.65rem] italic text-center" style="color: var(--text-muted);"><strong>Protocole :</strong> Création de la zone pour l'adressage IPv4.</p>
   </div>
 
   <div class="space-y-3">
-    <div class="aspect-video overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#0c0c0c] p-2">
-      <img src="/images/projets/identity-security/dns/dns5.png" alt="ID réseau" class="w-full h-full object-contain" />
+    <div class="overflow-hidden rounded-xl p-2 border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+      <img src="/images/projets/identity-security/dns/dns5.png" alt="ID réseau 10.0.1" class="w-full h-full object-contain" />
     </div>
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;"><strong>Réseau :</strong> Saisie de l'ID réseau <code class="text-blue-600 dark:text-blue-400">192.168.174</code>.</p>
+    <p class="text-[0.65rem] italic text-center" style="color: var(--text-muted);"><strong>Réseau :</strong> Saisie de l'ID réseau <code class="text-blue-400">10.0.1</code> (SEG-SRV).</p>
   </div>
 
 </div>
 
 ---
 
-## 🔗 Étape 3 : Automatisation du pointeur PTR
+## 🔗 Étape 2 : Automatisation du pointeur PTR
 
-Il est préférable d’activer la création automatique du pointeur pour éviter une gestion manuelle fastidieuse. Je lie l’enregistrement **A** du serveur à la zone inversée via ses propriétés.
+Il est préférable d'activer la création automatique du pointeur pour éviter une gestion manuelle fastidieuse. Je lie l'enregistrement **A** du serveur à la zone inversée via ses propriétés.
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 my-10 items-center">
-  <img src="/images/projets/identity-security/dns/dns7.png" alt="Activation PTR" class="rounded-xl border border-slate-200 dark:border-white/10 shadow-lg" />
-  <div class="bg-slate-50 dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/10">
-    <p class="text-[11px] text-slate-700 dark:text-white/70 leading-relaxed">L'option <span class="text-blue-600 dark:text-blue-400 font-bold">"Mettre à jour l'enregistrement de pointeur (PTR) associé"</span> garantit qu'à chaque changement d'IP, le DNS inverse se mettra à jour dynamiquement.</p>
+  <ProjectImage
+    src="/images/projets/identity-security/dns/dns7.png"
+    alt="Activation mise à jour PTR automatique"
+    caption="Activation de la mise à jour automatique du PTR"
+  />
+  <div class="p-6 rounded-2xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+    <p class="text-[11px] leading-relaxed" style="color: var(--text-main);">
+      L'option <span class="text-blue-400 font-bold">"Mettre à jour l'enregistrement de pointeur (PTR) associé"</span> garantit qu'à chaque changement d'IP, le DNS inverse se mettra à jour dynamiquement.
+    </p>
   </div>
 </div>
 
 ---
 
----
-## 🌐 Étape 4 : Configuration des Redirecteurs et Validation
+## 🌐 Étape 3 : Redirecteurs DNS et Validation
 
-Une fois les zones locales mises en place, j’ai ensuite configuré des redirecteurs afin de permettre au serveur de résoudre les noms externes.
+Une fois les zones locales mises en place, j'ai configuré les redirecteurs afin de permettre au serveur de résoudre les noms externes.
 
-### Pourquoi configurer des redirecteurs ?
-Mon contrôleur de domaine ne connaît que les machines de mon lab. Pour que les clients puissent naviguer sur le web, j'utilise des **redirecteurs DNS**. Le serveur local va ainsi interroger des résolveurs publics (comme ceux de Google ou Cloudflare) pour toutes les requêtes qu'il ne sait pas traiter lui-même.
+### Comment fonctionne la chaîne DNS dans ce lab ?
 
-<div class="my-10 flex flex-col items-center">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm group">
-    <img src="/images/projets/identity-security/dns/dnsredirect.png" alt="Configuration des redirecteurs DNS" class="rounded-xl max-w-full h-auto" />
-  </div>
-  <div class="mt-4 flex items-center gap-2 text-slate-500 dark:text-white/40 font-medium">
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Propriétés du serveur : Ajout des DNS de Google (8.8.8.8)</p>
-  </div>
+Dans ce lab, SRV-AD-01 ne résout pas directement les noms publics vers Internet. Le redirecteur pointe vers **OPNsense (`10.0.1.254`)**, qui prend en charge la résolution récursive via Unbound :
+
+<div class="my-6 rounded-xl p-5 border font-mono text-xs" style="background-color: var(--card-bg); border-color: var(--card-border);">
+  <p class="text-green-400 mb-1">// Domaine interne (ex: srv-ad-01.infra.formation.local)</p>
+  <p style="color: var(--text-muted);">Client → OPNsense (10.0.1.254) → SRV-AD-01 (127.0.0.1) → réponse</p>
+  <p class="text-green-400 mt-3 mb-1">// Domaine public (ex: google.com)</p>
+  <p style="color: var(--text-muted);">Client → OPNsense (10.0.1.254) → résolution récursive → réponse</p>
+  <p class="text-green-400 mt-3 mb-1">// SRV-AD-01 lui-même pour les noms publics</p>
+  <p style="color: var(--text-muted);">SRV-AD-01 → redirecteur 10.0.1.254 (OPNsense) → résolution → réponse</p>
 </div>
+
+<div class="rounded-xl border border-blue-500/20 p-4 bg-blue-500/5 my-4 flex items-start gap-3">
+  <div class="text-xl">💡</div>
+  <p class="text-xs leading-relaxed" style="color: var(--text-main);">
+    Tout le trafic DNS transite par OPNsense — aucun accès direct vers des résolveurs publics depuis les serveurs internes. Cela offre une traçabilité complète et permettra d'alimenter Graylog lors du déploiement du monitoring.
+  </p>
+</div>
+
+<ProjectImage
+  src="/images/projets/identity-security/dns/dns-ptr.png"
+  alt="Redirecteur DNS configuré vers OPNsense 10.0.1.254"
+  caption="Redirecteur DNS : 10.0.1.254 (OPNsense/Unbound)"
+  maxWidth="500px"
+/>
 
 ### Validation finale
-Je termine par un test de cohérence. La résolution inverse doit maintenant fonctionner parfaitement : le serveur doit être capable de retourner son propre nom FQDN à partir de son adresse IP.
 
-<div class="my-10 flex flex-col items-center">
-  <div class="p-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
-    <img src="/images/projets/identity-security/dns/dnsok.png" alt="Validation DNS OK" class="rounded-xl max-w-full h-auto" />
-  </div>
-  <div class="mt-4 flex items-center gap-2 text-slate-500 dark:text-white/40 font-medium">
-    <p style="font-size: 0.65rem; text-align: center; opacity: 0.5; margin-top: 8px; font-style: italic;">Test NSLOOKUP : Correspondance IP/Nom validée</p>
-  </div>
-</div>
+Je termine par un test de cohérence via `nslookup`. Le serveur doit retourner son propre nom FQDN à partir de son adresse IP — ce qui confirme que la zone inversée est opérationnelle.
 
-<div class="mt-12 space-y-6 border-t border-slate-200 dark:border-white/10 pt-8 text-balance">
-  <p class="text-sm leading-relaxed text-slate-700 dark:text-white/80 italic">
-    Cette configuration me permet d’obtenir une base propre avant le déploiement de <strong>LDAPS</strong>.
-  </p>
-  <p class="text-sm leading-relaxed text-slate-700 dark:text-white/80">
-    Elle garantit que les clients pourront authentifier le serveur sans erreur de certificat (Hostname mismatch), permettant ainsi le passage d'un protocole LDAP en clair vers un canal chiffré et intègre.
-  </p>
-</div>
+<ProjectImage
+  src="/images/projets/identity-security/dns/dnsok.png"
+  alt="Validation nslookup résolution inverse"
+  caption="Test nslookup : correspondance IP / nom FQDN validée"
+  maxWidth="500px"
+/>
+
+---
+
+<p class="text-sm leading-relaxed italic mt-8" style="color: var(--text-main);">
+  Cette configuration permet d'obtenir une base propre avant le déploiement de <strong>LDAPS</strong>.
+  Elle garantit que les clients pourront authentifier le serveur sans erreur de certificat (Hostname mismatch),
+  permettant ainsi le passage d'un protocole LDAP en clair vers un canal chiffré et intègre.
+</p>
+
+---
 
 <section class="mt-16 space-y-12">
-  
-  {/* Carte de Bilan - Responsive & Theme-Ready */}
   <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
     <div>
       <h3 style="color: var(--text-title);" class="text-xl font-black mb-4 flex items-center gap-2">
-        <span class="text-green-500 text-lg">✅</span> Bilan de l'étape : DNS
+        <span class="text-green-500 text-lg">✅</span> Bilan — DNS
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Cohérence réseau :</strong> Zone de recherche inversée (PTR) fonctionnelle sur le subnet <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">192.168.174.x</code>.</span>
+          <span><strong>Cohérence réseau :</strong> Zone de recherche inversée (PTR) fonctionnelle sur le subnet <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">10.0.1.x</code>.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Automatisation :</strong> Mise à jour dynamique des enregistrements activée via les propriétés de l'enregistrement A.</span>
+          <span><strong>Automatisation :</strong> Mise à jour dynamique des enregistrements PTR activée.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Ouverture maîtrisée :</strong> Redirecteurs DNS configurés pour assurer la résolution des noms externes.</span>
+          <span><strong>Chaîne DNS maîtrisée :</strong> Redirecteur vers OPNsense (<code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-[10px] font-mono">10.0.1.254</code>) — aucun accès DNS public direct.</span>
         </li>
       </ul>
     </div>
-    
-    {/* Globe - Visible sur Mobile et PC */}
+
     <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
-        <div class="text-center">
-          <div class="text-5xl mb-2 transition-transform hover:scale-110 duration-300 filter drop-shadow-lg">🌍</div>
-          <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest font-black opacity-60">Infrastructure Saine</p>
-          <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic font-medium">Ready for PKI & LDAPS</p>
-        </div>
+      <div class="text-center">
+        <div class="text-5xl mb-2 filter drop-shadow-lg">🌍</div>
+        <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest font-black opacity-60">Infrastructure saine</p>
+        <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Ready for PKI & LDAPS</p>
+      </div>
     </div>
   </div>
-
 </section>
 
-<NextStep 
-  href="/projets/ad-cs" 
-  title="PKI : Déploiement AD CS" 
+<NextStep
+  href="/projets/ad-cs"
+  title="PKI : Déploiement AD CS"
 />

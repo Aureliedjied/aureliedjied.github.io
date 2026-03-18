@@ -2,7 +2,7 @@
 title: "Haute Disponibilité : Préparation du Cluster et Clonage"
 description: "Mise en place du lien de synchronisation (SYNC), clonage de la VM et adressage IP du second nœud pour le futur basculement (Failover)."
 category: "opnsense"
-tags: ["OpnSense", "Cluster", "Failover", "Sécurité"]
+tags: ["Firewall", "HA", "Réseau", "Sécurité"]
 serie: "firewalling-edge"
 serieOrder: 4
 pubDate: 2026-02-05
@@ -45,8 +45,8 @@ La création d'un réseau privé dédié permet aux deux pare-feux d'échanger l
   </div>
 </div>
 
-3. **Configuration :** Je l'ai activée sous le nom **CLUSTERSYNC**.
-4. **Optimisation :** Pour plus de clarté, les interfaces sont également renommées : **AdministrationLAN** et **InternetWAN**.
+3. **Configuration :** Je l'ai activée sous le nom **SYNC**.
+4. **Optimisation :** Pour plus de clarté, les interfaces sont également renommées : **AdministrationLAN** **InternetWAN**, **CLUSTERSYNC**
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -59,7 +59,7 @@ La création d'un réseau privé dédié permet aux deux pare-feux d'échanger l
   </div>
 </div>
 
-5. **Adressage :** Configuration de l'IP statique `172.16.0.1` sur le segment SYNC.
+5. **Adressage :** Configuration de l'IP statique `172.16.0.1` sur le segment SEG-SYNC.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -123,6 +123,7 @@ Cette nouvelle VM est nommée **OPNSENSE-02** .
 
 ## ⌨️ Étape 3 : Ré-adressage via la console
 
+Le clone ayant les mêmes IPs que le Master, il faut immédiatement les modifier via la console pour éviter les conflits ARP.
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
   <div class="flex flex-col items-center">
@@ -302,7 +303,28 @@ C’est le moment de tester si tout fonctionne vraiment.
 
 Depuis le poste de travail (10.0.1.50), je vérifie que chaque étape du réseau répond correctement.
 
-### 6.1. Vérification de la sortie Internet
+### 7.1. Vérification de la connectivité SYNC
+
+Avant de tester internet, on valide que les deux nœuds se joignent bien via le lien dédié.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/22.png" 
+         alt="Ping OPN-01 vers OPN-02" 
+         class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">
+      OPN-01 (172.16.0.1) ping OPN-02 (172.16.0.2) — lien SYNC opérationnel
+    </p>
+  </div>
+  <div class="flex flex-col items-center">
+    <img src="/images/projets/firewalling-edge/opnsense/cluster/23.png" 
+         alt="Ping OPN-02 vers OPN-01" 
+         class="rounded border border-white/10 shadow-sm" />
+    <p class="text-[0.6rem] opacity-50 mt-1 italic">
+      OPN-02 (172.16.0.2) ping OPN-01 (172.16.0.1) — communication bidirectionnelle
+    </p>
+  </div>
+</div>
 
 Vérifier que la sortie Internet fonctionne bien à travers le cluster, malgré une micro-coupure :
 
@@ -317,8 +339,8 @@ Vérifier que la sortie Internet fonctionne bien à travers le cluster, malgré 
   </div>
 </div>
 
-### 6.2. Le test ultime : Le Failover (Basculement)
-Pour simuler une panne matérielle, un ping continu est effectué sur l'IP virtuelle (**10.0.1.254**) pendant lequel la VM **OPNsense-01** est éteinte brutalement. Seule une perte de paquet de 5% avant que le backup reprenne le relai est visible.
+### 7.2. Le test ultime : Le Failover (Basculement)
+Pour simuler une panne matérielle, un ping continu est effectué sur l'IP virtuelle (**10.0.1.254**) pendant lequel la VM **OPNsense-01** est éteinte brutalement. 
 
 <div class="flex justify-center my-8">
   <div class="w-full max-w-xl">
@@ -359,6 +381,6 @@ Pour simuler une panne matérielle, un ping continu est effectué sur l'IP virtu
 </section>
 
 <NextStep 
-  href="/projets/opnsense-vlan" 
-  title="Segmentation Réseau : Création et isolation des VLANs" 
+  href="/projets/opnsense-segments" 
+  title="Segmentation Réseau : Création et isolation des Segments" 
 />
