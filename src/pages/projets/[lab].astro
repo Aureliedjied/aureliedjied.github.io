@@ -1,0 +1,199 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { SERIES } from '../../constants/series';
+
+export async function getStaticPaths() {
+  const allLabs = await getCollection('labs');
+  return allLabs.map(lab => ({
+    params: { lab: lab.id },
+    props: { lab },
+  }));
+}
+
+const { lab } = Astro.props;
+
+// Séries rattachées à ce lab — on lit la propriété "lab" dans chaque série
+// Pour l'instant le lab PME contient toutes les séries de SERIES
+// On filtre via un champ optionnel "labs" dans series.ts, ou on prend tout pour lab-pme-vmware
+const allArticles = await getCollection('articles');
+
+// Calcul du nombre d'articles par série
+const seriesWithCount = Object.entries(SERIES).map(([key, data]) => {
+  const count = allArticles.filter(a => a.data.serie === key).length;
+  return { key, ...data, count };
+});
+
+const activeSeries = seriesWithCount.filter(s => s.count > 0);
+const comingSeries = seriesWithCount.filter(s => s.count === 0);
+
+const totalArticles = allArticles.length;
+const totalSeries = activeSeries.length;
+---
+
+<Layout title={lab.data.title}>
+  <div class="max-w-4xl mx-auto py-16 px-6">
+
+    <!-- Retour -->
+    <a
+      href="/projets"
+      class="inline-flex items-center gap-2 text-sm mb-10 transition-opacity opacity-50 hover:opacity-100"
+      style="color: var(--text-main);"
+    >
+      <span>←</span> Mes projets
+    </a>
+
+    <!-- En-tête lab -->
+    <header class="mb-12">
+      <div class="flex items-start justify-between mb-5">
+        <div
+          class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl border"
+          style={`background-color: ${lab.data.color}15; border-color: ${lab.data.color}25; color: ${lab.data.color};`}
+        >
+          {lab.data.icon === 'server'   && <i class="ri-server-line"></i>}
+          {lab.data.icon === 'devops'   && <i class="ri-loop-right-line"></i>}
+          {lab.data.icon === 'shield'   && <i class="ri-shield-keyhole-line"></i>}
+          {lab.data.icon === 'terminal' && <i class="ri-terminal-box-fill"></i>}
+          {lab.data.icon === 'cloud'    && <i class="ri-cloud-line"></i>}
+          {lab.data.icon === 'network'  && <i class="ri-router-line"></i>}
+        </div>
+        <span
+          class="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border"
+          style={lab.data.status === 'active'
+            ? 'background-color: rgba(16,185,129,0.1); color: rgb(16,185,129); border-color: rgba(16,185,129,0.2);'
+            : 'background-color: rgba(255,255,255,0.05); color: var(--text-muted); border-color: var(--card-border);'}
+        >
+          {lab.data.status === 'active' ? 'En cours' : 'À venir'}
+        </span>
+      </div>
+
+      <h1 class="text-3xl font-bold tracking-tight mb-3" style="color: var(--text-title);">
+        {lab.data.title}
+      </h1>
+      <p class="text-base opacity-60 max-w-2xl leading-relaxed mb-5" style="color: var(--text-main);">
+        {lab.data.description}
+      </p>
+
+      <!-- Méta -->
+      <div class="flex gap-6 mb-5">
+        <span class="text-sm" style="color: var(--text-muted);">
+          <span class="font-semibold" style="color: var(--text-title);">{totalSeries}</span> séries
+        </span>
+        <span class="text-sm" style="color: var(--text-muted);">
+          <span class="font-semibold" style="color: var(--text-title);">{totalArticles}</span> articles
+        </span>
+      </div>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2">
+        {lab.data.tags.map(tag => (
+          <span class="text-[10px] font-medium px-2 py-0.5 rounded-md border border-white/10 bg-white/5 opacity-60">
+            {tag}
+          </span>
+        ))}
+      </div>
+    </header>
+
+    <!-- Séries actives -->
+    {activeSeries.length > 0 && (
+      <section class="mb-12">
+        <p class="text-xs font-bold uppercase tracking-widest mb-5 opacity-40" style="color: var(--text-main);">
+          Séries disponibles
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {activeSeries.map(serie => (
+            <a
+              href={`/series/${serie.key}`}
+              class="group flex flex-col gap-4 p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1"
+              style={`background-color: var(--card-bg); border-color: var(--card-border); --serie-color: ${serie.color};`}
+            >
+              <div
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-base border transition-transform group-hover:scale-110"
+                style={`background-color: ${serie.color}15; border-color: ${serie.color}25; color: ${serie.color};`}
+              >
+                {serie.icon === 'windows'    && <i class="ri-microsoft-fill"></i>}
+                {serie.icon === 'linux'      && <i class="ri-terminal-box-fill"></i>}
+                {serie.icon === 'network'    && <i class="ri-router-line"></i>}
+                {serie.icon === 'security'   && <i class="ri-shield-keyhole-line"></i>}
+                {serie.icon === 'backup'     && <i class="ri-database-2-line"></i>}
+                {serie.icon === 'monitoring' && <i class="ri-dashboard-3-line"></i>}
+                {serie.icon === 'itsm'       && <i class="ri-customer-service-2-line"></i>}
+                {serie.icon === 'storage'    && <i class="ri-hard-drive-2-line"></i>}
+                {serie.icon === 'nextcloud'  && <i class="ri-cloud-fill"></i>}
+                {serie.icon === 'glpi'       && <i class="ri-ticket-2-line"></i>}
+              </div>
+
+              <div class="flex-1">
+                <h2
+                  class="text-sm font-semibold mb-1 group-hover:text-[var(--serie-color)] transition-colors"
+                  style="color: var(--text-title);"
+                >
+                  {serie.title}
+                </h2>
+                <p class="text-xs opacity-60 leading-relaxed" style="color: var(--text-main);">
+                  {serie.description}
+                </p>
+              </div>
+
+              <div
+                class="flex items-center justify-between pt-3 border-t"
+                style="border-color: var(--card-border);"
+              >
+                <span class="text-[10px] opacity-40" style="color: var(--text-main);">
+                  {serie.count} {serie.count > 1 ? 'articles' : 'article'}
+                </span>
+                <span
+                  class="text-[10px] font-bold uppercase tracking-widest transition-transform group-hover:translate-x-1 inline-block"
+                  style={`color: ${serie.color};`}
+                >
+                  Lire →
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Séries à venir -->
+    {comingSeries.length > 0 && (
+      <section>
+        <p class="text-xs font-bold uppercase tracking-widest mb-5 opacity-40" style="color: var(--text-main);">
+          À venir
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {comingSeries.map(serie => (
+            <div
+              class="flex flex-col gap-4 p-5 rounded-2xl border border-dashed opacity-40 cursor-default select-none"
+              style="background-color: var(--card-bg); border-color: var(--card-border);"
+            >
+              <div
+                class="w-9 h-9 rounded-xl flex items-center justify-center text-base border"
+                style={`background-color: ${serie.color}10; border-color: ${serie.color}20; color: ${serie.color};`}
+              >
+                {serie.icon === 'windows'    && <i class="ri-microsoft-fill"></i>}
+                {serie.icon === 'linux'      && <i class="ri-terminal-box-fill"></i>}
+                {serie.icon === 'network'    && <i class="ri-router-line"></i>}
+                {serie.icon === 'security'   && <i class="ri-shield-keyhole-line"></i>}
+                {serie.icon === 'backup'     && <i class="ri-database-2-line"></i>}
+                {serie.icon === 'monitoring' && <i class="ri-dashboard-3-line"></i>}
+                {serie.icon === 'itsm'       && <i class="ri-customer-service-2-line"></i>}
+                {serie.icon === 'storage'    && <i class="ri-hard-drive-2-line"></i>}
+                {serie.icon === 'nextcloud'  && <i class="ri-cloud-fill"></i>}
+                {serie.icon === 'glpi'       && <i class="ri-ticket-2-line"></i>}
+              </div>
+              <div>
+                <h2 class="text-sm font-semibold mb-1" style="color: var(--text-title);">{serie.title}</h2>
+                <p class="text-xs opacity-60 leading-relaxed" style="color: var(--text-main);">{serie.description}</p>
+              </div>
+              <div class="pt-3 border-t" style="border-color: var(--card-border);">
+                <span class="text-[10px] opacity-30" style="color: var(--text-muted);">En cours de rédaction…</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+  </div>
+</Layout>

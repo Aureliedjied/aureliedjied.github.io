@@ -1,25 +1,25 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 // On utilise PostLayout qui contient la barre de progression
 import PostLayout from '../../layouts/PostLayout.astro'; 
 import { SERIES } from '../../constants/series';
 import SeriesStepper from '../../components/SeriesStepper.astro';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projets');
-  return projects.map(project => ({
-    params: { slug: project.slug },
+  const allarticles = await getCollection('articles');
+  return allarticles.map(project => ({
+    params: { slug: project.data.slug ?? project.id },  // ← utilise le slug frontmatter
     props: { project },
   }));
 }
 
 const { project } = Astro.props;
-const { Content } = await project.render();
+const { Content } = await render(project);
 
 // --- LOGIQUE D'AUTOMATISATION DU STEPPER ---
-const allProjects = await getCollection('projets');
+const allarticles = await getCollection('articles');
 
-const seriesProjects = allProjects
+const seriesarticles = allarticles
   .filter(p => p.data.serie === project.data.serie)
   .sort((a, b) => {
     const orderA = Number(a.data.serieOrder) || 99;
@@ -27,12 +27,12 @@ const seriesProjects = allProjects
     return orderA - orderB;
   });
 
-const steps = seriesProjects.map(p => ({
+const steps = seriesarticles.map(p => ({
   label: p.data.title,
-  href: `/projets/${p.slug}`
+  href: `/projets/${p.data.slug ?? p.id}`
 }));
 
-const currentStepIndex = seriesProjects.findIndex(p => p.slug === project.slug);
+const currentStepIndex = seriesarticles.findIndex(p => (p.data.slug ?? p.id) === (project.data.slug ?? project.id));
 
 const seriesTitle = SERIES[project.data.serie as keyof typeof SERIES]?.title || "Documentation";
 const serieColor = SERIES[project.data.serie as keyof typeof SERIES]?.color;
@@ -48,13 +48,13 @@ const formatDate = (date: Date) => {
 <PostLayout frontmatter={{...project.data, color: serieColor}}>
   <article class="max-w-none" data-pagefind-body>
     <header class="mb-10">
-      <a href="/projets" data-pagefind-ignore 
+      <a href="/projets/lab-pme-vmware" data-pagefind-ignore 
         class="text-sm transition-colors flex items-center gap-2 mb-8 group"
         style="color: var(--text-muted);">
-        <span class="group-hover:-translate-x-1 transition-transform">←</span> Retour aux projets
+        <span class="group-hover:-translate-x-1 transition-transform">←</span> Retour aux articles
       </a>
 
-      {seriesProjects.length > 1 && (
+      {seriesarticles.length > 1 && (
         <SeriesStepper 
           steps={steps} 
           currentStepIndex={currentStepIndex} 

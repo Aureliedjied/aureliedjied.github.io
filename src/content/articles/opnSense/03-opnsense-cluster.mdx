@@ -224,7 +224,7 @@ Pour qu'un cluster soit fonctionnel et transparent, trois types de flux doivent 
   <div>
     <h4 class="font-semibold text-red-500 text-sm mb-1">Le protocole pfsync</h4>
     <p class="text-xs leading-relaxed opacity-90">
-      Le <strong>pfsync</strong> est le protocole IP 240. Sans lui, le basculement ne sera pas "Stateful". Si le Master tombe, toutes les connexions TCP actives (sessions SSH, téléchargements) seront coupées car l'Esclave n'aura aucune connaissance des sessions établies par le Master.
+      Le pfsync est identifié par le numéro de protocole IP 240, tout comme TCP porte le numéro 6 ou UDP le numéro 17. C'est pourquoi la règle firewall ne filtre pas sur un port, mais directement sur ce numéro de protocole.
     </p>
   </div>
 </div>

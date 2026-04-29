@@ -1,0 +1,126 @@
+---
+title: "Sécurisation du Segment d'Administration (SEG-SRV)"
+description: "Mise en place du filtrage restrictif, création d'alias et isolation du poste pilote GUI selon les principes du moindre privilège."
+category: "opnsense"
+tags: ["Firewall", "Filtrage", "Cyberécurité", "Segmentation"]
+serie: "firewalling-edge"
+serieOrder: 5
+pubDate: 2026-02-10
+slug: "opnsense-poste-pilote"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+import ProjectImage from '../../../components/ProjectImage.astro';
+import ProjectImage2 from '../../../components/ProjectImage2.astro';
+
+<p class="mt-6 text-sm leading-relaxed italic" style="color: var(--text-main);">
+  Dans une infrastructure critique, le segment d'administration (Management Plane) est le cœur du pouvoir. 
+  Cet article détaille comment j'ai verrouillé l'accès à la GUI d'OPNsense pour n'autoriser que mon poste pilote, 
+  appliquant ainsi une segmentation stricte conforme aux recommandations de l'ANSSI.
+</p>
+
+---
+
+## 🛡️ La philosophie : "Never Trust, Always Verify"
+
+Le segment `SEG-SRV` ne doit pas être un réseau "ouvert". Pour garantir l'intégrité du pare-feu, j'ai défini trois objectifs de filtrage :
+1. **Isoler l'interface de gestion (GUI)** : Seul mon poste identifié peut configurer le cluster.
+2. **Brider les flux de services** : Le poste pilote ne peut interroger que les services nécessaires (DNS de l'AD).
+3. **Bloquer par défaut** : Tout ce qui n'est pas explicitement autorisé est rejeté.
+
+---
+
+## 🏷️ Étape 1 : Création des Alias (Abstraction Logicielle)
+
+Plutôt que d'utiliser des adresses IP brutes dans les règles, l'utilisation d'**Alias** permet une gestion plus propre et évite les erreurs de saisie.
+
+- **AdminHosts** : Contient l'IP statique de mon poste de gestion (`10.0.1.50`).
+- **Poste_Pilote_GUI net** : Représente l'ensemble du sous-réseau du segment d'administration.
+
+<ProjectImage 
+  src="/images/projets/firewalling-edge/opnsense/segmentation/alias-admin.png" 
+  alt="Configuration de l'alias AdminHosts" 
+  caption="Alias AdminHosts pointant vers le poste pilote 10.0.1.50"
+  maxWidth="500px"
+/>
+
+---
+
+## 🔐 Étape 2 : Configuration des règles de filtrage
+
+Les règles suivantes ont été appliquées sur l'interface **SEG-SRV**. L'ordre est ici crucial pour respecter la priorité des flux.
+
+### 📋 Tableau de la politique de sécurité
+
+| Action | Protocole | Source | Destination | Port | Description |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **PASS** | IPv4 TCP | `AdminHosts` | `This Firewall` | `443` | Accès GUI — Poste pilote uniquement |
+| **BLOCK** | IPv4 TCP | `Poste_Pilote_GUI net` | `This Firewall` | `443` | Sécurité — Bloque la GUI pour tout le reste |
+| **PASS** | IPv4 TCP/UDP | `AdminHosts` | `10.0.2.10` | `53` | Résolution DNS via le contrôleur AD 01 |
+| **PASS** | IPv4 ICMP | `AdminHosts` | `Any` | `*` | Autorisation du diagnostic (Ping) |
+
+<ProjectImage 
+  src="/images/projets/firewalling-edge/opnsense/segmentation/rules-seg-srv.png" 
+  alt="Vue des règles de filtrage sur l'interface SEG-SRV" 
+  caption="Implémentation des règles sur l'interface SEG-SRV"
+  maxWidth="800px"
+/>
+
+---
+
+## 🧠 Étape 3 : Analyse technique des règles
+
+### 1. Protection de l'interface de gestion
+La règle n°2 est une **"Safety Net"**. Même si une nouvelle machine est ajoutée au segment `SEG-SRV`, elle se heurtera à un blocage explicite si elle tente d'accéder à l'IP du firewall sur le port 443. Cela empêche toute tentative de scan ou de brute-force interne.
+
+### 2. Dépendance DNS vers l'Active Directory
+Le poste pilote fait partie du domaine `infra.formation.local`. Pour pouvoir joindre les serveurs par leur nom (ex: `ad01.infra.formation.local`), le flux DNS vers l'IP `10.0.2.10` est indispensable. Notez que j'ai restreint ce flux au seul `AdminHosts`.
+
+### 3. Suppression de la règle Anti-Lockout
+Une fois ces règles validées, j'ai désactivé la règle automatique **Anti-Lockout** d'OPNsense. 
+> **Pourquoi ?** Parce que la règle automatique autorise l'accès à la GUI depuis *n'importe quelle* IP du LAN, ce qui contredit ma politique de sécurité restrictive basée sur l'alias `AdminHosts`.
+
+---
+
+## 🧪 Étape 4 : Validation du cloisonnement
+
+Pour tester l'étanchéité, j'ai tenté d'accéder à `https://10.0.1.254` depuis une machine temporaire sur le même segment (IP `10.0.1.60`). 
+
+**Résultat :** Connexion refusée. Les logs du firewall confirment le déclenchement de la règle de blocage "autres machines". Mon poste pilote `10.0.1.50`, lui, conserve un accès fluide.
+
+---
+
+<section class="mt-16 space-y-12">
+  <div style="background-color: var(--card-bg); border: 1px solid var(--card-border);" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center rounded-2xl p-8 shadow-sm">
+    <div>
+      <h3 style="color: var(--text-title);" class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span class="text-green-500">✅</span> Bilan Sécurité
+      </h3>
+      <ul class="space-y-3 text-sm">
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Surface d'attaque :</strong> Réduite au seul poste d'administration.</span>
+        </li>
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Conformité :</strong> Application du principe de cloisonnement des flux.</span>
+        </li>
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Maintenance :</strong> Utilisation d'alias pour une gestion simplifiée.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div style="border-color: var(--card-border);" class="flex justify-center border-t pt-8 md:border-t-0 md:border-l md:pl-8 md:pt-0">
+      <div class="text-center">
+        <div class="text-5xl mb-2 filter drop-shadow-lg">🔒</div>
+        <p style="color: var(--text-title);" class="text-[10px] uppercase tracking-widest opacity-60 font-black">Segment Sécurisé</p>
+        <p style="color: var(--text-muted);" class="text-[9px] mt-1 italic">Le Management Plane est désormais sous contrôle</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<NextStep
+  href="/projets/opnsense-dmz"
+  title="Segmentation Réseau : Configuration de la DMZ et NAT Entrant"
+/>

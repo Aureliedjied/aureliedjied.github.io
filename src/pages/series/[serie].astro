@@ -4,7 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import { SERIES } from '../../constants/series';
 
 export async function getStaticPaths() {
-  const allProjects = await getCollection('projets');
+  const allProjects = await getCollection('articles');
   
   // TRI DES ARTICLES PAR DATE 
   const sortedProjects = allProjects.sort((a, b) => {
@@ -59,7 +59,7 @@ const serieInfo = SERIES[serieKey as keyof typeof SERIES];
       {projects.length > 0 ? (
         projects.map((project) => (
         <a 
-          href={`/projets/${project.slug}`} 
+          href={`/projets/${project.data.slug ?? project.id}`}
           class="group p-8 rounded-[2rem] border transition-all duration-500 hover:-translate-y-1"
           style={`background-color: var(--card-bg); border-color: var(--card-border); --hover-color: ${serieInfo?.color};`}
         >
