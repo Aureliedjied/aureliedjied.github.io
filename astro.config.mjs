@@ -8,8 +8,18 @@ import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   site: 'https://aureliedjied.github.io',
-  integrations: [mdx(), pagefind(), sitemap()],
-
+  // On s'assure que le trailingSlash est cohérent pour éviter les doubles indexations
+  trailingSlash: 'always', 
+  integrations: [
+    mdx(), 
+    pagefind(), 
+    sitemap({
+      // Optionnel : change la priorité de pages principales
+      changefreq: 'weekly',
+      priority: 0.7,
+      lastmod: new Date(),
+    })
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
