@@ -2,112 +2,220 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout>
-  <div class="max-w-3xl mx-auto py-12 space-y-16">
-    
-    <section class="space-y-6">
-      <h1 class="text-5xl font-black italic tracking-tighter" style="color: var(--text-title);">
-        Aurélie Djied<span class="text-purple-500">.</span>
+<Layout title="Présentation — Aurélie Djied">
+  <div class="py-12 md:py-20 max-w-3xl">
+
+    <!-- Accroche -->
+    <section class="mb-16 space-y-6">
+      <p class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted);">
+        Aurélie Djied · Toulon
+      </p>
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight" style="color: var(--text-title);">
+        Reconvertie.<br/>
+        <span class="text-purple-500">Autodidacte.</span><br/>
       </h1>
-      <p class="text-xl leading-relaxed" style="color: var(--text-main);">
-        Actuellement en formation <span class="text-purple-500 font-bold">TSSR (Niveau 5)</span>, je prépare une entrée en
-        <span class="text-blue-500 font-bold">Master Systèmes, Réseaux et Cloud Computing</span> en alternance pour la rentrée 2026.
+      <p class="text-sm md:text-base leading-relaxed border-l-2 border-purple-500/40 pl-4 max-w-xl" style="color: var(--text-muted);">
+        Je viens de l'industrie et du dev web. Aujourd'hui je me forme à l'administration
+        d'infrastructures et à la cybersécurité — pas parce que c'est tendance,
+        parce que c'est ce qui m'accroche vraiment.
       </p>
       <div class="flex flex-wrap gap-3">
         <span class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border"
               style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-muted);">
-          <span class="text-green-500">◉</span> Disponible en alternance — Sept. 2026
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          Disponible en alternance — sept. 2026
         </span>
         <span class="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border"
               style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-muted);">
-          <span class="text-blue-500">◎</span> Mobile — Toulon · Marseille · DOM-TOM
+          <span class="text-blue-500">◎</span> Toulon · Marseille · DOM-TOM
         </span>
       </div>
     </section>
 
-    <section class="space-y-8">
-      <h2 class="text-2xl font-bold flex items-center gap-3" style="color: var(--text-title);">
-        <span class="w-8 h-1 bg-purple-500 rounded-full"></span>
-        Mon Parcours
-      </h2>
-      
-      <div class="space-y-10 border-l-2 ml-4 pl-8" style="border-color: var(--card-border);">
-        
-        <!-- Objectif Master -->
+    <!-- Objectif -->
+    <section class="mb-16">
+      <p class="text-xs font-black uppercase tracking-widest mb-6" style="color: var(--text-muted);">
+        Objectif
+      </p>
+      <div class="p-6 rounded-[2rem] border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+        <p class="text-lg font-black tracking-tight mb-2" style="color: var(--text-title);">
+          Titre Administrateur d'Infrastructures Sécurisées
+          <span class="text-purple-500"> — Bac+3</span>
+        </p>
+        <p class="text-sm leading-relaxed opacity-70 mb-4" style="color: var(--text-main);">
+          En alternance à partir de septembre 2026. Orientation cybersécurité,
+          administration systèmes Linux et architectures hybrides. Mastère Bac+5 en ligne de mire ensuite.
+        </p>
+        <p class="text-xs font-mono" style="color: var(--text-muted);">
+          <span class="text-purple-500">→</span> École en cours de sélection — Toulon · Marseille · DOM-TOM
+        </p>
+      </div>
+    </section>
+
+    <!-- Parcours -->
+    <section class="mb-16">
+      <p class="text-xs font-black uppercase tracking-widest mb-8" style="color: var(--text-muted);">
+        Parcours
+      </p>
+
+      <div class="space-y-10 border-l-2 ml-2 pl-8" style="border-color: var(--card-border);">
+
+        <!-- TSSR -->
         <div class="relative">
-          <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-[var(--bg-color)] animate-pulse"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20">Objectif 2026 – 2028</span>
-          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Master Systèmes, Réseaux & Cloud Computing</h3>
-          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Niveau 7 (BAC+5) — Alternance 2 ans</p>
-          <p class="mt-2" style="color: var(--text-main);">
-            Spécialisation dans l'administration avancée, la sécurité des infrastructures et les architectures Cloud.
-            Préparation du <strong class="text-purple-400">CCNA</strong> en ligne de mire.
+          <div class="absolute -left-[37px] top-1 w-4 h-4 rounded-full bg-purple-500 border-4"
+               style="border-color: var(--bg-color);"></div>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
+                style="background-color: rgba(168,85,247,0.1); color: #a855f7; border: 1px solid rgba(168,85,247,0.2);">
+            2025 – 2026 · En cours
+          </span>
+          <h3 class="font-black text-lg mt-2" style="color: var(--text-title);">
+            TSSR — Technicien Supérieur Systèmes et Réseaux
+          </h3>
+          <p class="text-sm italic opacity-60 mb-2" style="color: var(--text-main);">
+            RNCP Bac+2 · La Plateforme, Toulon
           </p>
-          <p class="mt-2 text-xs italic opacity-60" style="color: var(--text-muted);">
-            École en cours de sélection — mobile Toulon · Marseille · DOM-TOM
+          <p class="text-sm leading-relaxed" style="color: var(--text-main);">
+            Administration Windows Server et Linux, cybersécurité opérationnelle (OPNsense, VPN, hardening),
+            supervision (Zabbix, Graylog), sauvegarde (Veeam). Le tout documenté dans un lab VMware personnel.
           </p>
         </div>
 
-        <!-- TSSR en cours -->
-        <div class="relative">
-          <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-purple-500 border-4 border-[var(--bg-color)]"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20">En cours : 2025 – 2026</span>
-          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Titre RNCP — Technicien Supérieur Systèmes et Réseaux</h3>
-          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Niveau 5 (BAC+2)</p>
-          <p class="mt-2" style="color: var(--text-main);">
-            Administration d'infrastructures virtualisées, déploiement de services réseaux et sécurisation des accès.
-          </p>
-        </div>
-
-        <!-- Développeuse web -->
+        <!-- Dev web -->
         <div class="relative opacity-80">
-          <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-[var(--card-border)] border-4 border-[var(--bg-color)]"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20">2023 – 2024</span>
-          <h3 class="font-bold text-lg mt-2" style="color: var(--text-title);">Développeuse Web et Web Mobile</h3>
-          <p class="text-sm font-medium italic opacity-70" style="color: var(--text-main);">Spécialisation PHP / Symfony</p>
-          <p class="mt-2" style="color: var(--text-main);">
-            Conception d'applications web et gestion de bases de données. Cette base en développement me permet aujourd'hui
-            d'aborder l'Infrastructure as Code et le DevOps avec facilité.
+          <div class="absolute -left-[37px] top-1 w-4 h-4 rounded-full border-4"
+               style="background-color: var(--card-border); border-color: var(--bg-color);"></div>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
+                style="background-color: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2);">
+            2023 – 2024
+          </span>
+          <h3 class="font-black text-lg mt-2" style="color: var(--text-title);">
+            Développeuse Web et Web Mobile
+          </h3>
+          <p class="text-sm italic opacity-60 mb-2" style="color: var(--text-main);">
+            O'Clock · PHP / Symfony / MySQL
+          </p>
+          <p class="text-sm leading-relaxed" style="color: var(--text-main);">
+            Conception d'applications web, versioning Git, méthode Agile.
+            Cette base me permet aujourd'hui d'aborder l'automatisation et le DevOps
+            sans partir de zéro — Bash, Docker, IaC, je comprends la logique.
+          </p>
+        </div>
+
+        <!-- Valeo -->
+        <div class="relative opacity-70">
+          <div class="absolute -left-[37px] top-1 w-4 h-4 rounded-full border-4"
+               style="background-color: var(--card-border); border-color: var(--bg-color);"></div>
+          <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
+                style="background-color: rgba(113,113,122,0.1); color: #71717a; border: 1px solid rgba(113,113,122,0.2);">
+            2022 – 2024
+          </span>
+          <h3 class="font-black text-lg mt-2" style="color: var(--text-title);">
+            Technicienne métrologie & commande numérique
+          </h3>
+          <p class="text-sm italic opacity-60 mb-2" style="color: var(--text-main);">
+            Valeo · Fabrication d'embrayages automobiles
+          </p>
+          <p class="text-sm leading-relaxed" style="color: var(--text-main);">
+            Réglage au micromètre, programmation d'arrêts/marches sur robots et machines d'usinage (Tacchella),
+            contrôle qualité métrologique. Avant de configurer des serveurs,
+            j'apprenais déjà à lire des systèmes et à documenter des anomalies.
+            La rigueur procédurale, c'est pas venu avec l'IT.
           </p>
         </div>
 
       </div>
     </section>
 
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="p-8 rounded-3xl border transition-all" style="background-color: var(--card-bg); border-color: var(--card-border);">
-        <h3 class="text-xl font-bold mb-4" style="color: var(--text-title);">Veille & Certifications</h3>
-        <ul class="space-y-3" style="color: var(--text-main);">
-          <li class="flex items-center gap-2">
-            <span class="text-blue-500">◎</span> Cisco NetAcad (en cours)
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-purple-500">◎</span> Lab personnel VMware (HomeLab)
-          </li>
-          <li class="flex items-center gap-2 opacity-50 italic">
-            <span class="text-zinc-500">▹</span> CCNA (projet Master 2026)
-          </li>
-        </ul>
-      </div>
+    <!-- Compétences -->
+    <section class="mb-16">
+      <p class="text-xs font-black uppercase tracking-widest mb-6" style="color: var(--text-muted);">
+        Compétences
+      </p>
 
-      <div class="p-8 rounded-3xl border transition-all" style="background-color: var(--card-bg); border-color: var(--card-border);">
-        <h3 class="text-xl font-bold mb-4" style="color: var(--text-title);">Compétences Transverses</h3>
-        <p class="text-sm mb-4" style="color: var(--text-main);">
-          Mon passé de développeuse m'apporte une vision globale du cycle de vie d'un projet et une aisance naturelle avec les outils DevOps et IaC.
-        </p>
-        <div class="flex flex-wrap gap-2">
-          <span class="px-2 py-1 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] text-purple-400 font-bold uppercase">PHP / Symfony</span>
-          <span class="px-2 py-1 bg-blue-500/10 border border-blue-500/20 rounded text-[10px] text-blue-400 font-bold uppercase">Git / GitHub</span>
-          <span class="px-2 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded text-[10px] text-yellow-400 font-bold uppercase">SQL</span>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <!-- Cœur de métier -->
+        <div class="p-6 rounded-[2rem] border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+          <p class="text-xs font-black uppercase tracking-widest mb-4" style="color: var(--text-muted);">
+            Cœur de métier
+          </p>
+          <div class="space-y-2">
+            {[
+              { label: "Windows Server", detail: "AD, GPO, PKI" },
+              { label: "Linux", detail: "Red Hat · Debian" },
+              { label: "Virtualisation", detail: "VMware · Hyper-V" },
+              { label: "Réseaux", detail: "VLAN, TCP/IP, DNS/DHCP" },
+              { label: "Cybersécurité", detail: "OPNsense, hardening, VPN, RGPD" },
+              { label: "Supervision", detail: "Zabbix · Graylog" },
+              { label: "Sauvegarde", detail: "Veeam · rsync · PRA/PCA" },
+            ].map(skill => (
+              <div class="flex items-baseline justify-between">
+                <span class="text-sm font-bold" style="color: var(--text-title);">{skill.label}</span>
+                <span class="text-xs opacity-50" style="color: var(--text-main);">{skill.detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Atouts transverses -->
+        <div class="p-6 rounded-[2rem] border" style="background-color: var(--card-bg); border-color: var(--card-border);">
+          <p class="text-xs font-black uppercase tracking-widest mb-4" style="color: var(--text-muted);">
+            Atouts transverses
+          </p>
+          <div class="space-y-2 mb-6">
+            {[
+              { label: "Automatisation", detail: "Bash · PowerShell" },
+              { label: "DevOps", detail: "Docker · Git · GitHub" },
+              { label: "Dev web", detail: "PHP · Symfony · SQL" },
+              { label: "Gestion de projet", detail: "Agile · Trello · Notion" },
+              { label: "Anglais", detail: "Lecture documentation IT" },
+            ].map(skill => (
+              <div class="flex items-baseline justify-between">
+                <span class="text-sm font-bold" style="color: var(--text-title);">{skill.label}</span>
+                <span class="text-xs opacity-50" style="color: var(--text-main);">{skill.detail}</span>
+              </div>
+            ))}
+          </div>
+          <div class="pt-4 border-t" style="border-color: var(--card-border);">
+            <p class="text-xs leading-relaxed opacity-60 italic" style="color: var(--text-main);">
+              Rigueur procédurale héritée de l'industrie.
+              Documentation comme réflexe, pas comme contrainte.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Veille -->
+    <section>
+      <p class="text-xs font-black uppercase tracking-widest mb-6" style="color: var(--text-muted);">
+        Veille & certifications
+      </p>
+      <div class="p-6 rounded-[2rem] border space-y-3" style="background-color: var(--card-bg); border-color: var(--card-border);">
+        <div class="flex items-center gap-3">
+          <span class="text-green-500 text-xs">●</span>
+          <span class="text-sm" style="color: var(--text-main);">
+            <span class="font-bold" style="color: var(--text-title);">ANSSI</span> — veille réglementaire et recommandations sécurité
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-green-500 text-xs">●</span>
+          <span class="text-sm" style="color: var(--text-main);">
+            <span class="font-bold" style="color: var(--text-title);">Microsoft Learn</span> — documentation et parcours certifiants
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-blue-500 text-xs">◎</span>
+          <span class="text-sm opacity-70 italic" style="color: var(--text-main);">
+            Certifications en préparation autodidacte — à venir
+          </span>
         </div>
       </div>
     </section>
 
   </div>
 </Layout>
-
-<style>
-  .text-zinc-500 { color: #71717a; }
-  .text-purple-500 { color: #a855f7; }
-  .text-blue-500 { color: #3b82f6; }
-</style>
