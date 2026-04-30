@@ -1,37 +1,41 @@
 @import "tailwindcss";
 
+@import "tailwindcss";
+
 :root {
-  /* MODE SOMBRE (Inspiré par Catppuccin Mocha) */
-  --bg-color: #1e1e2e;           /* Mocha Base : Moins agressif que le noir */
-  --bg-glow-1: rgba(203, 166, 247, 0.12); /* Mocha Mauve */
-  --bg-glow-2: rgba(137, 180, 250, 0.08); /* Mocha Blue */
+  /* MODE SOMBRE (Catppuccin Mocha - Contrast Adjusted) */
+  --bg-color: #1e1e2e;           
+  --bg-glow-1: rgba(203, 166, 247, 0.12); 
+  --bg-glow-2: rgba(137, 180, 250, 0.08); 
   
-  --text-main: #cdd6f4;          /* Mocha Text : Un blanc cassé bleuté doux */
-  --text-title: #f5e0dc;         /* Mocha Rosewater : Pour des titres chaleureux */
-  --text-muted: #bac2de;         /* Mocha Subtext1 */
+  --text-main: #cdd6f4;          /* Passé de Text à Text (clair) */
+  --text-title: #ffffff;         /* Pur blanc pour un contraste maximal sur les titres */
+  --text-muted: #a6adc8;         /* Ajusté (Mocha Subtext0) : Meilleur contraste que Subtext1 */
   
-  --card-bg: #181825;            /* Mocha Mantle : Légèrement plus sombre que le fond pour le relief */
-  --card-border: #313244;        /* Mocha Surface0 : Bordure subtile */
+  --card-bg: #181825;            
+  --card-border: #313244;        
   
-  --header-bg: rgba(30, 30, 46, 0.85); /* Fond transparent basé sur Mocha Base */
+  --header-bg: rgba(30, 30, 46, 0.85); 
   
-  --text-purple: #cba6f7;        /* Mocha Mauve pur */
+  --text-purple: #cba6f7;        
   --purple-border: rgba(203, 166, 247, 0.2);
 }
 
 :root[data-theme='light'] {
-  /* MODE CLAIR (Inspiré par Catppuccin Latte pour rester cohérent) */
+  /* MODE CLAIR (Catppuccin Latte - Contrast Adjusted) */
   --bg-color: #eff1f5;
   --bg-glow-1: rgba(136, 57, 239, 0.05);
   --bg-glow-2: rgba(30, 102, 245, 0.03);
-  --text-main: #4c4f69;
-  --text-title: #20202b;
+  
+  --text-main: #4c4f69;          /* Latte Text : Très bon sur fond clair */
+  --text-title: #1e1e2e;         /* Utilisation du Mocha Base pour des titres très lisibles */
+  --text-muted: #5c5f77;         /* Assombri (Latte Subtext1) pour passer le test AA */
+  
   --card-bg: #e6e9ef;
-  --card-border: rgba(0, 0, 0, 0.05);
+  --card-border: #ccd0da;        /* Bordure un peu plus visible pour l'accessibilité */
   --header-bg: rgba(239, 241, 245, 0.8);
   --text-purple: #8839ef;
   --purple-border: rgba(136, 57, 239, 0.1);
-  --text-muted: #6c6f85;
 }
 
 body {
