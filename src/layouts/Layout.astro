@@ -6,26 +6,29 @@ import Footer from '../components/Footer.astro';
 
 <html lang="fr" class="w-full overflow-x-hidden">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Portfolio d'Aurélie Djied, étudiante technicienne systèmes et réseaux, future sysadmin Cloud et réseaux Windows/Linux.">
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg.png" />
-        <title>Aurélie Djied | Portfolio</title>
-        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
-        <script is:inline>
-            const theme = (() => {
-                if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-                    return localStorage.getItem('theme');
-                }
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    return 'dark';
-                }
-                return 'dark';
-            })();
-            
-            document.documentElement.setAttribute('data-theme', theme);
-        </script>
-    </head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <meta name="description" content="Portfolio d'Aurélie Djied, étudiante technicienne systèmes et réseaux, future sysadmin Cloud et réseaux Windows/Linux." />
+            <link rel="icon" type="image/svg+xml" href="/favicon.svg.png" />
+            <title>Aurélie Djied | Portfolio</title>
+
+            <!-- Chargement asynchrone des icônes pour ne pas bloquer le rendu -->
+            <link 
+                href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" 
+                rel="stylesheet" 
+                media="print" 
+                onload="this.media='all'"
+            />
+            <noscript>
+                <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+            </noscript>
+
+            <script is:inline>
+                // Version ultra-rapide pour éviter le flash blanc sans bloquer le thread
+                const t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark');
+                document.documentElement.setAttribute('data-theme', t);
+            </script>
+        </head>
     
     <body class="min-h-screen flex flex-col w-full overflow-x-hidden relative">
         <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none w-full">
