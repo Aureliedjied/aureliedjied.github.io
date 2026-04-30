@@ -93,3 +93,14 @@ import Footer from '../components/Footer.astro';
         color: var(--text-title);
     }
 </style>
+
+<script is:inline>
+  // Force le trailing slash en local et en prod pour éviter les 404 Astro
+  (function() {
+    const pathname = window.location.pathname;
+    // Si on n'est pas sur la racine, qu'il n'y a pas de point (fichier) et pas de slash à la fin
+    if (pathname !== '/' && !pathname.endsWith('/') && !pathname.includes('.')) {
+      window.location.replace(pathname + '/');
+    }
+  })();
+</script>

@@ -64,7 +64,7 @@ const formatDate = (date: Date) => {
 
       <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tighter italic" 
           style="color: var(--text-title);">
-        {title}
+        {project.data.title.split(':').pop()?.trim()}
       </h1>
       
       <div class="flex flex-wrap gap-3 mb-4">

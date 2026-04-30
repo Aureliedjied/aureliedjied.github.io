@@ -1,38 +1,64 @@
 ---
+// src/components/NextStep.astro
+import { getCollection } from 'astro:content';
+import { SERIES } from '../constants/series';
+
 interface Props {
-  href: string;
-  title: string;
+  currentSlug: string; // On passe le slug de l'article actuel
 }
-const { href, title } = Astro.props;
+
+const { currentSlug } = Astro.props;
+
+// 1. Récupérer les articles
+const allArticles = await getCollection('articles');
+const serieKeys = Object.keys(SERIES);
+
+// 2. Trier la liste selon TON ordonnancement (Série puis Ordre)
+const sortedLabArticles = allArticles.sort((a, b) => {
+  const indexA = serieKeys.indexOf(a.data.serie || "");
+  const indexB = serieKeys.indexOf(b.data.serie || "");
+  
+  if (indexA !== indexB) return indexA - indexB;
+  return (a.data.serieOrder || 0) - (b.data.serieOrder || 0);
+});
+
+// 3. Trouver l'article actuel via son slug OU son ID
+const currentIndex = sortedLabArticles.findIndex(a => 
+  (a.data.slug === currentSlug) || (a.id === currentSlug)
+);
+
+// Sécurité : si on ne trouve pas l'article, on n'affiche rien au lieu de crash
+if (currentIndex === -1) return null;
+
+const currentArticle = sortedLabArticles[currentIndex];
+const nextArticle = sortedLabArticles[currentIndex + 1];
+
+// Si c'est le dernier article de tout le lab
+if (!nextArticle) return null;
+
+const nextHref = `/projets/${nextArticle.data.slug ?? nextArticle.id}`;
+const isNewSerie = nextArticle.data.serie !== currentArticle.data.serie;
 ---
 
 <div class="mt-16 pt-8 border-t" style="border-color: var(--card-border);">
-  <a href={href} class="group flex flex-col items-end gap-2 text-right">
+  <a href={nextHref} class="group flex flex-col items-end gap-2 text-right">
     <span class="text-[10px] uppercase tracking-widest font-bold" style="color: var(--text-muted);">
-      Étape Suivante
+      {isNewSerie ? "Série Suivante" : "Étape Suivante"}
     </span>
     
     <div class="flex items-center gap-3">
-      <span class="text-xl font-bold group-hover:text-purple-500 transition-colors" style="color: var(--text-title);">
-        {title}
-      </span>
+      <div class="flex flex-col items-end">
+        <span class="text-xl font-bold group-hover:text-purple-500 transition-colors" style="color: var(--text-title);">
+          {nextArticle.data.title}
+        </span>
+        {isNewSerie && nextArticle.data.serie && (
+            <span class="text-[10px] opacity-50 italic">Module : {SERIES[nextArticle.data.serie].title}</span>
+        )}
+      </div>
 
-      <div 
-        class="p-2 rounded-full border transition-all duration-300 group-hover:border-purple-500 group-hover:bg-purple-500/10"
-        style="background-color: var(--card-bg); border-color: var(--card-border);"
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="24" 
-          height="24" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          stroke-width="2.5" 
-          stroke-linecap="round" 
-          stroke-linejoin="round" 
-          class="text-purple-500"
-        >
+      <div class="p-2 rounded-full border transition-all duration-300 group-hover:border-purple-500 group-hover:bg-purple-500/10"
+           style="background-color: var(--card-bg); border-color: var(--card-border);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-purple-500">
           <path d="M5 12h14"></path>
           <path d="m12 5 7 7-7 7"></path>
         </svg>

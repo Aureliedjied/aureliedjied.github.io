@@ -8,8 +8,6 @@ import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   site: 'https://aureliedjied.github.io',
-  // On s'assure que le trailingSlash est cohérent pour éviter les doubles indexations
-  trailingSlash: 'always', 
   integrations: [
     mdx(), 
     pagefind(), 
