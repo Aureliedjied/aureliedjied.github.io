@@ -1,0 +1,132 @@
+---
+title: "AD01 : Déploiement du Cœur d'Identité"
+description: "Installation de Windows Server 2022, promotion en DC et isolation DNS dans le segment SEG-AD01."
+category: "windows-server"
+tags: ["Active Directory", "DNS", "Windows Server", "Sécurité"]
+serie: "firewalling-edge"
+serieOrder: 6
+pubDate: 2026-05-15
+slug: "opnsense-ad01"
+---
+
+import SeriesStepper from '../../../components/SeriesStepper.astro';
+import NextStep from '../../../components/NextStep.astro';
+import ProjectImage from '../../../components/ProjectImage.astro';
+import ProjectImage2 from '../../../components/ProjectImage2.astro';
+
+<p class="mt-6 text-sm leading-relaxed italic" style="color: var(--text-main);">
+  L'Active Directory est le cerveau de l'infrastructure. Dans ce lab, il est isolé dans son propre segment (SEG-AD01). 
+  Cet article détaille la configuration réseau et le filtrage strict appliqué par OPNsense pour protéger ce pilier d'identité.
+</p>
+
+---
+
+## 🏗️ Étape 1 — Isolation physique et virtuelle (VMware)
+
+La première couche de sécurité est l'isolation du bus de données. L'AD01 est assigné à un **LAN Segment dédié** nommé `SEG-AD01`, garantissant qu'aucun trafic ne sort ou n'entre sans passer par le pare-feu.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/ad01/1.png"
+  alt="Assignation LAN Segment SEG-AD01"
+  caption="Isolation de la carte réseau du serveur AD01 sur un segment privé"
+  maxWidth="600px"
+/>
+
+---
+
+## 🌐 Étape 2 — Configuration de l'Interface G_AD
+
+Sur OPNsense, j'ai activé et configuré une interface spécifique pour ce segment. Pour assurer la haute disponibilité (HA), l'AD01 utilise une **IP Virtuelle (VIP CARP)** comme passerelle par défaut.
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <ProjectImage
+    src="/images/projets/firewalling-edge/opnsense/ad01/2.png"
+    alt="Activation interface AD01LAN"
+    caption="Activation et nommage de l'interface opt2 en AD01LAN"
+    maxWidth="100%"
+  />
+  <ProjectImage
+    src="/images/projets/firewalling-edge/opnsense/ad01/3.png"
+    alt="Configuration IP statique OPNsense"
+    caption="Adressage statique de l'interface réelle sur 10.0.2.252"
+    maxWidth="100%"
+  />
+</div>
+
+### Statut de la VIP CARP
+La VIP `10.0.2.254` est l'adresse de référence pour tout le segment AD. En cas de panne du Master, le Backup prend le relais sans interruption de service pour l'annuaire.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/ad01/4.png"
+  alt="Statut VIP CARP MASTER"
+  caption="Le cluster confirme le statut MASTER pour l'interface AD01LAN sur l'IP .254"
+  maxWidth="800px"
+/>
+
+---
+
+## 🔐 Étape 3 — Stratégie de Filtrage et Alias
+
+Pour éviter de manipuler des IP brutes, j'ai créé un alias `AD_SERVERS`. Le filtrage repose sur deux principes :
+1. **Autoriser l'AD à sortir** uniquement pour ses besoins DNS vers le pare-feu.
+2. **Bloquer tout accès direct** à Internet ou aux segments non autorisés.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/ad01/5.png"
+  alt="Alias AD_SERVERS"
+  caption="Création de l'alias AD_SERVERS pointant vers 10.0.2.10"
+  maxWidth="500px"
+/>
+
+### Règles de Firewall
+Les règles appliquées sur l'interface **AD01LAN** sont restrictives. On remarque ici le blocage du DNS direct vers l'extérieur pour forcer le passage par Unbound (contrôle des flux).
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/ad01/6.png"
+  alt="Règles de filtrage AD01LAN"
+  caption="Filtrage des flux DNS : l'AD est autorisé vers le pare-feu mais bloqué vers l'extérieur"
+  maxWidth="800px"
+/>
+
+---
+
+## 🏷️ Étape 4 — DNS Split-Horizon (Unbound DNS)
+
+Pour que la résolution soit cohérente, OPNsense délègue toutes les requêtes du domaine `infra.formation.local` à l'AD01. C'est la **Transmission des requêtes (Domain Override)**.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/ad01/7.png"
+  alt="Transmission de requêtes Unbound"
+  caption="Domain Override : redirection du trafic .infra.formation.local vers l'AD01"
+  maxWidth="800px"
+/>
+
+---
+
+## 🧪 Étape 5 — Validation depuis l'AD01
+
+La vérification finale sur le serveur `SRV-AD-01` confirme que la configuration est opérationnelle.
+
+1. **IPConfig** : On valide l'adresse `10.0.2.10` et la passerelle `10.0.2.254` (VIP).
+2. **NSLookup** : 
+   - Résolution externe (google.fr) : **OK** (via Unbound).
+   - Résolution interne (srv-ad-01) : **OK** (via l'AD lui-même).
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6 text-center">
+  <ProjectImage
+    src="/images/projets/firewalling-edge/opnsense/ad01/8.png"
+    alt="ipconfig AD01"
+    caption="Validation de l'adressage IP et de la passerelle VIP"
+    maxWidth="100%"
+  />
+  <ProjectImage
+    src="/images/projets/firewalling-edge/opnsense/ad01/9.png"
+    alt="nslookup tests"
+    caption="Tests DNS : résolution hybride interne/externe fonctionnelle"
+    maxWidth="100%"
+  />
+</div>
+
+
+
+<NextStep currentSlug={frontmatter.slug} />

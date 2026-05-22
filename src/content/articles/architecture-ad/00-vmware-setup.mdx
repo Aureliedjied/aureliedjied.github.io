@@ -162,11 +162,11 @@ Avant toute promotion ou installation de rôle, le serveur doit porter un nom d�
 
 ---
 
-## 🌐 Migration sur SEG-SRV et configuration IP statique
+## 🌐 Migration sur SEG-AD01 et configuration IP statique
 
-Une fois le système installé et nommé, la carte réseau est migrée de NAT vers le **LAN Segment SEG-SRV** — le réseau interne isolé géré par OPNsense.
+Une fois le système installé et nommé, la carte réseau est migrée de NAT vers le **LAN Segment SEG-AD01** — le réseau interne isolé géré par OPNsense.
 
-Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe sur soi-même (`127.0.0.1`). Aucun DNS public n'est configuré directement dans la carte réseau — la résolution Internet sera gérée via les redirecteurs DNS configurés sur le serveur, qui forwarderont vers OPNsense (`10.0.1.254`).
+Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe sur soi-même (`127.0.0.1`). Aucun DNS public n'est configuré directement dans la carte réseau — la résolution Internet sera gérée via les redirecteurs DNS configurés sur le serveur, qui forwarderont vers OPNsense (`10.0.2.254`).
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 my-8 items-center">
   <div class="overflow-hidden rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
@@ -184,11 +184,11 @@ Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe
         </tr>
         <tr class="border-t" style="border-color: var(--card-border);">
           <td class="p-4 font-bold text-blue-400">Adresse IP</td>
-          <td class="p-4" style="color: var(--text-main);">10.0.1.10 / 24</td>
+          <td class="p-4" style="color: var(--text-main);">10.0.2.10 / 24</td>
         </tr>
         <tr class="border-t" style="border-color: var(--card-border);">
           <td class="p-4 font-bold" style="color: var(--text-main);">Passerelle</td>
-          <td class="p-4" style="color: var(--text-main);">10.0.1.254 (VIP CARP OPNsense)</td>
+          <td class="p-4" style="color: var(--text-main);">10.0.2.254 (VIP CARP OPNsense)</td>
         </tr>
         <tr class="border-t" style="border-color: var(--card-border);">
           <td class="p-4 font-bold text-green-400">DNS Primaire</td>
@@ -196,7 +196,7 @@ Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe
         </tr>
         <tr class="border-t" style="border-color: var(--card-border);">
           <td class="p-4 font-bold" style="color: var(--text-main);">Segment VMware</td>
-          <td class="p-4" style="color: var(--text-main);">SEG-SRV (LAN Segment)</td>
+          <td class="p-4" style="color: var(--text-main);">SEG-AD01 (LAN Segment)</td>
         </tr>
       </tbody>
     </table>
@@ -204,7 +204,7 @@ Le paramétrage DNS est l'étape la plus critique. Pour un premier DC, on pointe
   <ProjectImage
     src="/images/projets/architecture-ad/roles/ipconf.png"
     alt="Configuration IP statique"
-    caption="Configuration IP statique sur SEG-SRV"
+    caption="Configuration IP statique sur SEG-AD01"
   />
 </div>
 
@@ -275,10 +275,10 @@ Via le **Gestionnaire de serveur**, j'installe les binaires nécessaires. Cette 
       </h3>
       <ul class="space-y-3">
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Environnement maîtrisé :</strong> VM dimensionnée, installée et migrée sur SEG-SRV.</span>
+          <span><strong>Environnement maîtrisé :</strong> VM dimensionnée, installée et migrée sur SEG-AD-01.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
-          <span><strong>Identité fixée :</strong> Nommage <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">SRV-AD-01</code> et IP statique <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">10.0.1.10</code> configurés.</span>
+          <span><strong>Identité fixée :</strong> Nommage <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">SRV-AD-01</code> et IP statique <code style="color: var(--text-purple); background: var(--purple-border);" class="px-1.5 py-0.5 rounded text-xs font-mono">10.0.2.10</code> configurés.</span>
         </li>
         <li class="flex items-start gap-3 text-sm" style="color: var(--text-main);">
           <span><strong>Prêt pour l'AD :</strong> Rôles AD DS et DNS installés (binaires uniquement).</span>

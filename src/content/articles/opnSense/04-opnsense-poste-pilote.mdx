@@ -2,7 +2,7 @@
 title: "Sécurisation du Segment d'Administration (SEG-SRV)"
 description: "Mise en place du filtrage restrictif, création d'alias et isolation du poste pilote GUI selon les principes du moindre privilège."
 category: "opnsense"
-tags: ["Firewall", "Filtrage", "Cyberécurité", "Segmentation"]
+tags: ["Firewall", "Filtrage", "Cybersécurité", "Segmentation"]
 serie: "firewalling-edge"
 serieOrder: 5
 pubDate: 2026-02-10
@@ -14,9 +14,11 @@ import NextStep from '../../../components/NextStep.astro';
 import ProjectImage from '../../../components/ProjectImage.astro';
 import ProjectImage2 from '../../../components/ProjectImage2.astro';
 
+
+
 <p class="mt-6 text-sm leading-relaxed italic" style="color: var(--text-main);">
-  Dans une infrastructure critique, le segment d'administration (Management Plane) est le cœur du pouvoir. 
-  Cet article détaille comment j'ai verrouillé l'accès à la GUI d'OPNsense pour n'autoriser que mon poste pilote, 
+  Dans une infrastructure critique, le segment d'administration (Management Plane) est le cœur du pouvoir.
+  Cet article détaille comment j'ai verrouillé l'accès à la GUI d'OPNsense pour n'autoriser que mon poste pilote,
   appliquant ainsi une segmentation stricte conforme aux recommandations de l'ANSSI.
 </p>
 
@@ -25,69 +27,359 @@ import ProjectImage2 from '../../../components/ProjectImage2.astro';
 ## 🛡️ La philosophie : "Never Trust, Always Verify"
 
 Le segment `SEG-SRV` ne doit pas être un réseau "ouvert". Pour garantir l'intégrité du pare-feu, j'ai défini trois objectifs de filtrage :
+
 1. **Isoler l'interface de gestion (GUI)** : Seul mon poste identifié peut configurer le cluster.
 2. **Brider les flux de services** : Le poste pilote ne peut interroger que les services nécessaires (DNS de l'AD).
 3. **Bloquer par défaut** : Tout ce qui n'est pas explicitement autorisé est rejeté.
 
 ---
 
-## 🏷️ Étape 1 : Création des Alias (Abstraction Logicielle)
+## 🖥️ Étape 0 — Prérequis VMware : assignation du LAN Segment
 
-Plutôt que d'utiliser des adresses IP brutes dans les règles, l'utilisation d'**Alias** permet une gestion plus propre et évite les erreurs de saisie.
+Avant toute configuration réseau, la machine qui jouera le rôle de poste pilote doit être connectée au bon segment virtuel. Dans VMware Workstation, chaque VM doit avoir sa carte réseau assignée au **LAN Segment SEG-SRV** — et non en NAT ou Host-Only, qui introduiraient du trafic parasite.
 
-- **AdminHosts** : Contient l'IP statique de mon poste de gestion (`10.0.1.50`).
-- **Poste_Pilote_GUI net** : Représente l'ensemble du sous-réseau du segment d'administration.
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/1.png"
+  alt="Assignation de la carte réseau LAN Segment SEG-SRV dans VMware"
+  caption="La carte réseau du poste pilote est rattachée au LAN Segment SEG-SRV — aucune interface VMware sur l'hôte"
+  maxWidth="600px"
+/>
 
-<ProjectImage 
-  src="/images/projets/firewalling-edge/opnsense/segmentation/alias-admin.png" 
-  alt="Configuration de l'alias AdminHosts" 
-  caption="Alias AdminHosts pointant vers le poste pilote 10.0.1.50"
+---
+
+## 🌐 Étape 1 — Configuration IP statique du poste pilote
+
+Le poste pilote doit avoir une **IP fixe et connue** — c'est cette adresse qui sera whitelistée dans l'alias OPNsense. Une IP dynamique (DHCP) serait un risque : si l'adresse change, le poste perd l'accès à la GUI.
+
+Configuration appliquée :
+
+<div class="overflow-x-auto rounded-xl border my-6" style="border-color: var(--card-border);">
+  <table class="w-full text-sm border-collapse">
+    <thead>
+      <tr style="background-color: var(--card-bg); border-bottom: 1px solid var(--card-border);">
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted);">Paramètre</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted);">Valeur</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted);">Raison</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid var(--card-border);">
+        <td class="px-4 py-3 font-bold" style="color: var(--text-title);">Adresse IP</td>
+        <td class="px-4 py-3 font-mono text-xs" style="color: var(--text-main);">10.0.1.50</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">Fixe, hors plage DHCP (Whitelisting)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--card-border);">
+        <td class="px-4 py-3 font-bold" style="color: var(--text-title);">Passerelle</td>
+        <td class="px-4 py-3 font-mono text-xs" style="color: var(--text-main);">10.0.1.254</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">VIP du cluster OPNsense</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--card-border);">
+        <td class="px-4 py-3 font-bold" style="color: var(--text-title);">DNS Principal</td>
+        <td class="px-4 py-3 font-mono text-xs" style="color: var(--text-main);">10.0.2.10</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">AD01 Toulon uniquement</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 font-bold" style="color: var(--text-title);">DNS Public</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-main);">❌ Aucun</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">Isolation totale (No Internet access)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+> **Pourquoi pas de DNS public ?** Le poste d'administration ne doit joindre qu'un périmètre maîtrisé. Un DNS public (8.8.8.8) ouvrirait une surface d'exfiltration potentielle et sortirait du cloisonnement voulu.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/2.png"
+  alt="Configuration IP statique du poste pilote : 10.0.1.50, GW 10.0.1.254, DNS 10.0.2.10"
+  caption="IP fixe 10.0.1.50 — passerelle sur la VIP OPNsense, DNS exclusivement vers l'AD01"
+  maxWidth="600px"
+/>
+
+---
+
+## 🏷️ Étape 2 — Création des alias (abstraction logicielle)
+
+Plutôt que d'utiliser des adresses IP brutes dans les règles, les **alias** permettent une gestion plus lisible et évitent les erreurs de saisie. Si l'IP du poste pilote change un jour, une seule modification dans l'alias suffit — toutes les règles qui y font référence sont mises à jour automatiquement.
+
+- **AdminHosts** : contient l'IP statique du poste de gestion (`10.0.1.50`)
+- **Poste_Pilote_GUI net** : représente l'ensemble du sous-réseau SEG-SRV
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/3.png"
+  alt="Configuration de l'alias AdminHosts pointant vers 10.0.1.50"
+  caption="Alias AdminHosts — l'IP du poste pilote est abstraite, les règles référencent l'alias"
   maxWidth="500px"
 />
 
 ---
 
-## 🔐 Étape 2 : Configuration des règles de filtrage
+## 🔐 Étape 3 — Règles de filtrage sur SEG-SRV
 
-Les règles suivantes ont été appliquées sur l'interface **SEG-SRV**. L'ordre est ici crucial pour respecter la priorité des flux.
+Les règles suivantes ont été appliquées sur l'interface **SEG-SRV**. L'ordre est ici crucial — OPNsense applique les règles de haut en bas, première correspondance gagne.
 
-### 📋 Tableau de la politique de sécurité
+### 📋 Politique de sécurité
 
-| Action | Protocole | Source | Destination | Port | Description |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **PASS** | IPv4 TCP | `AdminHosts` | `This Firewall` | `443` | Accès GUI — Poste pilote uniquement |
-| **BLOCK** | IPv4 TCP | `Poste_Pilote_GUI net` | `This Firewall` | `443` | Sécurité — Bloque la GUI pour tout le reste |
-| **PASS** | IPv4 TCP/UDP | `AdminHosts` | `10.0.2.10` | `53` | Résolution DNS via le contrôleur AD 01 |
-| **PASS** | IPv4 ICMP | `AdminHosts` | `Any` | `*` | Autorisation du diagnostic (Ping) |
+<div class="overflow-x-auto rounded-xl border my-6" style="border-color: var(--card-border);">
+  <table class="w-full text-sm border-collapse">
+    <thead>
+      <tr style="background-color: var(--card-bg); border-bottom: 1px solid var(--card-border);">
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Action</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Protocole</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Source</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Destination</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Port</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid var(--card-border);">
+        <td class="px-4 py-3 whitespace-nowrap"><span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background-color: rgba(16,185,129,0.1); color: rgb(16,185,129);">PASS</span></td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">IPv4 TCP</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-title);">AdminHosts</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">This Firewall</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">443</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">Accès GUI — poste pilote uniquement</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--card-border); background-color: rgba(239,68,68,0.03);">
+        <td class="px-4 py-3 whitespace-nowrap"><span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background-color: rgba(239,68,68,0.1); color: rgb(239,68,68);">BLOCK</span></td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">IPv4 TCP</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-title);">Poste_Pilote_GUI net</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">This Firewall</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">443</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">Bloque la GUI pour tout le reste du segment</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--card-border);">
+        <td class="px-4 py-3 whitespace-nowrap"><span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background-color: rgba(16,185,129,0.1); color: rgb(16,185,129);">PASS</span></td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">IPv4 TCP/UDP</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-title);">AdminHosts</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">10.0.2.10</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">53</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">Résolution DNS vers AD01 uniquement</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 whitespace-nowrap"><span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background-color: rgba(16,185,129,0.1); color: rgb(16,185,129);">PASS</span></td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">IPv4 ICMP</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-title);">AdminHosts</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">Any</td>
+        <td class="px-4 py-3 whitespace-nowrap font-mono text-xs" style="color: var(--text-main);">*</td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">Diagnostic (ping) autorisé</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<ProjectImage 
-  src="/images/projets/firewalling-edge/opnsense/segmentation/rules-seg-srv.png" 
-  alt="Vue des règles de filtrage sur l'interface SEG-SRV" 
-  caption="Implémentation des règles sur l'interface SEG-SRV"
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/6.png"
+  alt="Vue des règles de filtrage sur l'interface SEG-SRV dans OPNsense"
+  caption="Règles SEG-SRV — la règle de blocage en position 2 est la safety net du segment"
   maxWidth="800px"
+/>
+
+### 📝 Journalisation des paquets bloqués
+
+J'ai activé la **journalisation sur la règle de blocage** (règle n°2). Chaque tentative d'accès à la GUI depuis une machine non autorisée sera tracée dans les logs — indispensable pour auditer et détecter toute tentative de contournement.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/7.png"
+  alt="Activation de la journalisation sur la règle de blocage GUI"
+  caption="Log activé sur la règle BLOCK — toute tentative non autorisée est enregistrée"
+  maxWidth="600px"
 />
 
 ---
 
-## 🧠 Étape 3 : Analyse technique des règles
+## ⚠️ Étape 4 — Désactivation de la règle Anti-Lockout
 
-### 1. Protection de l'interface de gestion
-La règle n°2 est une **"Safety Net"**. Même si une nouvelle machine est ajoutée au segment `SEG-SRV`, elle se heurtera à un blocage explicite si elle tente d'accéder à l'IP du firewall sur le port 443. Cela empêche toute tentative de scan ou de brute-force interne.
+OPNsense génère par défaut une règle **Anti-Lockout** qui autorise l'accès à la GUI depuis n'importe quelle IP du LAN. Cette règle contredit directement ma politique de sécurité.
 
-### 2. Dépendance DNS vers l'Active Directory
-Le poste pilote fait partie du domaine `infra.formation.local`. Pour pouvoir joindre les serveurs par leur nom (ex: `ad01.infra.formation.local`), le flux DNS vers l'IP `10.0.2.10` est indispensable. Notez que j'ai restreint ce flux au seul `AdminHosts`.
+> **Attention** : ne désactiver cette règle qu'**après** avoir validé l'accès depuis `10.0.1.50`. Si elle est désactivée avant, il y a risque de se retrouver bloqué hors de la GUI sans recours (sauf accès console direct).
 
-### 3. Suppression de la règle Anti-Lockout
-Une fois ces règles validées, j'ai désactivé la règle automatique **Anti-Lockout** d'OPNsense. 
-> **Pourquoi ?** Parce que la règle automatique autorise l'accès à la GUI depuis *n'importe quelle* IP du LAN, ce qui contredit ma politique de sécurité restrictive basée sur l'alias `AdminHosts`.
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/5.png"
+  alt="Désactivation de la règle Anti-Lockout sur l'interface d'administration OPNsense"
+  caption="Anti-Lockout désactivée — la politique de filtrage par alias prend le relais"
+  maxWidth="600px"
+/>
 
 ---
 
-## 🧪 Étape 4 : Validation du cloisonnement
+## 🔄 Étape 5 — Synchronisation avec OPNsense 2 (cluster HA)
 
-Pour tester l'étanchéité, j'ai tenté d'accéder à `https://10.0.1.254` depuis une machine temporaire sur le même segment (IP `10.0.1.60`). 
+Les règles configurées sur OPNsense 1 doivent être **répliquées sur OPNsense 2** via la synchronisation XMLRPC déjà mise en place dans l'article précédent. Une vérification s'impose après chaque modification de règle.
 
-**Résultat :** Connexion refusée. Les logs du firewall confirment le déclenchement de la règle de blocage "autres machines". Mon poste pilote `10.0.1.50`, lui, conserve un accès fluide.
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/7.5.png"
+  alt="Synchronisation des règles SEG-SRV vers OPNsense 2 via XMLRPC"
+  caption="Les règles de filtrage SEG-SRV sont répliquées sur le nœud passif — cohérence garantie en cas de bascule"
+  maxWidth="700px"
+/>
+
+---
+
+## 🧪 Étape 6 — Validation du cloisonnement
+
+### Test  — Accès GUI refusé depuis une IP non autorisée
+
+J'ai tenté d'accéder à `https://10.0.1.254` depuis une machine temporaire sur le même segment (IP `10.0.1.10`). Les journaux OPNsense confirment le déclenchement de la règle de blocage.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/8.png"
+  alt="Journaux OPNsense — accès GUI refusé depuis 10.0.2.10, autorisé depuis 10.0.1.50"
+  caption="Les logs confirment : BLOCK sur 10.0.2.10, PASS sur 10.0.1.50 — le cloisonnement est étanche"
+  maxWidth="800px"
+/>
+
+
+ 
+## 🔒 Étape 7 — Isolation DNS : mise en place du Split-Horizon
+ 
+### Pourquoi c'est important ?
+ 
+Par défaut, un contrôleur de domaine Windows avec la récursion DNS activée peut résoudre **n'importe quel nom externe** — ce qui crée une surface d'exfiltration potentielle via DNS. Dans une architecture segmentée conforme à l'ANSSI, le Management Plane ne doit pas pouvoir joindre Internet, y compris via des requêtes DNS.
+ 
+L'objectif est d'obtenir ce comportement strict :
+ 
+```
+Poste pilote → AD01 (DNS)
+AD01         → autorité sur infra.formation.local uniquement
+AD01         → refuse toute résolution externe (récursion désactivée)
+Résolution externe → impossible depuis le segment
+```
+ 
+### Désactivation de la récursion DNS sur AD01
+ 
+La récursion permet à un serveur DNS de résoudre des noms pour lesquels il n'est pas autoritaire — en interrogeant d'autres serveurs DNS sur Internet. On la désactive pour que l'AD01 ne réponde qu'aux zones qu'il gère.
+ 
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/12.5.png"
+  alt="Récursion DNS désactivée sur AD01 — Enable: False"
+  caption="Get-DnsServerRecursion confirme Enable: False — l'AD01 ne résout plus que ses propres zones"
+  maxWidth="600px"
+/>
+ 
+### Configuration d'Unbound — Domain Override vers AD01
+ 
+Sur OPNsense, Unbound est configuré avec un **domain override** : toutes les requêtes pour `infra.formation.local` sont déléguées à l'AD01 (`10.0.2.10`). Pour le reste, Unbound résout de manière récursive — mais uniquement depuis OPNsense, pas depuis les segments internes.
+ 
+Cette configuration implémente le **DNS split-horizon** :
+- Les noms internes → AD01 fait autorité
+- Les noms externes → Unbound résout, mais les segments internes ne peuvent pas l'atteindre directement.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/13.png"
+  alt="Configuration Unbound — domain override infra.formation.local vers 10.0.2.10"
+  caption="Domain override Unbound : toutes les requêtes .infra.formation.local sont transmises à l'AD01"
+  maxWidth="700px"
+/>
+ 
+### Validation — Tests depuis le poste pilote
+ 
+Trois tests confirment que le cloisonnement DNS est effectif :
+ 
+<div class="overflow-x-auto rounded-xl border my-6" style="border-color: var(--card-border);">
+  <table class="w-full text-sm border-collapse">
+    <thead>
+      <tr style="background-color: var(--card-bg); border-bottom: 1px solid var(--card-border);">
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Test</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Commande</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Résultat</th>
+        <th class="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest whitespace-nowrap" style="color: var(--text-muted);">Attendu</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid var(--card-border);">
+        <td class="px-4 py-3 text-xs font-bold" style="color: var(--text-title);">Nom interne</td>
+        <td class="px-4 py-3 font-mono text-xs" style="color: var(--text-main);">nslookup srv-ad-01.infra.formation.local</td>
+        <td class="px-4 py-3"><span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background-color: rgba(16,185,129,0.1); color: rgb(16,185,129);">10.0.2.10 ✓</span></td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">AD01 répond en autorité</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--card-border); background-color: rgba(239,68,68,0.03);">
+        <td class="px-4 py-3 text-xs font-bold" style="color: var(--text-title);">Nom externe</td>
+        <td class="px-4 py-3 font-mono text-xs" style="color: var(--text-main);">nslookup google.com</td>
+        <td class="px-4 py-3"><span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background-color: rgba(239,68,68,0.1); color: rgb(239,68,68);">Query refused ✓</span></td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">AD01 refuse — récursion OFF</td>
+      </tr>
+      <tr>
+        <td class="px-4 py-3 text-xs font-bold" style="color: var(--text-title);">Récursion directe</td>
+        <td class="px-4 py-3 font-mono text-xs" style="color: var(--text-main);">nslookup google.com 127.0.0.1</td>
+        <td class="px-4 py-3"><span class="text-[10px] font-black px-2 py-0.5 rounded-full" style="background-color: rgba(239,68,68,0.1); color: rgb(239,68,68);">No response ✓</span></td>
+        <td class="px-4 py-3 text-xs" style="color: var(--text-muted);">AD01 silencieux en local</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/14.png"
+  alt="Résultats nslookup — nom interne résolu, externe refusé, récursion directe silencieuse"
+  caption="Le DNS split-horizon est effectif — le Management Plane ne peut pas résoudre de noms externes"
+  maxWidth="600px"
+/>
+
+---
+## 🛡️ Étape 8 — PKI Locale : Authentification de la WebGUI
+
+Pour parfaire la sécurité du poste pilote, j'ai remplacé le certificat auto-signé par défaut par une **chaîne de confiance personnalisée**. L'objectif est d'éliminer les alertes de sécurité et de garantir l'identité du cluster sans dépendre de l'Active Directory.
+
+### 1. Création de l'Autorité de Certification (CA) interne
+
+La première étape consiste à transformer l'OPNsense en autorité émettrice. J'ai configuré une CA nommée `CA-INFRA-TOULON` avec un chiffrement RSA-2048 et une durée de vie de 10 ans.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/15.png"
+  alt="Configuration de l'autorité de certification CA-INFRA-TOULON"
+  caption="Création de la CA racine locale — le point de départ de notre chaîne de confiance"
+  maxWidth="600px"
+/>
+
+### 2. Génération du certificat serveur signé
+
+J'ai ensuite généré un certificat pour la WebGUI (`CERT-GUI-OPNSENSE`) signé par notre nouvelle CA. Ce certificat inclut les **Subject Alternative Names (SAN)** pour la VIP (.254) ainsi que les IP réelles des nœuds (.252 et .253), évitant toute alerte de nom de domaine invalide.
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/16.png"
+  alt="Génération du certificat serveur signé par la CA locale"
+  caption="Certificat serveur incluant les IP du cluster dans les champs alternatifs (SAN)"
+  maxWidth="600px"
+/>
+
+### 3. Déploiement de la confiance sur le Poste Pilote
+
+Pour que le navigateur du poste pilote valide la connexion, il faut lui importer la partie publique de notre CA. L'installation est réalisée dans le magasin système pour une persistance totale.
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+  <ProjectImage
+    src="/images/projets/firewalling-edge/opnsense/seg-srv/17.png"
+    alt="Clic droit sur le certificat PEM et installer"
+    caption="1. Clic droit sur le certificat .pem pour lancer l'assistant"
+    maxWidth="100%"
+  />
+  <ProjectImage
+    src="/images/projets/firewalling-edge/opnsense/seg-srv/18.png"
+    alt="Choix de l'emplacement : Ordinateur Local"
+    caption="2. Sélection de 'Ordinateur local' pour l'ensemble du système"
+    maxWidth="100%"
+  />
+  <ProjectImage
+    src="/images/projets/firewalling-edge/opnsense/seg-srv/19.png"
+    alt="Sélection du magasin Autorités de certification racines de confiance"
+    caption="3. Placement manuel dans le magasin des racines de confiance"
+    maxWidth="100%"
+  />
+</div>
+
+### 4. Validation finale : Le cadenas
+
+Une fois le certificat appliqué dans les paramètres d'administration d'OPNsense et la session réinitialisée (pour corriger d'éventuels jetons CSRF expirés), l'accès à la console de gestion est désormais parfaitement sécurisé et authentifié.
+
+
+<ProjectImage
+  src="/images/projets/firewalling-edge/opnsense/seg-srv/20.png"
+  alt="WebGUI OPNsense avec cadenas vert sur l'IP 10.0.1.254"
+  caption="Résultat final : Connexion chiffrée et identité vérifiée sur la VIP du cluster"
+  maxWidth="800px"
+/>
 
 ---
 
@@ -99,13 +391,19 @@ Pour tester l'étanchéité, j'ai tenté d'accéder à `https://10.0.1.254` depu
       </h3>
       <ul class="space-y-3 text-sm">
         <li class="flex items-start gap-3" style="color: var(--text-main);">
-          <span><strong>Surface d'attaque :</strong> Réduite au seul poste d'administration.</span>
+          <span><strong>Surface d'attaque :</strong> Réduite au seul poste d'administration identifié par alias.</span>
         </li>
         <li class="flex items-start gap-3" style="color: var(--text-main);">
-          <span><strong>Conformité :</strong> Application du principe de cloisonnement des flux.</span>
+          <span><strong>Conformité :</strong> Cloisonnement des flux conforme aux recommandations ANSSI.</span>
         </li>
         <li class="flex items-start gap-3" style="color: var(--text-main);">
-          <span><strong>Maintenance :</strong> Utilisation d'alias pour une gestion simplifiée.</span>
+          <span><strong>Traçabilité :</strong> Journalisation activée sur les règles de blocage.</span>
+        </li>
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Résilience :</strong> Règles synchronisées sur les deux nœuds du cluster.</span>
+        </li>
+        <li class="flex items-start gap-3" style="color: var(--text-main);">
+          <span><strong>Isolation DNS :</strong> Aucune résolution externe — AD01 exclusivement.</span>
         </li>
       </ul>
     </div>

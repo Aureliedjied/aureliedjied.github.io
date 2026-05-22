@@ -66,29 +66,43 @@ Le lab est découpé en **5 segments distincts**, chacun correspondant à une zo
       <tr class="hover:bg-white/3 transition-colors">
         <td class="py-3 px-4 font-mono font-semibold text-green-400">SEG-SRV</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.1.0/24</td>
-        <td class="py-3 px-4 text-xs">LAN Serveurs</td>
-        <td class="py-3 px-4 text-xs opacity-80">AD-01, serveurs fichiers, infra</td>
-        <td class="py-3 px-4 text-xs opacity-80">Réseau de confiance — services internes critiques</td>
+        <td class="py-3 px-4 text-xs">Administration</td>
+        <td class="py-3 px-4 text-xs opacity-80">Poste pilote GUI</td>
+        <td class="py-3 px-4 text-xs opacity-80">Segment d'administration — accès GUI OPNsense restreint</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
-        <td class="py-3 px-4 font-mono font-semibold text-sky-400">SEG-CLIENT</td>
+        <td class="py-3 px-4 font-mono font-semibold text-sky-400">SEG-AD01</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.2.0/24</td>
-        <td class="py-3 px-4 text-xs">LAN Clients</td>
-        <td class="py-3 px-4 text-xs opacity-80">Postes utilisateurs</td>
-        <td class="py-3 px-4 text-xs opacity-80">Accès filtré vers SEG-SRV via OPNsense</td>
+        <td class="py-3 px-4 text-xs">Contrôleurs de domaine</td>
+        <td class="py-3 px-4 text-xs opacity-80">AD01 (10.0.2.10)</td>
+        <td class="py-3 px-4 text-xs opacity-80">Active Directory — DNS, authentification, GPO</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-indigo-400">SEG-AD02</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.3.0/24</td>
+        <td class="py-3 px-4 text-xs">Contrôleur secondaire</td>
+        <td class="py-3 px-4 text-xs opacity-80">AD02 (à venir)</td>
+        <td class="py-3 px-4 text-xs opacity-80">Redondance AD — réplication inter-sites</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
         <td class="py-3 px-4 font-mono font-semibold text-amber-400">SEG-DMZ</td>
-        <td class="py-3 px-4 font-mono text-xs">10.0.3.0/24</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.4.0/24</td>
         <td class="py-3 px-4 text-xs">DMZ</td>
-        <td class="py-3 px-4 text-xs opacity-80">Nextcloud, services exposés WAN</td>
-        <td class="py-3 px-4 text-xs opacity-80">Zone exposée — isolée de SEG-SRV</td>
+        <td class="py-3 px-4 text-xs opacity-80">Nextcloud (à venir)</td>
+        <td class="py-3 px-4 text-xs opacity-80">Zone exposée — isolée des segments internes</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-mono font-semibold text-sky-300">SEG-CLIENT</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.10.0/24</td>
+        <td class="py-3 px-4 text-xs">LAN Clients</td>
+        <td class="py-3 px-4 text-xs opacity-80">Postes utilisateurs (à venir)</td>
+        <td class="py-3 px-4 text-xs opacity-80">Accès filtré vers SEG-AD via OPNsense</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
         <td class="py-3 px-4 font-mono font-semibold text-rose-400">SEG-MONITOR</td>
-        <td class="py-3 px-4 font-mono text-xs">10.0.4.0/24</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.20.0/24</td>
         <td class="py-3 px-4 text-xs">Supervision</td>
-        <td class="py-3 px-4 text-xs opacity-80">Graylog ou Zabbix</td>
+        <td class="py-3 px-4 text-xs opacity-80">Zabbix, Graylog (à venir)</td>
         <td class="py-3 px-4 text-xs opacity-80">Collecte logs et métriques de toutes les zones</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
@@ -121,7 +135,7 @@ OPNsense disposera de **6 interfaces** sur chaque nœud pour couvrir toutes les 
       </tr>
     </thead>
     <tbody class="divide-y divide-white/5">
-      <tr class="hover:bg-white/3 transition-colors">
+<tr class="hover:bg-white/3 transition-colors">
         <td class="py-3 px-4 font-semibold text-blue-400">InternetWAN</td>
         <td class="py-3 px-4 font-mono text-xs">192.168.1.252</td>
         <td class="py-3 px-4 font-mono text-xs">192.168.1.253</td>
@@ -129,31 +143,45 @@ OPNsense disposera de **6 interfaces** sur chaque nœud pour couvrir toutes les 
         <td class="py-3 px-4 font-mono text-xs">/24</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
-        <td class="py-3 px-4 font-semibold text-green-400">AdministrationLAN</td>
+        <td class="py-3 px-4 font-semibold text-green-400">Poste_Pilote_GUI (SEG-SRV)</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.1.252</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.1.253</td>
         <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.1.254</td>
         <td class="py-3 px-4 font-mono text-xs">/24</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
-        <td class="py-3 px-4 font-semibold text-sky-400">ClientsLAN</td>
+        <td class="py-3 px-4 font-semibold text-sky-400">AD01LAN (SEG-AD01)</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.2.252</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.2.253</td>
         <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.2.254</td>
         <td class="py-3 px-4 font-mono text-xs">/24</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
-        <td class="py-3 px-4 font-semibold text-amber-400">DMZ</td>
+        <td class="py-3 px-4 font-semibold text-indigo-400">AD02LAN (SEG-AD02)</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.3.252</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.3.253</td>
         <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.3.254</td>
         <td class="py-3 px-4 font-mono text-xs">/24</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
-        <td class="py-3 px-4 font-semibold text-rose-400">Supervision</td>
+        <td class="py-3 px-4 font-semibold text-amber-400">DMZ</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.4.252</td>
         <td class="py-3 px-4 font-mono text-xs">10.0.4.253</td>
         <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.4.254</td>
+        <td class="py-3 px-4 font-mono text-xs">/24</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-sky-300">ClientsLAN</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.10.252</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.10.253</td>
+        <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.10.254</td>
+        <td class="py-3 px-4 font-mono text-xs">/24</td>
+      </tr>
+      <tr class="hover:bg-white/3 transition-colors">
+        <td class="py-3 px-4 font-semibold text-rose-400">Supervision</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.20.252</td>
+        <td class="py-3 px-4 font-mono text-xs">10.0.20.253</td>
+        <td class="py-3 px-4 font-mono text-xs text-amber-400">10.0.20.254</td>
         <td class="py-3 px-4 font-mono text-xs">/24</td>
       </tr>
       <tr class="hover:bg-white/3 transition-colors">
@@ -243,20 +271,25 @@ OPNsense disposera de **6 interfaces** sur chaque nœud pour couvrir toutes les 
 
     <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
       <div class="text-lg mb-2">💻</div>
-      <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-CLIENT</h6>
-      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.2.0/24</p>
+      <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-AD01/02</h6>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.2-3.0/24</p>
     </div>
 
     <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
       <div class="text-lg mb-2">🛡️</div>
       <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-DMZ</h6>
-      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.3.0/24</p>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.4.0/24</p>
     </div>
 
     <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
       <div class="text-lg mb-2">📊</div>
+      <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-CLIENTS</h6>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.10.0/24</p>
+    </div>
+        <div class="p-4 rounded-2xl border text-center" style="border-color: var(--card-border); background-color: var(--bg-color);">
+      <div class="text-lg mb-2">📊</div>
       <h6 class="text-[9px] font-black uppercase opacity-60" style="color: var(--text-title);">SEG-MONITOR</h6>
-      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.4.0/24</p>
+      <p class="text-[10px] font-mono font-bold" style="color: var(--text-purple);">10.0.20.0/24</p>
     </div>
   </div>
 </div>
